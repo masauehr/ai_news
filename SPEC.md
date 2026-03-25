@@ -13,7 +13,9 @@
 | モデルリリース | OpenAI Blog / Anthropic News / Google DeepMind Blog | 新モデル・機能発表 |
 | 研究論文 | arXiv (cs.AI, cs.CL, cs.LG) / Hugging Face Papers | 注目論文のアブスト |
 | ビジネス動向 | TechCrunch / VentureBeat / The Information | 資金調達・提携・動向 |
-| 国内情報 | ASCII.jp / ITmedia AI+ / Impress AI | 日本語AI情報 |
+| 国内情報（一般） | ASCII.jp / ITmedia AI+ / Impress Watch / AINOW | 日本語AI情報 |
+| 国内情報（スタートアップ） | Sakana AI Blog / PFN Blog / SB Intuitions / さくらインターネット | 国内AI企業の研究・製品動向 |
+| 国内情報（政府・研究機関） | デジタル庁 / 総務省 / 経産省 / NEDO / JST | 政策・研究開発・補助金 |
 | コミュニティ | Hacker News (AI関連) / Reddit r/MachineLearning | コミュニティ反応 |
 | 規制・政策 | 総務省 / 経産省 / EU AI Act 関連 | 法規制・ガイドライン |
 
@@ -52,6 +54,13 @@
 - **情報源**: デジタル庁 / 総務省 / 経産省 / 内閣サイバーセキュリティセンター（NISC）
 - **キーワード**: `デジタル庁 生成AI`, `行政 AI活用`, `政府 ChatGPT`, `自治体 生成AI`, `国産LLM`
 
+#### 5. 日本のAI企業・研究動向（重点収集）
+- **対象**: 国内のAI研究機関・スタートアップ・大企業のAI部門
+- **注目企業**: Sakana AI / PFN（Preferred Networks）/ SB Intuitions / さくらインターネット /
+  Rinna / AI Shift / ELYZA / cyberagent AI Lab / NTT / 富士通 / NEC
+- **注目点**: 新モデルリリース・論文発表・資金調達・製品リリース・産学連携
+- **キーワード**: `Sakana AI`, `PFN AI`, `国産LLM`, `日本 生成AI スタートアップ`, `ELYZA`, `SB Intuitions`
+
 ---
 
 ## 記事フォーマット
@@ -59,7 +68,7 @@
 ### 週次まとめ（articles/weekly/YYYY-WXX.md）
 
 ```markdown
-# 生成AI週次ダイジェスト YYYY年WXX週（MM/DD〜MM/DD）
+# 生成AI週次ダイジェスト（MM/DD〜MM/DD）
 
 > 自動生成: YYYY-MM-DD | 対象期間: YYYY-MM-DD 〜 YYYY-MM-DD
 
@@ -106,7 +115,16 @@
 
 ## 🇯🇵 国内動向
 
-- 〜
+> 国内企業・政府・研究機関の動向を必ず収録すること。Sakana AI / PFN / ELYZA 等の
+> 日本のAI企業の動向を個別に検索して含めること。
+
+### 国内AI企業・研究
+
+- **[企業/機関名]**: 〜（参照: [日本語タイトル or 英語タイトル（日本語訳）](URL)）
+
+### 政府・行政
+
+- **[省庁/自治体名]**: 〜
 
 ---
 

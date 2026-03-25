@@ -39,21 +39,37 @@ fi
 - `AI PC NPU VRAM ローカルAI スペック`
 - `デジタル庁 生成AI` / `行政 AI活用 自治体`
 
+**日本国内AI動向（必ず個別に検索すること）**:
+- `Sakana AI 最新` — さくらインターネット・SB Intuitions等の国産LLM開発動向も含む
+- `日本 AI スタートアップ 資金調達 最新`
+- `PFN preferred networks AI`
+- `国産LLM 新モデル リリース`
+- `日本 生成AI 企業導入 事例 最新`
+- `NEDO JST AI 研究開発 採択`
+
 **参照サイト（WebFetch）**:
 - OpenAI Blog
 - Anthropic News
 - Google DeepMind Blog
 - Hugging Face Blog
 - ITmedia AI+
+- Sakana AI Blog（https://sakana.ai/blog/）
+- AINOW（https://ainow.ai/）
+- 窓の杜 AI関連（https://forest.watch.impress.co.jp/）
 
 ### Step 3: 週次記事の生成
 
 ファイル名: `articles/weekly/YYYY-WXX.md`（例: `2026-W14.md`）
 
 SPEC.md の週次フォーマットに従い記事を生成する。
-- 最低5トピック以上を収録
+- 最低5トピック以上を収録（日本国内動向を必ず1件以上含める）
 - 各情報源のURLを必ず記載
 - 日本語で記述（技術用語・モデル名は原語のまま）
+- **英語記事・英語タイトルのリンクには、必ず日本語訳タイトルを併記する**
+  - 例: `[Introducing GPT-5.4（GPT-5.4の発表）](https://...)`
+  - 例: `参照: [OpenAI Blog — Introducing o3（o3の紹介）](https://...)`
+- 記事タイトルは `# 生成AI週次ダイジェスト（MM/DD〜MM/DD）` の形式で月日表記を使うこと
+  （スクリプトから渡される `WEEK_LABEL` の値を使う）
 
 ### Step 4: 月次記事の生成（第1月曜のみ）
 
@@ -69,8 +85,9 @@ SPEC.md の月次フォーマットに従い記事を生成する。
 
 週次まとめのリンク形式:
 ```markdown
-- [YYYY年WXX週（MM/DD〜MM/DD）](./articles/weekly/YYYY-WXX.md)
+- [MM/DD〜MM/DD](./articles/weekly/YYYY-WXX.md)
 ```
+（例: `- [3/23〜3/29](./articles/weekly/2026-W13.md)`）
 
 月次まとめのリンク形式:
 ```markdown
