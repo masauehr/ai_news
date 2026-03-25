@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  com.user.ai_news.plist — launchd設定ファイル
+  設置先: ~/Library/LaunchAgents/com.user.ai_news.plist
+  登録:   launchctl load ~/Library/LaunchAgents/com.user.ai_news.plist
+  手動実行: launchctl start com.user.ai_news
+  解除:   launchctl unload ~/Library/LaunchAgents/com.user.ai_news.plist
+-->
+<plist version="1.0">
+<dict>
+  <!-- ジョブ識別子 -->
+  <key>Label</key>
+  <string>com.user.ai_news</string>
+
+  <!-- 実行コマンド -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/masahiro/projects/ai_news/scripts/run_ai_news.sh</string>
+  </array>
+
+  <!-- 実行スケジュール: 毎週月曜 09:00 JST -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key>
+    <integer>1</integer>  <!-- 1=月曜日 -->
+    <key>Hour</key>
+    <integer>9</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <!-- 環境変数 -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/masahiro/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/anaconda3/bin</string>
+    <key>HOME</key>
+    <string>/Users/masahiro</string>
+    <key>LANG</key>
+    <string>ja_JP.UTF-8</string>
+  </dict>
+
+  <!-- ログ出力先 -->
+  <key>StandardOutPath</key>
+  <string>/Users/masahiro/projects/ai_news/ai_news.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/masahiro/projects/ai_news/ai_news.log</string>
+
+  <!-- Mac起動時に登録済みであれば自動ロード -->
+  <key>RunAtLoad</key>
+  <false/>
+
+  <!-- 作業ディレクトリ -->
+  <key>WorkingDirectory</key>
+  <string>/Users/masahiro/projects/ai_news</string>
+</dict>
+</plist>
