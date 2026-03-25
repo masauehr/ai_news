@@ -1,0 +1,8 @@
+# ログファイル
+*.log
+
+# macOS
+.DS_Store
+
+# 環境設定
+.env
