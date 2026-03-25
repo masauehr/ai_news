@@ -1,6 +1,6 @@
 # SPEC.md — 情報収集・記事生成仕様
 
-最終更新: 2026-03-26（注目トピック追加）
+最終更新: 2026-03-26（日本国内情報ソース見直し）
 
 ---
 
@@ -13,9 +13,10 @@
 | モデルリリース | OpenAI Blog / Anthropic News / Google DeepMind Blog | 新モデル・機能発表 |
 | 研究論文 | arXiv (cs.AI, cs.CL, cs.LG) / Hugging Face Papers | 注目論文のアブスト |
 | ビジネス動向 | TechCrunch / VentureBeat / The Information | 資金調達・提携・動向 |
-| 国内情報（一般） | ASCII.jp / ITmedia AI+ / Impress Watch / AINOW | 日本語AI情報 |
-| 国内情報（スタートアップ） | Sakana AI Blog / PFN Blog / SB Intuitions / さくらインターネット | 国内AI企業の研究・製品動向 |
-| 国内情報（政府・研究機関） | デジタル庁 / 総務省 / 経産省 / NEDO / JST | 政策・研究開発・補助金 |
+| 国内情報（メディア） | ITmedia AI+ / ASCII.jp / Impress Watch / 日経クロステック / CNET Japan | 日本語AI情報全般 |
+| 国内情報（政府・公式） | デジタル庁ニュース（digital.go.jp/news）/ 内閣府AI戦略 / 経産省AI政策 / 総務省 | 政策・ガイドライン・実証事業 |
+| 国内情報（研究機関） | NEDO / JST / 理研 / 産総研 | 研究開発・補助金採択 |
+| 国内情報（企業動向） | 各社プレスリリース・IRニュース（WebSearchで横断収集） | 国内AI企業の製品・研究動向 |
 | コミュニティ | Hacker News (AI関連) / Reddit r/MachineLearning | コミュニティ反応 |
 | 規制・政策 | 総務省 / 経産省 / EU AI Act 関連 | 法規制・ガイドライン |
 
@@ -50,16 +51,24 @@
 
 #### 4. 日本政府・行政機関の生成AI活用
 - **対象**: 各省庁・自治体・デジタル庁・内閣府の生成AI導入・実証実験・ガイドライン
-- **注目点**: 調達状況・活用事例・セキュリティ方針・国産LLM活用の動き
-- **情報源**: デジタル庁 / 総務省 / 経産省 / 内閣サイバーセキュリティセンター（NISC）
-- **キーワード**: `デジタル庁 生成AI`, `行政 AI活用`, `政府 ChatGPT`, `自治体 生成AI`, `国産LLM`
+- **注目点**: 国産AI選定状況・令和8年度試行・調達・セキュリティ方針
+- **情報源（直接確認）**:
+  - デジタル庁ニュース: https://www.digital.go.jp/news/
+  - 経産省AIポリシー: https://www.meti.go.jp/policy/it_policy/ai/
+  - 内閣府AI戦略: https://www8.cao.go.jp/cstp/ai/
+  - NISC: https://www.nisc.go.jp/
+- **キーワード**: `デジタル庁 生成AI`, `国産AI 選定 令和8年度`, `行政 LLM 試行`, `自治体 生成AI導入`,
+  `政府 AI調達`, `内閣府 AI戦略`
 
-#### 5. 日本のAI企業・研究動向（重点収集）
+#### 5. 日本のAI企業・研究動向
 - **対象**: 国内のAI研究機関・スタートアップ・大企業のAI部門
-- **注目企業**: Sakana AI / PFN（Preferred Networks）/ SB Intuitions / さくらインターネット /
-  Rinna / AI Shift / ELYZA / cyberagent AI Lab / NTT / 富士通 / NEC
-- **注目点**: 新モデルリリース・論文発表・資金調達・製品リリース・産学連携
-- **キーワード**: `Sakana AI`, `PFN AI`, `国産LLM`, `日本 生成AI スタートアップ`, `ELYZA`, `SB Intuitions`
+- **注目企業（例示・偏り禁止）**:
+  - スタートアップ: Sakana AI / ELYZA / Rinna / AI Shift / Lightblue
+  - 大手テック: 楽天（RakutenAI）/ ソフトバンク（SB Intuitions）/ KDDI / さくらインターネット
+  - 研究機関・大手: PFN（Preferred Networks）/ NTT / NEC / 富士通 / サイバーエージェント AI Lab
+- **注意**: 特定企業だけをクローズアップせず、その週に動きのあった企業を幅広く収録する
+- **キーワード**: `日本 生成AI 企業 最新`, `国産LLM リリース`, `RakutenAI 楽天AI`,
+  `日本 AI スタートアップ 資金調達`, `ELYZA SB Intuitions PFN`
 
 ---
 
