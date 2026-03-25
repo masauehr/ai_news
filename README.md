@@ -72,7 +72,7 @@ macOS の launchd によって定期実行する。
 
 ```bash
 # 週次まとめを今すぐ生成
-bash /Users/masahiro/projects/ai_news/scripts/run_ai_news.sh
+bash /path/to/ai_news/scripts/run_ai_news.sh
 
 # launchd登録
 launchctl load ~/Library/LaunchAgents/com.user.ai_news.plist
@@ -81,7 +81,7 @@ launchctl load ~/Library/LaunchAgents/com.user.ai_news.plist
 launchctl start com.user.ai_news
 
 # ログ確認
-tail -f /Users/masahiro/projects/ai_news/ai_news.log
+tail -f /path/to/ai_news/ai_news.log
 ```
 
 ---
