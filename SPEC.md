@@ -1,6 +1,6 @@
 # SPEC.md — 情報収集・記事生成仕様
 
-最終更新: 2026-03-26
+最終更新: 2026-03-26（注目トピック追加）
 
 ---
 
@@ -25,6 +25,32 @@
 - `マルチモーダル`, `エージェント`, `RAG`, `ファインチューニング`
 - `AI規制`, `AI安全`, `AI倫理`
 - `画像生成`, `動画生成`, `音声合成`
+
+### 特に注目しているトピック（優先収集・必ず記事に含める）
+
+#### 1. ローカル動作する小型LLM
+- **対象**: Llama / Gemma / Phi / Qwen / Mistral Small / DeepSeek 等のオンデバイスモデル
+- **注目点**: モデルサイズ（パラメータ数）・量子化（GGUF/GPTQ）・ベンチマーク性能
+- **ツール**: Ollama / LM Studio / llama.cpp / MLX（Apple Silicon）
+- **キーワード**: `ローカルLLM`, `edge AI`, `on-device`, `小型モデル`, `量子化`, `Ollama`
+
+#### 2. AIエージェントの動向
+- **対象**: 自律エージェント・マルチエージェント・ツール呼び出し・ワークフロー自動化
+- **注目点**: フレームワーク比較・実用事例・精度・コスト・安全性
+- **ツール**: LangGraph / AutoGen / CrewAI / MCP（Model Context Protocol）/ OpenAI Agents SDK
+- **キーワード**: `AIエージェント`, `agentic AI`, `MCP`, `マルチエージェント`, `autonomous agent`
+
+#### 3. 生成AIを動かせるPC・ハードウェア
+- **対象**: GPU/NPU搭載PC・Apple Silicon・NVIDIA GeForce / RTX / GB200・AMD Radeon AI
+- **注目点**: VRAM容量・推論速度・消費電力・価格帯・ローカルLLMとの相性
+- **メーカー**: NVIDIA / AMD / Intel / Apple / Qualcomm（Snapdragon X）
+- **キーワード**: `AI PC`, `NPU`, `ローカルAI 推奨スペック`, `RTX AI`, `Apple Silicon LLM`
+
+#### 4. 日本政府・行政機関の生成AI活用
+- **対象**: 各省庁・自治体・デジタル庁・内閣府の生成AI導入・実証実験・ガイドライン
+- **注目点**: 調達状況・活用事例・セキュリティ方針・国産LLM活用の動き
+- **情報源**: デジタル庁 / 総務省 / 経産省 / 内閣サイバーセキュリティセンター（NISC）
+- **キーワード**: `デジタル庁 生成AI`, `行政 AI活用`, `政府 ChatGPT`, `自治体 生成AI`, `国産LLM`
 
 ---
 

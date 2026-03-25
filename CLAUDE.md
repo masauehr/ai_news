@@ -33,6 +33,12 @@ fi
 - `AI 規制 法律 日本`
 - `arXiv LLM 注目論文`
 
+**優先収集キーワード（SPEC.md の注目トピック — 必ず検索すること）**:
+- `ローカルLLM Ollama 新モデル` / `小型LLM 量子化 最新`
+- `AIエージェント MCP AutoGen 最新動向`
+- `AI PC NPU VRAM ローカルAI スペック`
+- `デジタル庁 生成AI` / `行政 AI活用 自治体`
+
 **参照サイト（WebFetch）**:
 - OpenAI Blog
 - Anthropic News
