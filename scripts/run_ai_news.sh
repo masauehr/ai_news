@@ -1,6 +1,7 @@
 #!/bin/bash
 # run_ai_news.sh — 生成AI情報まとめ 自動実行スクリプト
-# launchd から毎週月曜 09:00 に呼び出される
+# launchd から毎日 09:00 に呼び出される。
+# 今週分の記事がまだ生成されていない場合のみ実行する。
 
 set -euo pipefail
 
@@ -12,6 +13,7 @@ TODAY=$(TZ=Asia/Tokyo date +%Y-%m-%d)
 DAY_OF_MONTH=$(TZ=Asia/Tokyo date +%d)
 WEEK_NUM=$(TZ=Asia/Tokyo date +%V)
 YEAR=$(TZ=Asia/Tokyo date +%Y)
+WEEKLY_FILE="${PROJECT_DIR}/articles/weekly/${YEAR}-W${WEEK_NUM}.md"
 
 # --- ログ関数 ---
 log() {
@@ -19,15 +21,23 @@ log() {
 }
 
 # --- 開始 ---
-log "=== ai_news 自動実行開始 ==="
-log "今日: ${TODAY}（月の${DAY_OF_MONTH}日）"
+log "=== ai_news 起動チェック ==="
+log "今日: ${TODAY} / 対象週: ${YEAR}-W${WEEK_NUM}"
 
 cd "${PROJECT_DIR}"
 
-# --- モード判定 ---
+# --- 実行済みチェック（今週分のファイルが既にあればスキップ）---
+if [ -f "${WEEKLY_FILE}" ]; then
+  log "今週分（${YEAR}-W${WEEK_NUM}）は実行済み。スキップします。"
+  exit 0
+fi
+
+log "=== ai_news 自動実行開始 ==="
+
+# --- モード判定（第1週 = 月次も生成）---
 if [ "${DAY_OF_MONTH}" -le 7 ]; then
   MODE="monthly"
-  log "モード: 月次（第1月曜）"
+  log "モード: 月次（月初週）"
 else
   MODE="weekly"
   log "モード: 週次"
