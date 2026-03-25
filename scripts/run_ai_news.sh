@@ -15,6 +15,12 @@ WEEK_NUM=$(TZ=Asia/Tokyo date +%V)
 YEAR=$(TZ=Asia/Tokyo date +%Y)
 WEEKLY_FILE="${PROJECT_DIR}/articles/weekly/${YEAR}-W${WEEK_NUM}.md"
 
+# 今週の月曜〜日曜の月日を計算（例: 3/23〜3/29）
+DOW=$(TZ=Asia/Tokyo date +%u)  # 1=月曜, 7=日曜
+WEEK_MON=$(TZ=Asia/Tokyo date -v-$((DOW-1))d +%-m/%-d)
+WEEK_SUN=$(TZ=Asia/Tokyo date -v+$((7-DOW))d +%-m/%-d)
+WEEK_LABEL="${WEEK_MON}〜${WEEK_SUN}"
+
 # --- ログ関数 ---
 log() {
   echo "[$(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "${LOG_FILE}"
@@ -48,7 +54,8 @@ PROMPT="今日は ${TODAY} です。
 CLAUDE.md の手順に従って、生成AIの最新情報まとめ記事を自動生成してください。
 
 実行モード: ${MODE}
-対象週: ${YEAR}-W${WEEK_NUM}
+対象週ファイル名: ${YEAR}-W${WEEK_NUM}
+対象週の表示ラベル: ${WEEK_LABEL}（記事タイトルとREADMEリンクにはこちらを使うこと）
 
 手順:
 1. WebSearch で直近7日間の生成AI関連ニュースを収集する
