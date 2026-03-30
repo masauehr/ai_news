@@ -46,6 +46,7 @@ ai_news/
 
 ### 週次まとめ
 
+- [3/30〜4/5](./articles/weekly/2026-W14.md)
 - [3/23〜3/29](./articles/weekly/2026-W13.md)
 
 <!-- articles/weekly/ のファイルへのリンクがここに追加される -->
