@@ -37,6 +37,17 @@
 - **ツール**: Ollama / LM Studio / llama.cpp / MLX（Apple Silicon）
 - **キーワード**: `ローカルLLM`, `edge AI`, `on-device`, `小型モデル`, `量子化`, `Ollama`
 
+#### 1.5 1ビット・超低ビット量子化LLM（優先収集）
+- **対象**: 重みを1ビットまたは1.58ビットに量子化した超軽量LLM。CPU・NPUでの推論が現実的になるアーキテクチャ
+- **注目モデル**: Microsoft Research「BitNet」シリーズ（BitNet b1.58 / BitNet 3B）・**Bonsai**（1ビットLLM）・その他1bit量子化モデル
+- **注目点**: 推論速度・メモリ使用量・精度劣化の程度・CPU推論の実用性
+- **情報源（直接確認）**:
+  - Microsoft Research Blog: https://www.microsoft.com/en-us/research/blog/
+  - arXiv（cs.CL / cs.LG）: `bitnet`, `1-bit LLM`, `binary LLM`, `Bonsai LLM`
+  - Hugging Face Blog: https://huggingface.co/blog
+- **キーワード**: `1-bit LLM`, `BitNet`, `Bonsai LLM`, `1ビットLLM`, `binary quantization LLM`,
+  `超低ビット量子化`, `CPU推論 LLM`, `Microsoft Research LLM`
+
 #### 2. AIエージェントの動向
 - **対象**: 自律エージェント・マルチエージェント・ツール呼び出し・ワークフロー自動化
 - **注目点**: フレームワーク比較・実用事例・精度・コスト・安全性
