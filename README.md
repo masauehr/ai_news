@@ -46,11 +46,11 @@ ai_news/
 
 ### 週次まとめ
 
-- [4/14〜4/20](./articles/weekly/2026-W17.md)
-- [4/13〜4/19](./articles/weekly/2026-W16.md)
-- [4/6〜4/12](./articles/weekly/2026-W15.md)
-- [3/30〜4/5](./articles/weekly/2026-W14.md)
-- [3/23〜3/29](./articles/weekly/2026-W13.md)
+- [4/14〜4/20](./articles/weekly/2026-0420.md)
+- [4/13〜4/19](./articles/weekly/2026-0413.md)
+- [4/6〜4/12](./articles/weekly/2026-0406.md)
+- [3/30〜4/5](./articles/weekly/2026-0330.md)
+- [3/23〜3/29](./articles/weekly/2026-0323.md)
 
 <!-- articles/weekly/ のファイルへのリンクがここに追加される -->
 

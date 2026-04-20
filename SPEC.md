@@ -85,7 +85,7 @@
 
 ## 記事フォーマット
 
-### 週次まとめ（articles/weekly/YYYY-WXX.md）
+### 週次まとめ（articles/weekly/YYYY-MMDD.md）
 
 ```markdown
 # 生成AI週次ダイジェスト（MM/DD〜MM/DD）
