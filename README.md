@@ -46,6 +46,7 @@ ai_news/
 
 ### 週次まとめ
 
+- [5/4〜5/10](./articles/weekly/2026-0504.md)
 - [4/27〜5/3](./articles/weekly/2026-0427.md)
 - [4/21〜4/27](./articles/weekly/2026-0421.md)
 - [4/14〜4/20](./articles/weekly/2026-0420.md)
@@ -58,6 +59,7 @@ ai_news/
 
 ### 月次まとめ
 
+- [2026年5月](./articles/monthly/2026-05.md)
 - [2026年4月](./articles/monthly/2026-04.md)
 
 <!-- articles/monthly/ のファイルへのリンクがここに追加される -->
@@ -120,76 +122,47 @@ tail -f /path/to/ai_news/ai_news.log
 
 <!-- 最新の週次まとめ記事をここに表示 -->
 
-# 生成AI週次ダイジェスト（4/27〜5/3）
+# 生成AI週次ダイジェスト（5/4〜5/10）
 
-> 自動生成: 2026-04-27 | 対象期間: 2026-04-21 〜 2026-04-27
+> 自動生成: 2026-05-04 | 対象期間: 2026-04-28 〜 2026-05-04
 
 ## 今週のハイライト
 
-1. **Stanford AI Index 2026 公開 — 生成AIはPCより速く普及、企業導入率88%** — Stanford HAIが4月17日に「AI Index 2026」を公開。生成AIが3年以内に世界人口の53%に普及し、PCやスマートフォンを上回る速度で社会実装が進んでいることが明らかになった。
-2. **OpenAI GPT-6（コードネーム「Spud」）— 4月14日発表を見送り・リリース待ち続く** — 事前学習完了の情報から「4月14日リリース」が予測されていたが、4月21日時点でも正式発表はなし。OpenAI内部の役員流出も重なり、GPT-6 の登場は5月以降に持ち越しの様相。
-3. **NII がオープンソース国産LLM「LLM-jp-4」を公開 — 一部指標でGPT-4oを超える** — 国立情報学研究所が4月3日に約12兆トークンで学習した8B・32B-A3Bモデルを公開。日本語ベンチマークでGPT-4oを上回る結果を示し、国産基盤モデル競争に新局面。
+1. **Anthropic、評価額9,000億ドル超で50億ドル調達を検討 — OpenAI抜き世界最高評価AIスタートアップへ** — 年間換算売上高300〜400億ドルを背景に、複数の投資家から最大9,000億ドル超の評価額で約500億ドルの資金調達案が浮上。成立すれば直近評価額8,500億ドルのOpenAIを上回る。
+2. **米国防総省がAI7社と機密ネットワーク協定（5/1）— Anthropicは安全条件で除外** — AWS・Google・Microsoft・Nvidia・OpenAI・SpaceX・Reflectionが協定に署名。Anthropicは完全自律型兵器への安全ガードレール条件をペンタゴンが拒否したとして交渉決裂。
+3. **Microsoft Agent 365がGA（5/1）— AIエージェント統制基盤が正式提供** — 月額$15/ユーザーの独立プランと、M365 E7($99)へのバンドルで提供開始。AIエージェントの「観測・統制・保護」を統合する企業向け管理基盤が整備された。
 
 ---
 
 ## 🤖 モデル・技術リリース
 
-### LLM-jp-4 — 12兆トークン学習・GPT-4o超えの国産オープンソースLLM（4/3）
+### Claude Opus 4.7 — SWE-Bench Pro 64.3%達成・高解像度ビジョン対応
 
-- **発表元**: 国立情報学研究所（NII）
-- **公開日**: 2026年4月3日
-- **概要**: 約12兆トークンの良質な日英コーパスでフルスクラッチ学習した「LLM-jp-4 8B」と「LLM-jp-4 32B-A3B」をオープンソースライセンスで公開。日本語・英語の理解力ベンチマーク（MT-Bench Ja / JMMLU）でOpenAI GPT-4o・Alibaba Qwen3-8Bを上回る性能を一部で達成。
-- **ポイント**: 商用利用可能なライセンスを採用。政府「源内」実証でも活用余地がある国産基盤モデルとして注目。富岳 NEXT 稼働後のさらなる大規模版への期待も高まっている。
-- 参照: [国産LLM「LLM-jp-4」を公開 一部指標でGPT-4oを上回る（事業構想オンライン）](https://www.projectdesign.jp/articles/news/5bf09550-268a-4dd6-8f92-de85464b419e) / [精度ほぼ同等で8億パラメータがiPhoneで動く「1ビットLLM Bonsai 8B」、国産AI「LLM-jp-4」を解説（TechnoEdge）](https://www.techno-edge.net/article/2026/04/07/4974.html)
+- **発表元**: Anthropic
+- **公開日**: 2026年5月（GA）
+- **概要**: Claude Opus 4.7が正式一般提供（GA）開始。SWE-Bench Pro（実際のGitHubイシュー解決）で64.3%を達成し、GPT-5.5の58.6%を上回る。ビジョン機能が大幅向上し、より高解像度の画像認識が可能になった。価格はOpus 4.6と同じ入力$5/出力$25 per 1Mトークン。
+- **ポイント**: 「最も難しいコーディング作業を安心して委託できる」という位置づけで、長時間タスクでの一貫性と精確な指示遵守が改善。Adobe・Blender・Ableton・Affinity・Autodesk Fusionとのコネクタも追加。
+- 参照: [Introducing Claude Opus 4.7（Anthropic公式）](https://www.anthropic.com/news/claude-opus-4-7)
 
-### Bonsai-8B — 8Bパラメータが1.15GBに収まる1ビットLLM（3/31リリース・4月も話題継続）
+### Qwen 3.6 — MoE・201言語・Apple Silicon対応のオープンモデル（4月）
 
-- **発表元**: PrismML
-- **公開日**: 2026年3月31日（Apache 2.0）
-- **概要**: 8Bパラメータを **1.15GB** のメモリに収めた純バイナリ重みLLM。iPhone 17 Proで約40トークン/秒を達成し、実質的にGPU不要でのオンデバイス推論が実用水準に到達した。ベースモデルはQwen3-8Bで、コンテキスト長は65K トークン。
-- **ポイント**: 通常量子化（INT4/INT8）と異なり、学習段階からバイナリ重みを前提とした設計。MMLU-R 65.7、GPQA 58%（Llama 3 70B超え）。Bonsai-4B（0.5GB）・Bonsai-1.7B（0.24GB）も公開済み。
-- 参照: [突如実用化した1ビットLLM Bonsai-8B — 推論にGPUはほぼ不要になる（WirelessWire News）](https://wirelesswire.jp/2026/04/93202/) / [Bonsai-8B 徹底解説：1-bit LLM が切り拓くローカルAIの新時代（Qiita）](https://qiita.com/TaichiEndoh/items/c1619b6a01216f5bdda5)
-
-### OpenAI GPT-6「Spud」— 4月14日リリーク外れ・5月以降に持ち越し
-
-- **概要**: コードネーム「Spud（ジャガイモ）」として知られるGPT-6の事前学習は3月24日頃に完了したとされていたが、4月14日の発表予想は外れ、4月21日時点でも正式リリースはない。パフォーマンスはGPT-5.4比40%向上・200万トークンコンテキスト・2段階推論フレームワーク（System-1/System-2）を搭載と予測されている。OpenAI役員の相次ぐ離脱が開発・発表スケジュールに影響した可能性が指摘されている。
-- 参照: [GPT-6（Spud）最新情報【2026年4月17日更新】4月14日リーク外れ（Uravation）](https://uravation.com/media/gpt6-spud-release-date-enterprise-guide-2026/)
-
----
-
-## 📊 調査・レポート
-
-### Stanford AI Index 2026 — 生成AIは3年でPCを超える速度で普及（4/17公開）
-
-- **発表元**: Stanford HAI（スタンフォード大学 人間中心AI研究所）
-- **公開日**: 2026年4月17日
-- **主要な知見**:
-  - 生成AIは3年以内に世界人口の **53%** に普及（PCやスマートフォンを上回る普及速度）
-  - 企業・組織の導入率は **88%**。大学生の **5人中4人** がAIを学習に活用
-  - コーディングベンチマーク（SWE-bench Verified）の正答率が **1年で60%→100%近く** に上昇
-  - 米国とトップ中国モデルの性能差はわずか **2.7%** まで縮小（2025年2月にDeepSeek-R1が同水準に）
-  - AIインシデント件数が2024年 233件 → 2025年 **362件** に増加。安全・倫理評価が能力評価に追いついていない課題も明示
-- 参照: [The 2026 AI Index Report（Stanford HAI）](https://hai.stanford.edu/ai-index/2026-ai-index-report) / [AI能力は加速し、社会的格差が拡大 — Stanford HAI「AI Index 2026」（マイナビ）](https://news.mynavi.jp/techplus/article/20260417-4351312/) / [スタンフォードAI Index 2026：米中差2.7%で導入率88%（Uravation）](https://uravation.com/media/stanford-ai-index-2026-china-us-performance-gap/)
-
----
-
-## 🛠️ ツール・OSS・フレームワーク
-
-### Microsoft Agent Framework 1.0 GA — Semantic Kernel × AutoGen の統合フレームワーク（4/3）
-
-- **発表元**: Microsoft
-- **公開日**: 2026年4月3日（GA リリース）
-- **概要**: Semantic KernelとAutoGenを統合した企業向けAIエージェント開発の新標準フレームワーク。.NETチームとPythonチームの分断を解消し、マルチエージェントシステムの設計・デプロイを統一的なAPIで提供。既存のAutoGenコードは移行ガイドに従い段階的に移行可能。
-- **ポイント**: MCP・A2A・ACPのプロトコル標準化競争の中で、Microsoftはエンタープライズ向けフレームワーク路線を確立。AutoGenはメンテナンスモードへ移行し、新機能開発はMicrosoft Agent Frameworkに集約される。
-- 参照: [Microsoft Agent Framework 1.0完全ガイド（Uravation）](https://uravation.com/media/microsoft-agent-framework-enterprise-guide-2026/) / [AutoGen から Microsoft Agent Framework への移行ガイド（Microsoft Learn）](https://learn.microsoft.com/ja-jp/agent-framework/migration-guide/from-autogen/)
+- **発表元**: Alibaba Qwen Team
+- **概要**: MoE（Mixture of Experts）アーキテクチャを採用し、201言語・方言をサポートする最新世代オープンモデル。llama.cpp・mlx-lm（Apple Silicon向け）でのローカル実行をサポートし、128Kコンテキスト（YaRN）対応。
+- 参照: [Qwen3.6（GitHub）](https://github.com/QwenLM/Qwen3.6)
 
 ---
 
 ## 🏢 ビジネス・業界動向
 
-- **Alphabet** — 2026年はGemini中心にAIインフラへの資本投資を大幅拡大する計画。データセンター建設・TPU増産を加速。参照: [AI企業の最新動向まとめ（2026年4月）（note / Yasu Shiina）](https://note.com/yasu_shiina/n/nd3d8d001c244)
-- **NTTデータ先端技術** — 金融機関のオンプレミス閉域環境でのローカルLLM活用PoC実施（4/14発表）。tsuzumi 2 等の国産モデルを活用したシステム開発支援の有効性を確認。参照: [NTTデータ先端技術、金融業界向けローカルLLMの有効性を確認（マイナビ）](https://news.mynavi.jp/techplus/article/20260414-4338386/)
-- **AIエージェント市場** — MCPのインストール数が9,700万件を突破。Anthropic・Linux Foundation連合、Google連合、IBM連合によるA2A/ACP/MCPのプロトコル標準化競争が最高潮に。参照: [AIエージェントの仕事を広げる新技術「MCP」「A2A」（BCG Japan）](https://bcg-jp.com/article/9551/)
+- **Anthropic** — 評価額9,000億ドル超での50億ドル調達を検討。年間換算売上高は300〜400億ドルに急拡大し、Googleが最大400億ドル・Amazonが最大250億ドルを既に表明。参照: [Anthropic in talks at $900B valuation（TechCrunch）](https://techcrunch.com/2026/04/29/sources-anthropic-could-raise-a-new-50b-round-at-a-valuation-of-900b/)
+- **Pentagon** — AWS・Google・Microsoft・Nvidia・OpenAI・SpaceX・Reflection・Oracleの8社とAI機密ネットワーク協定を締結。Anthropicは安全ガードレール条件で除外。参照: [Pentagon strikes deals with 7 Big Tech companies（CNN）](https://www.cnn.com/2026/05/01/tech/pentagon-ai-anthropic)
+- **Microsoft** — Agent 365が5月1日にGA。エンタープライズAIエージェント管理基盤として月額$15/ユーザーで提供開始。参照: [Microsoft Agent 365 GA（Microsoft Security Blog）](https://www.microsoft.com/en-us/security/blog/2026/05/01/microsoft-agent-365-now-generally-available-expands-capabilities-and-integrations/)
+
+---
+
+## 🛠️ ツール・OSS
+
+- **Qwen-Scope（5/1）** — Alibaba QwenがQwen3/3.5向け14種のスパースオートエンコーダ（SAE）OSSスイートを公開。モデル解釈可能性・推論時出力制御のツール。参照: [Qwen-Scope公開（Dev|Journal）](https://earezki.com/ai-news/2026-05-01-qwen-ai-releases-qwen-scope-an-open-source-sparse-autoencoders-sae-suite-that-turns-llm-internal-features-into-practical-development-tools/)
 
 ---
 
@@ -197,26 +170,30 @@ tail -f /path/to/ai_news/ai_news.log
 
 ### 政府・行政
 
-- **デジタル庁「源内」— 5月展開まで1ヶ月を切る** — 全府省庁39機関・約18万人の国家公務員を対象とした国産LLM7モデルの大規模実証が2026年5月に開始予定。LLM-jp-4など新規公開モデルが追加選定される可能性にも注目が集まっている。2027年1月に評価公表後、同年4月以降に有償調達へ移行する見込み。参照: [デジタル庁が国産AI「7人の侍」選定（SBビジネス）](https://www.sbbit.jp/article/cont1/182108)
-- **奈良市 — 生成AI活用で2025年下半期に約1万7,200時間の業務時間削減を達成** — 「AI活用推進室」設置後、部署横断的な活用推進の成果として公表。参照: [デイリーAI検索備忘録（2026/4/16号）（note / Yasuhito Morimoto）](https://note.com/yasuhitoo/n/n9a8fc302bc98)
+- **デジタル庁「源内」5月実証開始** — 全府省庁39機関・約18万人の国家公務員を対象とした国産LLM7件の大規模実証が2026年5月に正式スタート。8月頃から本格試用・2027年1月に評価結果公表予定。参照: [デジタル庁が国産AI「7人の侍」選定（SBビジネス）](https://www.sbbit.jp/article/cont1/182108)
 
 ### 企業・研究機関
 
-- **楽天「Rakuten AI 3.0」— オープンソース公開後の反響続く** — 3月17日に公開されたGENIACプロジェクト成果の7,000億パラメータMoEモデル（Apache 2.0）が開発者コミュニティで引き続き評価・活用が広がる。日本語ベンチマークでGPT-4oを超える領域も確認済み。参照: [楽天、日本語LLM「Rakuten AI 3.0」公開（ITmedia AI+）](https://www.itmedia.co.jp/aiplus/articles/2603/17/news085.html) / [楽天が本気を出してきた（note / fact-tech）](https://note.com/keen_ruff9637/n/n107a064a8906)
-- **日本のAI産業** — ソフトバンク・NEC・ホンダ・ソニーが「日本AI基盤モデル開発」を共同設立し、米中に対抗する国産AI開発体制を強化。参照: [生成AI関連ニュース ベスト5（2026-04-10）（GAIS）](https://gais.jp/news-2026-04-10/)
+- **PFN・さくらインターネット・NICT** — PLaMo 2.0後継モデルの共同開発が継続中。NICTデータとPFN独自合成データを活用した日本語特化LLMをさくらプラットフォームで提供計画。参照: [PFN・さくら・NICT 基本合意（さくらインターネット）](https://www.sakura.ad.jp/corporate/information/newsreleases/2025/09/18/1968220920/)
+
+---
+
+## 📜 規制・政策
+
+- **EU AI Act GPAI全面適用（8月2日）** — EU AI ActのGPAI規制が8月2日に全面施行。日本企業もEU向けAIシステム提供時は対応必須。参照: [EU AI規制法の解説（PwC Japan）](https://www.pwc.com/jp/ja/knowledge/column/awareness-cyber-security/generative-ai-regulation10.html)
+- **米AI安保政策** — Anthropicが安全基準を理由に軍事契約を断った唯一の大手AIラボとしてガバナンスの試金石に。
 
 ---
 
 ## 📰 Note注目記事
 
-- **「生成AIはPCよりスマホより速く普及した」** — Stanford AI Index 2026の解説記事。現場目線で普及速度・業務実態・日本の課題を整理。参照: [note / こわっきー](https://note.com/kowackey13824/n/nb4e5974a0f99)
-- **「週刊AIニュース [PEST編]（2026/4/6〜4/12号）」** — AI関連ニュースをPolitics・Economics・Society・Technologyの4軸で整理した解説記事。参照: [note / Yasuhito Morimoto](https://note.com/yasuhitoo/n/n31ad8a5b9531)
-- **「AI企業の最新動向まとめ（2026年4月）」** — Alphabet・OpenAI・Anthropicのインフラ投資・モデルロードマップ動向を中心にまとめ。参照: [note / Yasu Shiina](https://note.com/yasu_shiina/n/nd3d8d001c244)
+- **「国内AIエージェント動向(2026/5/1号)」** — 実業務フェーズに移行したAIエージェントの最新展開をPEST分析で整理。参照: [note / Yasuhito Morimoto](https://note.com/yasuhitoo/n/na9c8d890db85)
+- **「AIエージェントは、ついにIT資産になった」** — エージェントが「実験的ツール」から「管理すべきIT資産」に変わった転換点を論じる注目記事。参照: [note / hirokaji](https://note.com/tasty_dunlin998/n/nf232c430a697)
 
 ---
 
 ## 編集後記
 
-今週の最大のテーマはStanford AI Index 2026が提示した「生成AIの普及速度」だ。企業導入率88%・コーディング正答率の1年での急改善は、AIが「使ってみる段階」から「業務に組み込まれる段階」へと移行しつつある現実を裏付けている。一方でAIインシデントが年間362件に増えたという数字は、安全・ガバナンスへの対応が能力向上に追いついていないことを示す警鐘でもある。
+今週の最大のテーマは「Anthropicの台頭と孤立」の二面性だ。評価額9,000億ドル超・年間換算売上高400億ドルという数字はOpenAIを上回る勢いを示す一方、ペンタゴンとの契約を安全基準を理由に断ったAnthropicのスタンスは、AI倫理と安全保障のトレードオフが現実の商業的選択として顕在化した最初のケースとなった。
 
-国内では、NII の LLM-jp-4 と楽天 Rakuten AI 3.0 の2つのオープンソースモデルが実力を示しており、5月に始まるデジタル庁「源内」の18万人実証がその評価の場となる。GPT-6（Spud）のリリース延期は来週以降のビッグニュースとして引き続き注目が集まる。
+国内では5月から始まるガバメントAI「源内」の実証が静かに動き出す。18万人という規模と国産LLM7件という選択肢の多様さは、日本の行政AI導入が評価・選定フェーズに入ったことを意味する。2027年1月の評価公表まで、どのモデルがどの行政業務に適合するかが注目される。
