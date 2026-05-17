@@ -46,6 +46,7 @@ ai_news/
 
 ### 週次まとめ
 
+- [5/18〜5/24](./articles/weekly/2026-0518.md)
 - [5/11〜5/17](./articles/weekly/2026-0511.md)
 - [5/4〜5/10](./articles/weekly/2026-0504.md)
 - [4/27〜5/3](./articles/weekly/2026-0427.md)
@@ -123,78 +124,14 @@ tail -f /path/to/ai_news/ai_news.log
 
 <!-- 最新の週次まとめ記事をここに表示 -->
 
-# 生成AI週次ダイジェスト（5/11〜5/17）
+# 生成AI週次ダイジェスト（5/18〜5/24）
 
-> 自動生成: 2026-05-11 | 対象期間: 2026-05-05 〜 2026-05-11
+> 自動生成: 2026-05-18 | 対象期間: 2026-05-12 〜 2026-05-18
 
 ## 今週のハイライト
 
-1. **OpenAI、GPT-5.5 InstantをChatGPTの新デフォルトに（5/5）** — 幻覚52.5%削減・数学スコア81.2%達成。Gmailとの統合メモリも導入。
-2. **Apple、iOS 27でAIモデル選択を自由化へ（5/5）** — Claude・GeminiがSiriに統合可能に。2年間続いたOpenAI独占体制が終わる。
-3. **Anthropic Mythosが「サイバー分野で突出」と評価され政策変動** — 米政府がGoogle・Microsoft・xAIに対し事前評価プログラムを発動（5/5）。
+1. **Google、Gemini IntelligenceをAndroid全体に展開** — GeminiがAndroid全機種でアプリをまたいで自律操作。Googlebook（Gemini専用ノートPC）も予告。
+2. **OpenAI、GPT-5.5-Cyber を審査済みセキュリティ研究者に限定公開** — サイバー攻撃発見能力でAnthropicのMythosと性能が伯仲、政府アクセス交渉も進行。
+3. **Anthropicがサブスクリプション体系を刷新（6月15日施行）** — エージェント用途を別課金プールに分離。実質値上げとなり開発者コミュニティで議論。
 
----
-
-## 🤖 モデル・技術リリース
-
-### Claude Opus 4.7 — SWE-Bench Pro 64.3%達成・高解像度ビジョン対応
-
-- **発表元**: Anthropic
-- **公開日**: 2026年5月（GA）
-- **概要**: Claude Opus 4.7が正式一般提供（GA）開始。SWE-Bench Pro（実際のGitHubイシュー解決）で64.3%を達成し、GPT-5.5の58.6%を上回る。ビジョン機能が大幅向上し、より高解像度の画像認識が可能になった。価格はOpus 4.6と同じ入力$5/出力$25 per 1Mトークン。
-- **ポイント**: 「最も難しいコーディング作業を安心して委託できる」という位置づけで、長時間タスクでの一貫性と精確な指示遵守が改善。Adobe・Blender・Ableton・Affinity・Autodesk Fusionとのコネクタも追加。
-- 参照: [Introducing Claude Opus 4.7（Anthropic公式）](https://www.anthropic.com/news/claude-opus-4-7)
-
-### Qwen 3.6 — MoE・201言語・Apple Silicon対応のオープンモデル（4月）
-
-- **発表元**: Alibaba Qwen Team
-- **概要**: MoE（Mixture of Experts）アーキテクチャを採用し、201言語・方言をサポートする最新世代オープンモデル。llama.cpp・mlx-lm（Apple Silicon向け）でのローカル実行をサポートし、128Kコンテキスト（YaRN）対応。
-- 参照: [Qwen3.6（GitHub）](https://github.com/QwenLM/Qwen3.6)
-
----
-
-## 🏢 ビジネス・業界動向
-
-- **Anthropic** — 評価額9,000億ドル超での50億ドル調達を検討。年間換算売上高は300〜400億ドルに急拡大し、Googleが最大400億ドル・Amazonが最大250億ドルを既に表明。参照: [Anthropic in talks at $900B valuation（TechCrunch）](https://techcrunch.com/2026/04/29/sources-anthropic-could-raise-a-new-50b-round-at-a-valuation-of-900b/)
-- **Pentagon** — AWS・Google・Microsoft・Nvidia・OpenAI・SpaceX・Reflection・Oracleの8社とAI機密ネットワーク協定を締結。Anthropicは安全ガードレール条件で除外。参照: [Pentagon strikes deals with 7 Big Tech companies（CNN）](https://www.cnn.com/2026/05/01/tech/pentagon-ai-anthropic)
-- **Microsoft** — Agent 365が5月1日にGA。エンタープライズAIエージェント管理基盤として月額$15/ユーザーで提供開始。参照: [Microsoft Agent 365 GA（Microsoft Security Blog）](https://www.microsoft.com/en-us/security/blog/2026/05/01/microsoft-agent-365-now-generally-available-expands-capabilities-and-integrations/)
-
----
-
-## 🛠️ ツール・OSS
-
-- **Qwen-Scope（5/1）** — Alibaba QwenがQwen3/3.5向け14種のスパースオートエンコーダ（SAE）OSSスイートを公開。モデル解釈可能性・推論時出力制御のツール。参照: [Qwen-Scope公開（Dev|Journal）](https://earezki.com/ai-news/2026-05-01-qwen-ai-releases-qwen-scope-an-open-source-sparse-autoencoders-sae-suite-that-turns-llm-internal-features-into-practical-development-tools/)
-
----
-
-## 🇯🇵 国内動向
-
-### 政府・行政
-
-- **デジタル庁「源内」5月実証開始** — 全府省庁39機関・約18万人の国家公務員を対象とした国産LLM7件の大規模実証が2026年5月に正式スタート。8月頃から本格試用・2027年1月に評価結果公表予定。参照: [デジタル庁が国産AI「7人の侍」選定（SBビジネス）](https://www.sbbit.jp/article/cont1/182108)
-
-### 企業・研究機関
-
-- **PFN・さくらインターネット・NICT** — PLaMo 2.0後継モデルの共同開発が継続中。NICTデータとPFN独自合成データを活用した日本語特化LLMをさくらプラットフォームで提供計画。参照: [PFN・さくら・NICT 基本合意（さくらインターネット）](https://www.sakura.ad.jp/corporate/information/newsreleases/2025/09/18/1968220920/)
-
----
-
-## 📜 規制・政策
-
-- **EU AI Act GPAI全面適用（8月2日）** — EU AI ActのGPAI規制が8月2日に全面施行。日本企業もEU向けAIシステム提供時は対応必須。参照: [EU AI規制法の解説（PwC Japan）](https://www.pwc.com/jp/ja/knowledge/column/awareness-cyber-security/generative-ai-regulation10.html)
-- **米AI安保政策** — Anthropicが安全基準を理由に軍事契約を断った唯一の大手AIラボとしてガバナンスの試金石に。
-
----
-
-## 📰 Note注目記事
-
-- **「国内AIエージェント動向(2026/5/1号)」** — 実業務フェーズに移行したAIエージェントの最新展開をPEST分析で整理。参照: [note / Yasuhito Morimoto](https://note.com/yasuhitoo/n/na9c8d890db85)
-- **「AIエージェントは、ついにIT資産になった」** — エージェントが「実験的ツール」から「管理すべきIT資産」に変わった転換点を論じる注目記事。参照: [note / hirokaji](https://note.com/tasty_dunlin998/n/nf232c430a697)
-
----
-
-## 編集後記
-
-今週の最大のテーマは「Anthropicの台頭と孤立」の二面性だ。評価額9,000億ドル超・年間換算売上高400億ドルという数字はOpenAIを上回る勢いを示す一方、ペンタゴンとの契約を安全基準を理由に断ったAnthropicのスタンスは、AI倫理と安全保障のトレードオフが現実の商業的選択として顕在化した最初のケースとなった。
-
-国内では5月から始まるガバメントAI「源内」の実証が静かに動き出す。18万人という規模と国産LLM7件という選択肢の多様さは、日本の行政AI導入が評価・選定フェーズに入ったことを意味する。2027年1月の評価公表まで、どのモデルがどの行政業務に適合するかが注目される。
+[→ 全文を読む](./articles/weekly/2026-0518.md)
