@@ -457,8 +457,29 @@ def run_agent(args) -> bool:
     log(f"エージェント開始: model={args.model}, mode={args.mode}, week={args.week_file}")
 
     MAX_TURNS = 40
+    LOOP_THRESHOLD = 2          # 同一 (ツール, 引数) が N 回以上 → ループ判定
+    FORCE_WRITE_TURN = 12       # このターン以降に write_article 未呼び出しなら促進
+
+    call_counts: dict = {}      # (name, args_json) → 呼び出し回数
+    url_cache: dict = {}        # url → 取得済みコンテンツ
+    write_article_called = False
+    force_write_prompted = False
+
     for turn in range(MAX_TURNS):
         log(f"--- ターン {turn + 1}/{MAX_TURNS} ---")
+
+        # 情報収集が長引いている場合、write_article を一度だけ催促する
+        if turn >= FORCE_WRITE_TURN and not write_article_called and not force_write_prompted:
+            log("WARN: 情報収集ターン超過 → write_article を促進")
+            messages.append({
+                "role": "user",
+                "content": (
+                    "情報収集は十分に完了しています。これ以上の検索・URL取得は不要です。"
+                    "今すぐ write_article ツールを呼び出して週次記事を生成してください。"
+                    "記事生成後、append_to_readme → git_commit_push の順で後処理を行ってください。"
+                ),
+            })
+            force_write_prompted = True
 
         data = call_ollama(args.model, messages)
         msg = data.get("message", {})
@@ -468,10 +489,10 @@ def run_agent(args) -> bool:
         if content:
             log(f"モデル応答: {content[:300]}")
 
-        # ツール呼び出しがなければ完了
+        # ツール呼び出しがなければ終了
         if not tool_calls:
             log("ツール呼び出しなし → 完了")
-            return True
+            return write_article_called
 
         # アシスタントメッセージを履歴に追加
         messages.append({"role": "assistant", "content": content, "tool_calls": tool_calls})
@@ -489,19 +510,48 @@ def run_agent(args) -> bool:
                 except json.JSONDecodeError:
                     raw_args = {}
 
-            log(f"ツール呼び出し: {name}({json.dumps(raw_args, ensure_ascii=False)[:120]})")
+            args_key = json.dumps(raw_args, sort_keys=True, ensure_ascii=False)
+            call_key = (name, args_key)
+            call_counts[call_key] = call_counts.get(call_key, 0) + 1
 
-            handler = TOOL_HANDLERS.get(name)
-            if handler:
-                try:
-                    result = handler(raw_args)
-                except Exception as e:
-                    result = f"ツール実行エラー: {e}"
+            # ── ループ検出: 同一呼び出しが閾値を超えたらスキップ ──
+            if call_counts[call_key] > LOOP_THRESHOLD:
+                log(f"LOOP検出: {name} が {call_counts[call_key]} 回目 → スキップ")
+                result = (
+                    f"[重複スキップ] {name} の同一引数での呼び出しは {call_counts[call_key]} 回目です。"
+                    "この操作はすでに実行済みです。新しい情報は得られません。"
+                    "write_article ツールで記事を生成してください。"
+                )
+            # ── fetch_url キャッシュ: 取得済み URL はキャッシュを返す ──
+            elif name == "fetch_url" and raw_args.get("url") in url_cache:
+                url = raw_args["url"]
+                log(f"CACHE HIT: {url}")
+                result = (
+                    f"[取得済みキャッシュ] この URL はすでに取得しています。再取得は不要です:\n"
+                    f"{url_cache[url][:1000]}\n\n"
+                    "write_article ツールで記事を生成してください。"
+                )
             else:
-                result = f"未知のツール: {name}"
+                log(f"ツール呼び出し: {name}({args_key[:120]})")
+                handler = TOOL_HANDLERS.get(name)
+                if handler:
+                    try:
+                        result = handler(raw_args)
+                    except Exception as e:
+                        result = f"ツール実行エラー: {e}"
+                else:
+                    result = f"未知のツール: {name}"
+
+                # fetch_url の成功結果をキャッシュ
+                if name == "fetch_url" and not str(result).startswith("fetch_url エラー"):
+                    url_cache[raw_args.get("url", "")] = str(result)
+
+                # write_article 成功を記録
+                if name == "write_article" and "書き込み完了" in str(result):
+                    write_article_called = True
+                    log("write_article 完了 → 後処理フェーズへ")
 
             log(f"ツール結果: {str(result)[:300]}")
-
             messages.append({"role": "tool", "content": str(result)})
 
             # DuckDuckGo のレート制限を避けるため少し待機
@@ -509,7 +559,7 @@ def run_agent(args) -> bool:
                 time.sleep(2)
 
     log(f"ERROR: 最大ターン数 ({MAX_TURNS}) に達しました")
-    return False
+    return write_article_called
 
 # ------------------------------------------------------------------ #
 # エントリポイント
