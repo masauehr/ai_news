@@ -47,6 +47,7 @@ ai_news/
 
 ### 週次まとめ
 
+- [5/25〜5/31](./articles/weekly/2026-0525.md)
 - [5/18〜5/24](./articles/weekly/2026-0518.md)
 - [5/11〜5/17](./articles/weekly/2026-0511.md)
 - [5/4〜5/10](./articles/weekly/2026-0504.md)
@@ -62,6 +63,7 @@ ai_news/
 
 ### 月次まとめ
 
+- [2026年5月](./articles/monthly/2026-05.md)
 - [2026年5月](./articles/monthly/2026-05.md)
 - [2026年4月](./articles/monthly/2026-04.md)
 
