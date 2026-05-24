@@ -21,13 +21,14 @@
 ai_news/
 ├── README.md                    # このファイル（最新記事一覧）
 ├── SPEC.md                      # 情報収集・記事生成の仕様
-├── CLAUDE.md                    # Claude向け自動生成指示
 ├── articles/
-│   ├── weekly/YYYY-WXX.md      # 週次まとめ記事（毎週月曜 自動生成）
-│   └── monthly/YYYY-MM.md      # 月次まとめ記事（毎月第1月曜 自動生成）
+│   ├── weekly/YYYY-MMDD.md     # 週次まとめ記事（毎週土曜 自動生成）
+│   └── monthly/YYYY-MM.md      # 月次まとめ記事（毎月第1土曜 自動生成）
 └── scripts/
-    ├── run_ai_news.sh           # 実行スクリプト（launchdから呼ばれる）
-    └── com.user.ai_news.plist   # launchd設定ファイル（参考用）
+    ├── local_agent.py           # Ollama tool-callingエージェント（記事生成の中核）
+    ├── fetch_news.py            # BeautifulSoupによる事前スクレイピング
+    ├── run_ai_news.sh           # launchd実行スクリプト（ローカル専用・非公開）
+    └── com.user.ai_news.plist   # launchd設定ファイル（ローカル専用・非公開）
 ```
 
 ### ファイル役割と更新方法
@@ -79,30 +80,46 @@ ai_news/
 
 ## 自動実行システム
 
-Claude Code CLI（`claude`コマンド）を `scripts/run_ai_news.sh` 経由で呼び出し、
-macOS の launchd によって定期実行する。
+macOS の launchd が `scripts/run_ai_news.sh` を呼び出し、
+**Ollama のローカルLLM（tool calling）** が情報収集から記事生成・git push までを自動実行する。
 
 ### スケジュール
 
 | タイミング | 内容 |
 |---|---|
-| 毎週月曜 09:00 JST（第2〜5週） | 週次まとめ記事を自動生成・git push |
-| 毎月第1月曜 09:00 JST | 月次まとめ記事を自動生成・git push |
+| 毎週土曜 09:00 JST | 週次まとめ記事を自動生成・git push |
+| 毎月第1土曜 09:00 JST | 月次まとめ記事も追加生成・git push |
+
+### 使用モデル
+
+デフォルト: **`qwen3.6:35b-mlx`**（Ollama で動作するローカルLLM）
+
+```bash
+# 一時的にモデルを変更して実行
+AI_NEWS_MODEL=qwen3.6:27b-mlx bash ~/projects/ai_news/scripts/run_ai_news.sh
+
+# 常用モデルを変更する場合は com.user.ai_news.plist の EnvironmentVariables に追記:
+# <key>AI_NEWS_MODEL</key>
+# <string>qwen3.6:27b-mlx</string>
+```
+
+| モデル | サイズ | 特徴 |
+|---|---|---|
+| `qwen3.6:35b-mlx` | 21GB | **デフォルト**。品質優先 |
+| `qwen3.6:27b-mlx` | 19GB | 速度優先（品質も十分） |
+| `gemma4:31b-mlx` | 20GB | 代替候補 |
 
 ### 手動実行
 
 ```bash
-# 週次まとめを今すぐ生成
-bash /path/to/ai_news/scripts/run_ai_news.sh
-
-# launchd登録
-launchctl load ~/Library/LaunchAgents/com.user.ai_news.plist
+# 週次まとめを今すぐ生成（今週分のファイルが無い場合のみ実行）
+bash ~/projects/ai_news/scripts/run_ai_news.sh
 
 # launchd手動起動
 launchctl start com.user.ai_news
 
 # ログ確認
-tail -f /path/to/ai_news/ai_news.log
+tail -f ~/projects/ai_news/ai_news.log
 ```
 
 ---
