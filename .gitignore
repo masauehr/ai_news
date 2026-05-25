@@ -1,6 +1,11 @@
 # ログファイル
 *.log
 
+# Jekyll ビルド出力（GitHub Pages はクラウドでビルドするためローカル不要）
+_site/
+.jekyll-cache/
+.jekyll-metadata
+
 # macOS
 .DS_Store
 

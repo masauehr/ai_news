@@ -225,11 +225,17 @@ def tool_fetch_url(url: str) -> str:
         return f"fetch_url エラー: {e}"
 
 
+JEKYLL_FRONT_MATTER = "---\nlayout: default\n---\n"
+
+
 def tool_write_article(path: str, content: str) -> str:
     full = PROJECT_DIR / path
     if full.exists():
         return f"エラー: {path} は既に存在します。上書き禁止。"
     full.parent.mkdir(parents=True, exist_ok=True)
+    # GitHub Pages (Jekyll) 用に front matter を付与
+    if not content.startswith("---"):
+        content = JEKYLL_FRONT_MATTER + content
     full.write_text(content, encoding="utf-8")
     log(f"write_article: {path} ({len(content)} chars)")
     return f"書き込み完了: {path}"
