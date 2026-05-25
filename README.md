@@ -76,6 +76,7 @@ ai_news/
 
 ### Haiku週次まとめ（Claude Haiku）
 
+- [5/25〜5/31](./articles/haiku_weekly/2026-0525.md)
 <!-- articles/haiku_weekly/ のファイルへのリンクがここに追加される -->
 
 ### モデル比較（Ollama vs Haiku）
