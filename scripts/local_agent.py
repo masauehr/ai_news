@@ -15,6 +15,7 @@ local_agent.py — Ollama tool-calling エージェントで ai_news 記事を�
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 import time
@@ -131,6 +132,38 @@ TOOLS = [
             "description": (
                 "README.md の最新記事セクションに週次／月次リンクを追加する。"
                 "README の直接編集には使わないこと。このツール専用。"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "week_label": {
+                        "type": "string",
+                        "description": "週次ラベル（例: 5/25〜5/31）",
+                    },
+                    "week_path": {
+                        "type": "string",
+                        "description": "週次記事の相対パス（例: ./articles/weekly/2026-0525.md）",
+                    },
+                    "month_label": {
+                        "type": "string",
+                        "description": "月次ラベル（例: 2026年6月）。月次モード以外は省略。",
+                    },
+                    "month_path": {
+                        "type": "string",
+                        "description": "月次記事の相対パス（例: ./articles/monthly/2026-06.md）",
+                    },
+                },
+                "required": ["week_label", "week_path"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "update_index",
+            "description": (
+                "GitHub Pages サイトの index.md 記事リストを更新する。"
+                "append_to_readme の直後に必ず呼ぶこと。"
             ),
             "parameters": {
                 "type": "object",
@@ -292,6 +325,64 @@ def tool_append_to_readme(
     )
 
 
+def tool_update_index(
+    week_label: str,
+    week_path: str,
+    month_label: str = None,
+    month_path: str = None,
+) -> str:
+    index_path = PROJECT_DIR / "index.md"
+    if not index_path.exists():
+        return "エラー: index.md が存在しません"
+
+    # week_path (例: "./articles/weekly/2026-0525.md") から href と日付を生成
+    w_stem = Path(week_path).stem          # "2026-0525"
+    w_year, w_mmdd = w_stem.split("-", 1)  # "2026", "0525"
+    w_href = f"articles/weekly/{w_year}-{w_mmdd}"
+    w_date = f"{w_year}-{w_mmdd[:2]}-{w_mmdd[2:]}"
+    week_li = (
+        f'  <li><a href="{{{{ site.baseurl }}}}/{w_href}">'
+        f'{week_label}</a><span class="date">{w_date}</span></li>'
+    )
+
+    month_li = None
+    if month_label and month_path:
+        m_stem = Path(month_path).stem          # "2026-05"
+        m_year, m_month = m_stem.split("-", 1)  # "2026", "05"
+        m_href = f"articles/monthly/{m_year}-{m_month}"
+        month_li = (
+            f'  <li><a href="{{{{ site.baseurl }}}}/{m_href}">'
+            f'{month_label}</a><span class="date">{m_year}-{m_month}</span></li>'
+        )
+
+    lines = index_path.read_text(encoding="utf-8").split("\n")
+    result = []
+    in_weekly = in_monthly = False
+    weekly_done = monthly_done = False
+
+    for line in lines:
+        result.append(line)
+
+        if '<h2 class="section-title">' in line:
+            in_weekly = "📰 週次まとめ" in line
+            in_monthly = "📅 月次まとめ" in line
+
+        if in_weekly and not weekly_done and line.strip() == '<ul class="article-list">':
+            result.append(week_li)
+            weekly_done = True
+
+        if month_li and in_monthly and not monthly_done and line.strip() == '<ul class="article-list">':
+            result.append(month_li)
+            monthly_done = True
+
+    index_path.write_text("\n".join(result), encoding="utf-8")
+    log(f"update_index: {week_label}")
+    msg = f"index.md 更新完了: {week_label}"
+    if month_li and monthly_done:
+        msg += f" / {month_label}"
+    return msg
+
+
 def tool_git_commit_push(files: list, message: str) -> str:
     log(f"git_commit_push: {files}")
     try:
@@ -318,6 +409,7 @@ TOOL_HANDLERS = {
     "write_article":    lambda a: tool_write_article(**a),
     "read_file":        lambda a: tool_read_file(**a),
     "append_to_readme": lambda a: tool_append_to_readme(**a),
+    "update_index":     lambda a: tool_update_index(**a),
     "git_commit_push":  lambda a: tool_git_commit_push(**a),
 }
 
@@ -365,9 +457,11 @@ SYSTEM_PROMPT_TMPL = """\
 
 4. **README 更新** — append_to_readme ツールで週次リンクを追加する
 
+4.5. **index.md 更新** — update_index ツールで GitHub Pages のトップページ記事リストを更新する
+
 {monthly_step}
 
-5. **コミット** — git_commit_push で articles/ と README.md をコミット・プッシュする
+5. **コミット** — git_commit_push で articles/ と README.md と index.md をコミット・プッシュする
 
 # 記事フォーマット（必ず守ること）
 - ファイル: articles/weekly/{year}-{week_file}.md
@@ -380,6 +474,10 @@ SYSTEM_PROMPT_TMPL = """\
 - Note 記事は「note / 著者名」形式でソース明記
 
 # README append_to_readme の引数
+- week_label: "{week_label}"
+- week_path: "./articles/weekly/{year}-{week_file}.md"
+
+# index.md update_index の引数（append_to_readme と同じ値を使用）
 - week_label: "{week_label}"
 - week_path: "./articles/weekly/{year}-{week_file}.md"
 
