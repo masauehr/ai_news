@@ -42,6 +42,7 @@ Ollama のローカルLLM（tool calling）が情報収集から記事生成・�
 <h2 class="section-title">🔬 モデル比較（Ollama vs Haiku）</h2>
 
 <ul class="article-list" id="compare-list">
+  <li><a href="{{ site.baseurl }}/articles/compare/2026-0525">5/25〜5/31</a><span class="date">2026-05-25</span></li>
 </ul>
 
 <h2 class="section-title">📌 トピックス（深掘りレポート）</h2>
