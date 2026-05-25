@@ -325,16 +325,29 @@ def tool_append_to_readme(
     )
 
 
+def _insert_li_at_top_of_ul(md_path: Path, new_li: str) -> bool:
+    """<ul class="article-list"> の直後に new_li を1行挿入する。成功したら True を返す。"""
+    if not md_path.exists():
+        return False
+    lines = md_path.read_text(encoding="utf-8").split("\n")
+    result = []
+    inserted = False
+    for line in lines:
+        result.append(line)
+        if not inserted and line.strip() == '<ul class="article-list">':
+            result.append(new_li)
+            inserted = True
+    if inserted:
+        md_path.write_text("\n".join(result), encoding="utf-8")
+    return inserted
+
+
 def tool_update_index(
     week_label: str,
     week_path: str,
     month_label: str = None,
     month_path: str = None,
 ) -> str:
-    index_path = PROJECT_DIR / "index.md"
-    if not index_path.exists():
-        return "エラー: index.md が存在しません"
-
     # week_path (例: "./articles/weekly/2026-0525.md") から href と日付を生成
     w_stem = Path(week_path).stem          # "2026-0525"
     w_year, w_mmdd = w_stem.split("-", 1)  # "2026", "0525"
@@ -355,32 +368,39 @@ def tool_update_index(
             f'{month_label}</a><span class="date">{m_year}-{m_month}</span></li>'
         )
 
-    lines = index_path.read_text(encoding="utf-8").split("\n")
-    result = []
-    in_weekly = in_monthly = False
-    weekly_done = monthly_done = False
+    results = []
 
-    for line in lines:
-        result.append(line)
+    # 1. トップページ (index.md) — 週次・月次の両セクションを更新
+    top = PROJECT_DIR / "index.md"
+    if top.exists():
+        lines = top.read_text(encoding="utf-8").split("\n")
+        out = []
+        in_weekly = in_monthly = False
+        weekly_done = monthly_done = False
+        for line in lines:
+            out.append(line)
+            if '<h2 class="section-title">' in line:
+                in_weekly = "📰 週次まとめ" in line
+                in_monthly = "📅 月次まとめ" in line
+            if in_weekly and not weekly_done and line.strip() == '<ul class="article-list">':
+                out.append(week_li)
+                weekly_done = True
+            if month_li and in_monthly and not monthly_done and line.strip() == '<ul class="article-list">':
+                out.append(month_li)
+                monthly_done = True
+        top.write_text("\n".join(out), encoding="utf-8")
+        results.append("index.md")
 
-        if '<h2 class="section-title">' in line:
-            in_weekly = "📰 週次まとめ" in line
-            in_monthly = "📅 月次まとめ" in line
+    # 2. 週次一覧ページ (articles/weekly/index.md)
+    if _insert_li_at_top_of_ul(PROJECT_DIR / "articles/weekly/index.md", week_li):
+        results.append("articles/weekly/index.md")
 
-        if in_weekly and not weekly_done and line.strip() == '<ul class="article-list">':
-            result.append(week_li)
-            weekly_done = True
+    # 3. 月次一覧ページ (articles/monthly/index.md) — 月次モード時のみ
+    if month_li and _insert_li_at_top_of_ul(PROJECT_DIR / "articles/monthly/index.md", month_li):
+        results.append("articles/monthly/index.md")
 
-        if month_li and in_monthly and not monthly_done and line.strip() == '<ul class="article-list">':
-            result.append(month_li)
-            monthly_done = True
-
-    index_path.write_text("\n".join(result), encoding="utf-8")
-    log(f"update_index: {week_label}")
-    msg = f"index.md 更新完了: {week_label}"
-    if month_li and monthly_done:
-        msg += f" / {month_label}"
-    return msg
+    log(f"update_index: {week_label} → {results}")
+    return f"index.md 更新完了: {', '.join(results)}"
 
 
 def tool_git_commit_push(files: list, message: str) -> str:
@@ -461,7 +481,7 @@ SYSTEM_PROMPT_TMPL = """\
 
 {monthly_step}
 
-5. **コミット** — git_commit_push で articles/ と README.md と index.md をコミット・プッシュする
+5. **コミット** — git_commit_push で articles/ と README.md と index.md と articles/weekly/index.md と articles/monthly/index.md をコミット・プッシュする
 
 # 記事フォーマット（必ず守ること）
 - ファイル: articles/weekly/{year}-{week_file}.md

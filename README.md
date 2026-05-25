@@ -1,11 +1,14 @@
 # ai_news — 生成AI最新情報ダイジェスト
 
+**🌐 公開サイト: https://masauehr.github.io/ai_news/**
+
 ## クイックリンク
 
 | | リンク |
 |---|---|
-| 📰 最新週次まとめ | [articles/weekly/](./articles/weekly/) |
-| 📅 月次まとめ | [articles/monthly/](./articles/monthly/) |
+| 🌐 公開サイト | https://masauehr.github.io/ai_news/ |
+| 📰 週次まとめ一覧 | https://masauehr.github.io/ai_news/articles/weekly/ |
+| 📅 月次まとめ一覧 | https://masauehr.github.io/ai_news/articles/monthly/ |
 | ⚙️ 収集・生成仕様 | [SPEC.md](./SPEC.md) |
 
 ---
