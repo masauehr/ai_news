@@ -7,7 +7,9 @@
 | | リンク |
 |---|---|
 | 🌐 公開サイト | https://masauehr.github.io/ai_news/ |
-| 📰 週次まとめ一覧 | https://masauehr.github.io/ai_news/articles/weekly/ |
+| 📰 Ollama週次まとめ | https://masauehr.github.io/ai_news/articles/weekly/ |
+| ⚡ Haiku週次まとめ | https://masauehr.github.io/ai_news/articles/haiku_weekly/ |
+| 🔬 モデル比較 | https://masauehr.github.io/ai_news/articles/compare/ |
 | 📅 月次まとめ一覧 | https://masauehr.github.io/ai_news/articles/monthly/ |
 | ⚙️ 収集・生成仕様 | [SPEC.md](./SPEC.md) |
 
@@ -22,24 +24,32 @@
 
 ```
 ai_news/
-├── README.md                    # このファイル（最新記事一覧）
-├── SPEC.md                      # 情報収集・記事生成の仕様
+├── README.md                         # このファイル（最新記事一覧）
+├── SPEC.md                           # 情報収集・記事生成の仕様
 ├── articles/
-│   ├── weekly/YYYY-MMDD.md     # 週次まとめ記事（毎週土曜 自動生成）
-│   └── monthly/YYYY-MM.md      # 月次まとめ記事（毎月第1土曜 自動生成）
+│   ├── weekly/YYYY-MMDD.md          # Ollama 週次記事（土曜 09:00 自動生成）
+│   ├── haiku_weekly/YYYY-MMDD.md    # Haiku 週次記事（土曜 13:00 自動生成）
+│   ├── compare/YYYY-MMDD.md         # モデル比較ページ（13:00 以降 自動生成）
+│   └── monthly/YYYY-MM.md           # 月次まとめ（第1土曜 自動生成）
 └── scripts/
-    ├── local_agent.py           # Ollama tool-callingエージェント（記事生成の中核）
-    ├── fetch_news.py            # BeautifulSoupによる事前スクレイピング
-    ├── run_ai_news.sh           # launchd実行スクリプト（ローカル専用・非公開）
-    └── com.user.ai_news.plist   # launchd設定ファイル（ローカル専用・非公開）
+    ├── local_agent.py               # Ollama エージェント（09:00 実行）
+    ├── haiku_agent.py               # Claude Haiku エージェント（13:00 実行）
+    ├── generate_compare.py          # 比較ページ生成スクリプト
+    ├── fetch_news.py                # BeautifulSoup 事前スクレイピング
+    ├── run_ai_news.sh               # Ollama 実行スクリプト（launchd）
+    ├── run_ai_news_haiku.sh         # Haiku 実行スクリプト（launchd）
+    ├── com.user.ai_news.plist       # launchd 設定（09:00）
+    └── com.user.ai_news_haiku.plist # launchd 設定（13:00）
 ```
 
 ### ファイル役割と更新方法
 
 | ファイル | 役割 | 更新方法 | 更新頻度 |
 |---|---|---|---|
-| `articles/weekly/YYYY-WXX.md` | 週次まとめ記事 | **自動生成** | 毎週月曜 |
-| `articles/monthly/YYYY-MM.md` | 月次まとめ記事 | **自動生成** | 毎月第1月曜 |
+| `articles/weekly/YYYY-MMDD.md` | Ollama 週次まとめ | **自動生成**（09:00） | 毎週土曜 |
+| `articles/haiku_weekly/YYYY-MMDD.md` | Haiku 週次まとめ | **自動生成**（13:00） | 毎週土曜 |
+| `articles/compare/YYYY-MMDD.md` | モデル比較ページ | **自動生成**（13:00以降） | 毎週土曜 |
+| `articles/monthly/YYYY-MM.md` | 月次まとめ | **自動生成** | 毎月第1土曜 |
 | `README.md` | 記事一覧・プロジェクト概要 | 手動 or 自動更新 | 記事追加時 |
 
 ---
@@ -48,7 +58,7 @@ ai_news/
 
 <!-- 自動更新される記事一覧 -->
 
-### 週次まとめ
+### 週次まとめ（Ollama / qwen3.6:35b-mlx）
 
 - [5/25〜5/31](./articles/weekly/2026-0525.md)
 - [5/18〜5/24](./articles/weekly/2026-0518.md)
@@ -63,6 +73,14 @@ ai_news/
 - [3/23〜3/29](./articles/weekly/2026-0323.md)
 
 <!-- articles/weekly/ のファイルへのリンクがここに追加される -->
+
+### Haiku週次まとめ（Claude Haiku）
+
+<!-- articles/haiku_weekly/ のファイルへのリンクがここに追加される -->
+
+### モデル比較（Ollama vs Haiku）
+
+<!-- articles/compare/ のファイルへのリンクがここに追加される -->
 
 ### 月次まとめ
 
@@ -92,12 +110,16 @@ macOS の launchd が `scripts/run_ai_news.sh` を呼び出し、
 
 | タイミング | 内容 |
 |---|---|
-| 毎週土曜 09:00 JST | 週次まとめ記事を自動生成・git push |
-| 毎月第1土曜 09:00 JST | 月次まとめ記事も追加生成・git push |
+| 毎週土曜 09:00 JST | Ollama（qwen3.6:35b-mlx）が週次記事を自動生成・git push |
+| 毎月第1土曜 09:00 JST | 上記に加えて月次まとめも生成 |
+| 毎週土曜 13:00 JST | Claude Haiku が同じ週の記事を別ファイルに生成 → 比較ページを自動作成 |
 
 ### 使用モデル
 
-デフォルト: **`qwen3.6:35b-mlx`**（Ollama で動作するローカルLLM）
+| 実行 | モデル | 種別 |
+|---|---|---|
+| 09:00 | `qwen3.6:35b-mlx` | Ollama ローカルLLM（デフォルト） |
+| 13:00 | `claude-haiku-4-5-20251001` | Anthropic API（Claude Haiku） |
 
 ```bash
 # 一時的にモデルを変更して実行
@@ -117,14 +139,23 @@ AI_NEWS_MODEL=qwen3.6:27b-mlx bash ~/projects/ai_news/scripts/run_ai_news.sh
 ### 手動実行
 
 ```bash
-# 週次まとめを今すぐ生成（今週分のファイルが無い場合のみ実行）
+# Ollama 版（09:00 相当）を今すぐ実行
 bash ~/projects/ai_news/scripts/run_ai_news.sh
 
-# launchd手動起動
-launchctl start com.user.ai_news
+# Haiku 版（13:00 相当）を今すぐ実行
+bash ~/projects/ai_news/scripts/run_ai_news_haiku.sh
+
+# 比較ページのみ手動生成（両記事が揃っている場合）
+python3 ~/projects/ai_news/scripts/generate_compare.py \
+  --week-file 0525 --week-label "5/25〜5/31" --year 2026
+
+# launchd 手動起動
+launchctl start com.user.ai_news        # Ollama 版
+launchctl start com.user.ai_news_haiku  # Haiku 版
 
 # ログ確認
-tail -f ~/projects/ai_news/ai_news.log
+tail -f ~/projects/ai_news/ai_news.log        # Ollama ログ
+tail -f ~/projects/ai_news/ai_news_haiku.log  # Haiku ログ
 ```
 
 ---

@@ -33,6 +33,16 @@ Ollama のローカルLLM（tool calling）が情報収集から記事生成・�
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-04">2026年4月</a><span class="date">2026-04</span></li>
 </ul>
 
+<h2 class="section-title">⚡ Haiku週次まとめ（Claude Haiku）</h2>
+
+<ul class="article-list">
+</ul>
+
+<h2 class="section-title">🔬 モデル比較（Ollama vs Haiku）</h2>
+
+<ul class="article-list" id="compare-list">
+</ul>
+
 <h2 class="section-title">📌 トピックス（深掘りレポート）</h2>
 
 <ul class="article-list">
@@ -46,7 +56,9 @@ Ollama のローカルLLM（tool calling）が情報収集から記事生成・�
 
 | 項目 | 内容 |
 |------|------|
-| 更新頻度 | 毎週土曜 09:00 JST 自動更新 |
+| 更新頻度（Ollama） | 毎週土曜 09:00 JST 自動更新 |
+| 更新頻度（Haiku） | 毎週土曜 13:00 JST 自動更新 |
 | 収集対象 | OpenAI / Anthropic / Google / Meta / 国内AI動向 など |
-| 生成エンジン | Ollama ローカルLLM（qwen3.6:35b-mlx） |
+| 生成エンジン① | Ollama ローカルLLM（qwen3.6:35b-mlx） |
+| 生成エンジン② | Claude Haiku（Anthropic API）|
 | ソースコード | [github.com/masauehr/ai_news](https://github.com/masauehr/ai_news) |
