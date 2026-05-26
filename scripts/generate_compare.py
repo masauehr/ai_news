@@ -43,10 +43,13 @@ def extract_li_items(md_path: Path, limit: int = 5) -> str:
 
 
 def insert_li_at_top_of_ul(md_path: Path, new_li: str) -> bool:
-    """<ul class="article-list"> の直後に new_li を挿入する"""
+    """<ul class="article-list"> の直後に new_li を挿入する（重複チェック付き）"""
     if not md_path.exists():
         return False
-    lines = md_path.read_text(encoding="utf-8").split("\n")
+    content = md_path.read_text(encoding="utf-8")
+    if new_li.strip() in content:
+        return False  # 既に存在する場合はスキップ
+    lines = content.split("\n")
     result = []
     inserted = False
     for line in lines:
