@@ -33,6 +33,15 @@ def strip_front_matter(content: str) -> str:
     return content.strip()
 
 
+def extract_li_items(md_path: Path, limit: int = 5) -> str:
+    """index.md から <li> エントリを最大 limit 件取得して文字列で返す"""
+    if not md_path.exists():
+        return ""
+    lines = md_path.read_text(encoding="utf-8").split("\n")
+    items = [l for l in lines if l.strip().startswith("<li>")]
+    return "\n".join(items[:limit])
+
+
 def insert_li_at_top_of_ul(md_path: Path, new_li: str) -> bool:
     """<ul class="article-list"> の直後に new_li を挿入する"""
     if not md_path.exists():
@@ -50,41 +59,114 @@ def insert_li_at_top_of_ul(md_path: Path, new_li: str) -> bool:
     return inserted
 
 
-def update_top_index(week_label: str, week_file: str, year: str) -> None:
-    """トップページ (index.md) の比較リストに新しいエントリを追加する"""
-    top = PROJECT_DIR / "index.md"
-    if not top.exists():
-        return
+def update_top_page(
+    week_label: str,
+    week_file: str,
+    year: str,
+    ollama_content: str,
+    haiku_content: str,
+) -> None:
+    """index.md を最新比較コンテンツ + 過去記事グリッドで完全に書き換える"""
 
-    # 比較リンクのフォーマット
-    date_str = f"{year}-{week_file[:2]}-{week_file[2:]}"
-    href = f"articles/compare/{year}-{week_file}"
-    li = (
-        f'  <li><a href="{{{{ site.baseurl }}}}/{href}">'
-        f'{week_label}</a><span class="date">{date_str}</span></li>'
-    )
+    compare_items = extract_li_items(PROJECT_DIR / "articles/compare/index.md")
+    weekly_items  = extract_li_items(PROJECT_DIR / "articles/weekly/index.md")
+    haiku_items   = extract_li_items(PROJECT_DIR / "articles/haiku_weekly/index.md")
+    monthly_items = extract_li_items(PROJECT_DIR / "articles/monthly/index.md")
 
-    lines = top.read_text(encoding="utf-8").split("\n")
-    out = []
-    in_compare = False
-    compare_done = False
+    # Liquid の {{ }} は f-string と衝突するので {{ }} にエスケープ
+    baseurl = "{{ site.baseurl }}"
 
-    for line in lines:
-        out.append(line)
-        if '<h2 class="section-title">' in line:
-            in_compare = "🔬 モデル比較" in line
-        if in_compare and not compare_done and line.strip() == '<ul class="article-list" id="compare-list">':
-            out.append(li)
-            compare_done = True
+    index_md = f"""---
+layout: compare
+title: 生成AI週次ダイジェスト
+---
 
-    if compare_done:
-        top.write_text("\n".join(out), encoding="utf-8")
-        log(f"index.md 比較セクション更新: {week_label}")
+<div class="compare-header">
+  <h1>🔬 モデル比較（{week_label}）</h1>
+  <div class="compare-meta">
+    <span class="badge ollama">🖥️ Ollama</span>
+    <span style="font-family:monospace;font-size:0.82rem;color:#666">qwen3.6:35b-mlx（土曜 09:00 生成）</span>
+    <span style="margin: 0 0.5rem;">vs</span>
+    <span class="badge haiku">⚡ Claude</span>
+    <span style="font-family:monospace;font-size:0.82rem;color:#666">claude-haiku-4-5（土曜 13:00 生成）</span>
+  </div>
+</div>
+
+<div class="compare-wrapper">
+
+<div class="compare-panel ollama-panel">
+<div class="panel-header-bar">
+  <span class="model-badge">🖥️ Ollama</span>
+  <span class="model-name">qwen3.6:35b-mlx</span>
+</div>
+<div class="panel-body" markdown="1">
+
+{ollama_content}
+
+</div>
+</div>
+
+<div class="compare-panel haiku-panel">
+<div class="panel-header-bar">
+  <span class="model-badge">⚡ Claude Haiku</span>
+  <span class="model-name">claude-haiku-4-5</span>
+</div>
+<div class="panel-body" markdown="1">
+
+{haiku_content}
+
+</div>
+</div>
+
+</div>
+
+<div class="past-articles">
+<h2>📚 過去の記事</h2>
+<div class="past-articles-grid">
+
+<div class="past-col">
+<h3>🔬 モデル比較</h3>
+<ul class="article-list compact">
+{compare_items}
+</ul>
+<a href="{baseurl}/articles/compare/" class="view-all">すべて見る →</a>
+</div>
+
+<div class="past-col">
+<h3>🖥️ Ollama週次</h3>
+<ul class="article-list compact">
+{weekly_items}
+</ul>
+<a href="{baseurl}/articles/weekly/" class="view-all">すべて見る →</a>
+</div>
+
+<div class="past-col">
+<h3>⚡ Haiku週次</h3>
+<ul class="article-list compact">
+{haiku_items}
+</ul>
+<a href="{baseurl}/articles/haiku_weekly/" class="view-all">すべて見る →</a>
+</div>
+
+<div class="past-col">
+<h3>📅 月次まとめ</h3>
+<ul class="article-list compact">
+{monthly_items}
+</ul>
+<a href="{baseurl}/articles/monthly/" class="view-all">すべて見る →</a>
+</div>
+
+</div>
+</div>
+"""
+
+    (PROJECT_DIR / "index.md").write_text(index_md, encoding="utf-8")
+    log(f"index.md をトップ比較ページとして更新: {week_label}")
 
 
 def generate(week_file: str, week_label: str, year: str) -> bool:
-    ollama_path = PROJECT_DIR / f"articles/weekly/{year}-{week_file}.md"
-    haiku_path  = PROJECT_DIR / f"articles/haiku_weekly/{year}-{week_file}.md"
+    ollama_path  = PROJECT_DIR / f"articles/weekly/{year}-{week_file}.md"
+    haiku_path   = PROJECT_DIR / f"articles/haiku_weekly/{year}-{week_file}.md"
     compare_path = PROJECT_DIR / f"articles/compare/{year}-{week_file}.md"
     compare_index = PROJECT_DIR / "articles/compare/index.md"
 
@@ -94,14 +176,13 @@ def generate(week_file: str, week_label: str, year: str) -> bool:
     if not haiku_path.exists():
         log(f"SKIP: Haiku記事が存在しません: {haiku_path}")
         return False
-    if compare_path.exists():
-        log(f"SKIP: 比較ページは既に存在します: {compare_path}")
-        return False
 
     ollama_content = strip_front_matter(ollama_path.read_text(encoding="utf-8"))
     haiku_content  = strip_front_matter(haiku_path.read_text(encoding="utf-8"))
 
-    compare_md = f"""---
+    # 比較ページ（articles/compare/YYYY-MMDD.md）
+    if not compare_path.exists():
+        compare_md = f"""---
 layout: compare
 title: モデル比較（{week_label}）
 ---
@@ -145,10 +226,11 @@ title: モデル比較（{week_label}）
 
 </div>
 """
-
-    compare_path.parent.mkdir(parents=True, exist_ok=True)
-    compare_path.write_text(compare_md, encoding="utf-8")
-    log(f"比較ページ生成完了: {compare_path}")
+        compare_path.parent.mkdir(parents=True, exist_ok=True)
+        compare_path.write_text(compare_md, encoding="utf-8")
+        log(f"比較ページ生成完了: {compare_path}")
+    else:
+        log(f"比較ページは既に存在します（スキップ）: {compare_path}")
 
     # articles/compare/index.md を更新
     date_str = f"{year}-{week_file[:2]}-{week_file[2:]}"
@@ -158,10 +240,10 @@ title: モデル比較（{week_label}）
         f'{week_label}</a><span class="date">{date_str}</span></li>'
     )
     if insert_li_at_top_of_ul(compare_index, li):
-        log(f"articles/compare/index.md 更新完了")
+        log("articles/compare/index.md 更新完了")
 
-    # トップ index.md の比較セクションを更新
-    update_top_index(week_label, week_file, year)
+    # トップページを最新比較コンテンツで完全書き換え
+    update_top_page(week_label, week_file, year, ollama_content, haiku_content)
 
     # git commit & push
     files = [
@@ -170,7 +252,7 @@ title: モデル比較（{week_label}）
         "index.md",
     ]
     commit_msg = (
-        f"{year}-{week_file} モデル比較ページを追加\n\n"
+        f"{year}-{week_file} モデル比較ページを追加・トップページを更新\n\n"
         f"Co-Authored-By: generate_compare.py <noreply@local>"
     )
     try:
