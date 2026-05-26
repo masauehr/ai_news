@@ -15,4 +15,6 @@ _site/
 # 個人情報を含むファイル（ローカル専用）
 CLAUDE.md
 scripts/run_ai_news.sh
+scripts/run_ai_news_haiku.sh
 scripts/com.user.ai_news.plist
+scripts/com.user.ai_news_haiku.plist
