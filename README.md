@@ -2,6 +2,8 @@
 
 **🌐 公開サイト: https://masauehr.github.io/ai_news/**
 
+> 詳しい運用マニュアルは [ai-news.md](./ai-news.md) を参照。
+
 ## クイックリンク
 
 | | リンク |
