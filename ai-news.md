@@ -20,6 +20,7 @@ macOS の launchd からローカルLLMエージェント（Ollama + tool callin
 > - 2026-05-17: 「毎日 09:00 チェック」→「毎週土曜 09:00」に変更
 > - 2026-05-24: 記事生成エンジンを Claude CLI → **Ollama ローカルLLM** に変更
 > - 2026-05-25: **Claude Haiku（Anthropic API）による並行実行 + モデル比較ページ自動生成を追加**
+> - 2026-05-31: **ファイル名・期間ラベルの基準を「実行日」ベースに変更**（実行日7日前〜実行日を対象期間とする）
 
 ---
 
@@ -47,7 +48,7 @@ launchd（毎週土曜 09:00）
   ↓
 run_ai_news.sh が起動
   ↓
-今週分のファイル（articles/weekly/YYYY-MMDD.md）が存在する？
+実行日分のファイル（articles/weekly/YYYY-MMDD.md、MMDD=実行日）が存在する？
   ├─ Yes → スキップ（数秒で終了）
   └─ No  → fetch_news.py でニュースサイトを事前スクレイピング
               ↓
@@ -68,7 +69,7 @@ launchd（毎週土曜 13:00）
   ↓
 run_ai_news_haiku.sh が起動
   ↓
-今週分のファイル（articles/haiku_weekly/YYYY-MMDD.md）が存在する？
+実行日分のファイル（articles/haiku_weekly/YYYY-MMDD.md、MMDD=実行日）が存在する？
   ├─ Yes → 比較ページが未生成なら generate_compare.py のみ実行して終了
   └─ No  → ~/.anthropic_env から ANTHROPIC_API_KEY を読み込む
               ↓
@@ -309,18 +310,18 @@ AI_NEWS_MODEL="${AI_NEWS_MODEL:-qwen3.6:35b-mlx}"  # 環境変数で上書き可
 TODAY=$(TZ=Asia/Tokyo date +%Y-%m-%d)
 DAY_OF_MONTH=$(TZ=Asia/Tokyo date +%d)
 YEAR=$(TZ=Asia/Tokyo date +%Y)
-DOW=$(TZ=Asia/Tokyo date +%u)
 
-WEEK_MON_MMDD=$(TZ=Asia/Tokyo date -v-$((DOW-1))d +%m%d)
-WEEK_MON=$(TZ=Asia/Tokyo date -v-$((DOW-1))d +%-m/%-d)
-WEEK_SUN=$(TZ=Asia/Tokyo date -v+$((7-DOW))d +%-m/%-d)
-WEEK_LABEL="${WEEK_MON}〜${WEEK_SUN}"
-WEEKLY_FILE="${PROJECT_DIR}/articles/weekly/${YEAR}-${WEEK_MON_MMDD}.md"
+# ファイル名: 実行日（MMDD）/ ラベル: 実行日の7日前〜実行日
+WEEK_FILE_MMDD=$(TZ=Asia/Tokyo date +%m%d)
+WEEK_END=$(TZ=Asia/Tokyo date +%-m/%-d)
+WEEK_START=$(TZ=Asia/Tokyo date -v-7d +%-m/%-d)
+WEEK_LABEL="${WEEK_START}〜${WEEK_END}"
+WEEKLY_FILE="${PROJECT_DIR}/articles/weekly/${YEAR}-${WEEK_FILE_MMDD}.md"
 
 log() { echo "[$(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "${LOG_FILE}"; }
 
-log "=== 起動チェック: ${TODAY} / ${YEAR}-${WEEK_MON_MMDD} ==="
-[ -f "${WEEKLY_FILE}" ] && log "実行済み。スキップ。" && exit 0
+log "=== 起動チェック: ${TODAY} / ${YEAR}-${WEEK_FILE_MMDD} / 対象期間: ${WEEK_LABEL} ==="
+[ -f "${WEEKLY_FILE}" ] && log "実行日分（${YEAR}-${WEEK_FILE_MMDD}）は実行済み。スキップ。" && exit 0
 
 [ "${DAY_OF_MONTH}" -le 7 ] && MODE="monthly" || MODE="weekly"
 log "=== 実行開始: ${MODE} ==="
@@ -333,7 +334,7 @@ while [ ${RETRY} -lt ${MAX_RETRY} ]; do
   log "ローカルエージェント起動 model=${AI_NEWS_MODEL} (試行 ${RETRY}/${MAX_RETRY})"
   if "${PYTHON_BIN}" "${PROJECT_DIR}/scripts/local_agent.py" \
       --mode "${MODE}" \
-      --week-file "${WEEK_MON_MMDD}" \
+      --week-file "${WEEK_FILE_MMDD}" \
       --week-label "${WEEK_LABEL}" \
       --year "${YEAR}" \
       --month "$(TZ=Asia/Tokyo date +%m)" \
@@ -425,7 +426,7 @@ tail -f ~/projects/ai_news/ai_news_haiku.log
 
 # 比較ページだけ手動で生成したい場合（両記事が揃っている前提）
 python3 ~/projects/ai_news/scripts/generate_compare.py \
-  --week-file 0525 --week-label "5/25〜5/31" --year 2026
+  --week-file 0530 --week-label "5/23〜5/30" --year 2026
 ```
 
 ---
@@ -483,26 +484,26 @@ launchctl load  ~/Library/LaunchAgents/com.user.ai_news.plist
 
 **正常時のログ例：**
 ```
-[2026-05-31 09:00:05] === ai_news 起動チェック ===
-[2026-05-31 09:00:05] 今日: 2026-05-31 / 対象週開始: 2026-0525
-[2026-05-31 09:00:05] === ai_news 自動実行開始 ===
-[2026-05-31 09:00:05] モード: 週次
-[2026-05-31 09:00:06] BeautifulSoup で記事一覧を事前取得中...
-[2026-05-31 09:00:16] スクレイピング完了（79 行取得）
-[2026-05-31 09:00:16] ローカルエージェントを起動します... model=qwen3.6:35b-mlx (試行 1/3)
-[2026-05-31 09:00:16] エージェント開始: model=qwen3.6:35b-mlx, mode=weekly, week=0525
-[2026-05-31 09:00:16] --- ターン 1/40 ---
-[2026-05-31 09:00:35] ツール呼び出し: search_web({"query": "生成AI 最新ニュース 今週"})
+[2026-06-07 09:00:05] === ai_news 起動チェック ===
+[2026-06-07 09:00:05] 今日: 2026-06-07 / 実行日ファイル: 2026-0607 / 対象期間: 5/31〜6/7
+[2026-06-07 09:00:05] === ai_news 自動実行開始 ===
+[2026-06-07 09:00:05] モード: 週次
+[2026-06-07 09:00:06] BeautifulSoup で記事一覧を事前取得中...
+[2026-06-07 09:00:16] スクレイピング完了（79 行取得）
+[2026-06-07 09:00:16] ローカルエージェントを起動します... model=qwen3.6:35b-mlx (試行 1/3)
+[2026-06-07 09:00:16] エージェント開始: model=qwen3.6:35b-mlx, mode=weekly, week=0607
+[2026-06-07 09:00:16] --- ターン 1/40 ---
+[2026-06-07 09:00:35] ツール呼び出し: search_web({"query": "生成AI 最新ニュース 今週"})
 ...
-[2026-05-31 09:15:22] ツール呼び出し: git_commit_push(...)
-[2026-05-31 09:15:28] === ai_news 自動実行完了 ===
+[2026-06-07 09:15:22] ツール呼び出し: git_commit_push(...)
+[2026-06-07 09:15:28] === ai_news 自動実行完了 ===
 ```
 
 **スキップ時のログ例：**
 ```
-[2026-05-31 09:00:01] === ai_news 起動チェック ===
-[2026-05-31 09:00:01] 今日: 2026-05-31 / 対象週開始: 2026-0525
-[2026-05-31 09:00:01] 今週分（2026-0525）は実行済み。スキップします。
+[2026-06-07 09:00:01] === ai_news 起動チェック ===
+[2026-06-07 09:00:01] 今日: 2026-06-07 / 実行日ファイル: 2026-0607 / 対象期間: 5/31〜6/7
+[2026-06-07 09:00:01] 実行日分（2026-0607）は実行済み。スキップします。
 ```
 
 ---
@@ -576,6 +577,31 @@ rm ~/Library/LaunchAgents/com.user.ai_news.plist
 ---
 
 ## 設計判断メモ
+
+### 2026-05-31: ファイル名・期間ラベルを実行日ベースに変更
+
+**変更前:** ファイル名 = 今週月曜日（例: 5/30 実行 → `2026-0525.md`、ラベル `5/25〜5/31`）  
+**変更後:** ファイル名 = 実行日（例: 5/30 実行 → `2026-0530.md`、ラベル `5/23〜5/30`）
+
+**変更理由:**
+- 旧方式では「5/30 実行なのに 5/31 まで」のラベルになり、実際にカバーしていない未来の日付を含んでいた
+- 実行日ベースにすることで「実行した日までの7日間」という直感的な期間になる
+- ファイル名も実行日一致になるため「いつ実行した記事か」が一目でわかる
+
+**スクリプトの変更:**  
+`run_ai_news.sh` / `run_ai_news_haiku.sh` の週計算部分:
+```bash
+# 旧: 今週月曜日を基準
+WEEK_MON_MMDD=$(TZ=Asia/Tokyo date -v-$((DOW-1))d +%m%d)
+
+# 新: 実行日を基準
+WEEK_FILE_MMDD=$(TZ=Asia/Tokyo date +%m%d)
+WEEK_END=$(TZ=Asia/Tokyo date +%-m/%-d)
+WEEK_START=$(TZ=Asia/Tokyo date -v-7d +%-m/%-d)
+WEEK_LABEL="${WEEK_START}〜${WEEK_END}"
+```
+
+---
 
 ### 2026-05-25: Claude Haiku 並行実行 + モデル比較ページを追加
 
@@ -739,7 +765,7 @@ unload/load をせずに plist のみ書き換えると、launchd がメモリ�
 | 症状 | 原因 | 対処 |
 |---|---|---|
 | 毎週記事が生成されない | launchd が未登録 | `launchctl list \| grep ai_news` で確認・再登録 |
-| スキップされ続ける | 今週分のファイルが既に存在する | `ls articles/weekly/` で確認・不要なら削除 |
+| スキップされ続ける | 実行日分のファイルが既に存在する | `ls articles/weekly/` で確認・不要なら削除 |
 | `Ollama に接続できません` | Ollama が起動していない | `ollama serve` または Ollama.app を起動 |
 | ターン数上限（40回）に達する | エージェントがループ | ログを確認して原因を特定・システムプロンプトを調整 |
 | 記事が生成されたが内容が薄い | モデルの品質限界 | `qwen3.6:35b-mlx` を使用しているか確認 |
