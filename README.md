@@ -89,6 +89,7 @@ ai_news/
 
 - [2026年5月](./articles/monthly/2026-05.md)
 - [2026年5月](./articles/monthly/2026-05.md)
+- [2026年5月](./articles/monthly/2026-05.md)
 - [2026年4月](./articles/monthly/2026-04.md)
 
 <!-- articles/monthly/ のファイルへのリンクがここに追加される -->
