@@ -14,14 +14,12 @@ HAIKU_MODEL="${HAIKU_MODEL:-claude-haiku-4-5-20251001}"
 TODAY=$(TZ=Asia/Tokyo date +%Y-%m-%d)
 DAY_OF_MONTH=$(TZ=Asia/Tokyo date +%d)
 YEAR=$(TZ=Asia/Tokyo date +%Y)
-DOW=$(TZ=Asia/Tokyo date +%u)  # 1=月曜, 7=日曜
-
-# 今週月曜日の日付を算出
-WEEK_MON_MMDD=$(TZ=Asia/Tokyo date -v-$((DOW-1))d +%m%d)
-WEEK_MON=$(TZ=Asia/Tokyo date -v-$((DOW-1))d +%-m/%-d)
-WEEK_SUN=$(TZ=Asia/Tokyo date -v+$((7-DOW))d +%-m/%-d)
-WEEK_LABEL="${WEEK_MON}〜${WEEK_SUN}"
-HAIKU_WEEKLY_FILE="${PROJECT_DIR}/articles/haiku_weekly/${YEAR}-${WEEK_MON_MMDD}.md"
+# ファイル名: 実行日（MMDD）/ ラベル: 実行日の7日前〜実行日
+WEEK_FILE_MMDD=$(TZ=Asia/Tokyo date +%m%d)
+WEEK_END=$(TZ=Asia/Tokyo date +%-m/%-d)
+WEEK_START=$(TZ=Asia/Tokyo date -v-7d +%-m/%-d)
+WEEK_LABEL="${WEEK_START}〜${WEEK_END}"
+HAIKU_WEEKLY_FILE="${PROJECT_DIR}/articles/haiku_weekly/${YEAR}-${WEEK_FILE_MMDD}.md"
 
 # --- ログ関数 ---
 log() {
@@ -46,15 +44,15 @@ export ANTHROPIC_API_KEY
 
 # --- 開始 ---
 log "=== ai_news Haiku 起動チェック ==="
-log "今日: ${TODAY} / 対象週開始: ${YEAR}-${WEEK_MON_MMDD}"
+log "今日: ${TODAY} / 実行日ファイル: ${YEAR}-${WEEK_FILE_MMDD} / 対象期間: ${WEEK_LABEL}"
 
 cd "${PROJECT_DIR}"
 
 # --- 実行済みチェック（今週分のファイルが既にあればスキップ）---
 if [ -f "${HAIKU_WEEKLY_FILE}" ]; then
-  log "今週分 Haiku 記事（${YEAR}-${WEEK_MON_MMDD}）は実行済み。スキップします。"
+  log "実行日分 Haiku 記事（${YEAR}-${WEEK_FILE_MMDD}）は実行済み。スキップします。"
   # 比較ページが未生成なら生成を試みる
-  COMPARE_FILE="${PROJECT_DIR}/articles/compare/${YEAR}-${WEEK_MON_MMDD}.md"
+  COMPARE_FILE="${PROJECT_DIR}/articles/compare/${YEAR}-${WEEK_FILE_MMDD}.md"
   if [ ! -f "${COMPARE_FILE}" ]; then
     log "比較ページが未生成のため生成を試みます..."
     "${PYTHON_BIN}" "${PROJECT_DIR}/scripts/generate_compare.py" \
@@ -93,7 +91,7 @@ while [ ${RETRY} -lt ${MAX_RETRY} ]; do
 
   if "${PYTHON_BIN}" "${PROJECT_DIR}/scripts/haiku_agent.py" \
       --mode "${MODE}" \
-      --week-file "${WEEK_MON_MMDD}" \
+      --week-file "${WEEK_FILE_MMDD}" \
       --week-label "${WEEK_LABEL}" \
       --year "${YEAR}" \
       --month "$(TZ=Asia/Tokyo date +%m)" \
@@ -120,8 +118,8 @@ fi
 log "=== Haiku 記事生成完了 ==="
 
 # --- 比較ページ生成（Ollama版記事が揃っている場合のみ）---
-OLLAMA_FILE="${PROJECT_DIR}/articles/weekly/${YEAR}-${WEEK_MON_MMDD}.md"
-COMPARE_FILE="${PROJECT_DIR}/articles/compare/${YEAR}-${WEEK_MON_MMDD}.md"
+OLLAMA_FILE="${PROJECT_DIR}/articles/weekly/${YEAR}-${WEEK_FILE_MMDD}.md"
+COMPARE_FILE="${PROJECT_DIR}/articles/compare/${YEAR}-${WEEK_FILE_MMDD}.md"
 
 if [ -f "${OLLAMA_FILE}" ] && [ ! -f "${COMPARE_FILE}" ]; then
   log "=== 比較ページ生成開始 ==="
@@ -134,7 +132,7 @@ if [ -f "${OLLAMA_FILE}" ] && [ ! -f "${COMPARE_FILE}" ]; then
 elif [ ! -f "${OLLAMA_FILE}" ]; then
   log "WARN: Ollama版記事（${OLLAMA_FILE}）が存在しません。比較ページはスキップします。"
   log "      Ollama版が生成された後、以下のコマンドで手動生成できます:"
-  log "      python3 ${PROJECT_DIR}/scripts/generate_compare.py --week-file ${WEEK_MON_MMDD} --week-label '${WEEK_LABEL}' --year ${YEAR}"
+  log "      python3 ${PROJECT_DIR}/scripts/generate_compare.py --week-file ${WEEK_FILE_MMDD} --week-label '${WEEK_LABEL}' --year ${YEAR}"
 fi
 
 log "=== ai_news Haiku 自動実行完了 ==="
