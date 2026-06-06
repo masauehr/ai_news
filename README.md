@@ -88,6 +88,7 @@ ai_news/
 
 ### 月次まとめ
 
+- [2026年6月](./articles/monthly/2026-06.md)
 - [2026年5月](./articles/monthly/2026-05.md)
 - [2026年5月](./articles/monthly/2026-05.md)
 - [2026年5月](./articles/monthly/2026-05.md)
