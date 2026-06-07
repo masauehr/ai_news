@@ -240,9 +240,12 @@ def tool_read_file(path: str) -> str:
 
 
 def tool_append_to_readme(week_label: str, week_path: str) -> str:
-    """README.md の '### Haiku週次まとめ' セクションに週次リンクを追加する"""
+    """README.md の Haiku セクション（週次 or 月次）にリンクを追加する"""
     readme = PROJECT_DIR / "README.md"
     lines = readme.read_text(encoding="utf-8").split("\n")
+
+    is_monthly = "haiku_monthly" in week_path
+    section_header = "### Haiku月次まとめ（Claude Haiku）" if is_monthly else "### Haiku週次まとめ（Claude Haiku）"
 
     new_line = f"- [{week_label}]({week_path})"
     result = []
@@ -251,7 +254,7 @@ def tool_append_to_readme(week_label: str, week_path: str) -> str:
 
     while i < len(lines):
         result.append(lines[i])
-        if not inserted and lines[i].strip() == "### Haiku週次まとめ（Claude Haiku）":
+        if not inserted and lines[i].strip() == section_header:
             if i + 1 < len(lines) and lines[i + 1].strip() == "":
                 result.append(lines[i + 1])
                 i += 1
@@ -259,8 +262,11 @@ def tool_append_to_readme(week_label: str, week_path: str) -> str:
             inserted = True
         i += 1
 
+    if not inserted:
+        log(f"append_to_readme: セクション '{section_header}' が見つかりませんでした")
+
     readme.write_text("\n".join(result), encoding="utf-8")
-    log(f"append_to_readme (haiku): {new_line}")
+    log(f"append_to_readme (haiku {'monthly' if is_monthly else 'weekly'}): {new_line}")
     return f"README 更新完了: {new_line}"
 
 
@@ -281,41 +287,38 @@ def _insert_li_at_top_of_ul(md_path: Path, new_li: str) -> bool:
 
 
 def tool_update_index(week_label: str, week_path: str) -> str:
-    """index.md の Haiku セクションと haiku_weekly/index.md を更新する"""
-    w_stem = Path(week_path).stem          # "2026-0525"
-    w_year, w_mmdd = w_stem.split("-", 1)  # "2026", "0525"
-    w_href = f"articles/haiku_weekly/{w_year}-{w_mmdd}"
-    w_date = f"{w_year}-{w_mmdd[:2]}-{w_mmdd[2:]}"
-    week_li = (
-        f'  <li><a href="{{{{ site.baseurl }}}}/{w_href}">'
-        f'{week_label}</a><span class="date">{w_date}</span></li>'
-    )
+    """index.md の Haiku セクション（週次 or 月次）と各 index.md を更新する"""
+    is_monthly = "haiku_monthly" in week_path
+    w_stem = Path(week_path).stem  # "2026-0525" or "2026-06"
+
+    if is_monthly:
+        # 月次: articles/haiku_monthly/2026-06
+        w_href = f"articles/haiku_monthly/{w_stem}"
+        w_date = w_stem  # "2026-06"
+        item_li = (
+            f'  <li><a href="{{{{ site.baseurl }}}}/{w_href}">'
+            f'{week_label}</a><span class="date">{w_date}</span></li>'
+        )
+        sub_index = PROJECT_DIR / "articles/haiku_monthly/index.md"
+    else:
+        # 週次: articles/haiku_weekly/2026-0525
+        w_year, w_mmdd = w_stem.split("-", 1)
+        w_href = f"articles/haiku_weekly/{w_year}-{w_mmdd}"
+        w_date = f"{w_year}-{w_mmdd[:2]}-{w_mmdd[2:]}"
+        item_li = (
+            f'  <li><a href="{{{{ site.baseurl }}}}/{w_href}">'
+            f'{week_label}</a><span class="date">{w_date}</span></li>'
+        )
+        sub_index = PROJECT_DIR / "articles/haiku_weekly/index.md"
 
     results = []
 
-    # 1. トップページ (index.md) — Haiku セクションを更新
-    top = PROJECT_DIR / "index.md"
-    if top.exists():
-        lines = top.read_text(encoding="utf-8").split("\n")
-        out = []
-        in_haiku = False
-        haiku_done = False
-        for line in lines:
-            out.append(line)
-            if '<h2 class="section-title">' in line:
-                in_haiku = "⚡ Haiku週次まとめ" in line
-            if in_haiku and not haiku_done and line.strip() == '<ul class="article-list">':
-                out.append(week_li)
-                haiku_done = True
-        top.write_text("\n".join(out), encoding="utf-8")
-        results.append("index.md")
+    # 1. サブ index.md（haiku_weekly/index.md or haiku_monthly/index.md）を更新
+    if _insert_li_at_top_of_ul(sub_index, item_li):
+        results.append(str(sub_index.relative_to(PROJECT_DIR)))
 
-    # 2. haiku_weekly/index.md を更新
-    if _insert_li_at_top_of_ul(PROJECT_DIR / "articles/haiku_weekly/index.md", week_li):
-        results.append("articles/haiku_weekly/index.md")
-
-    log(f"update_index (haiku): {week_label} → {results}")
-    return f"index.md 更新完了: {', '.join(results)}"
+    log(f"update_index (haiku {'monthly' if is_monthly else 'weekly'}): {week_label} → {results}")
+    return f"index.md 更新完了: {', '.join(results) if results else '変更なし'}"
 
 
 def tool_git_commit_push(files: list, message: str) -> str:
@@ -360,7 +363,7 @@ def log(msg: str) -> None:
 # システムプロンプト
 # ------------------------------------------------------------------ #
 
-SYSTEM_PROMPT_TMPL = """\
+SYSTEM_PROMPT_WEEKLY_TMPL = """\
 あなたは生成AI情報まとめライターです。
 以下の手順に従い、ツールを使いながら週次まとめ記事を自動生成してください。
 
@@ -429,11 +432,92 @@ Co-Authored-By: {model} via Anthropic API <noreply@anthropic.com>
 {prefetch}
 """
 
+SYSTEM_PROMPT_MONTHLY_TMPL = """\
+あなたは生成AI情報まとめライターです。
+以下の手順に従い、ツールを使いながら月次まとめ記事を自動生成してください。
+
+# 基本情報
+- 今日: {today}
+- 実行モード: {mode}
+- 月次ファイルパス: articles/haiku_monthly/{year}-{month}.md
+- 月表示ラベル: {year}年{month_int}月
+
+# 作業手順
+1. **情報収集** — search_web で以下のキーワードを順番に検索する（各キーワード1回ずつ）
+   - 「生成AI 最新ニュース {year}年{month_int}月」
+   - 「LLM 新モデル リリース {year}年{month_int}月」
+   - 「OpenAI Anthropic Google AI news {year} {month_int}月」
+   - 「AIエージェント MCP 最新動向 {year}年{month_int}月」
+   - 「デジタル庁 生成AI 国産AI {year}年{month_int}月」
+   - 「国産LLM 新モデル リリース {year}年{month_int}月」
+   - 「日本 生成AI 企業 {year}年{month_int}月」
+
+2. **補足取得** — fetch_url で以下のサイトを直接確認する
+   - https://www.digital.go.jp/news/
+   - https://openai.com/news/
+   - 先月の Ollama 月次記事 articles/monthly/{year}-{month}.md を read_file で参照する
+
+3. **記事生成** — 収集した情報と Ollama 月次記事を統合して月次記事を生成し、write_article で保存する
+   - ファイルパスは必ず articles/haiku_monthly/{year}-{month}.md を使うこと
+
+4. **README 更新** — append_to_readme ツールで Haiku 月次リンクを追加する
+
+5. **index.md 更新** — update_index ツールで GitHub Pages のトップページ記事リストを更新する
+
+6. **コミット** — git_commit_push で以下のファイルをコミット・プッシュする
+   - articles/haiku_monthly/{year}-{month}.md
+   - README.md
+   - index.md
+   - articles/haiku_monthly/index.md
+
+# 記事フォーマット（必ず守ること）
+- ファイル: articles/haiku_monthly/{year}-{month}.md
+- ファイル先頭行: `**生成**: Claude Haiku（claude-haiku-4-5）| 対象期間: {year}年{month_int}月`
+- タイトル行: `# 生成AI月次ダイジェスト（{year}年{month_int}月）`
+- 最低 5 トピック以上収録（日本国内動向を必ず 2 件以上含める）
+- Ollama 月次記事と重複するトピックは必ず含め、Haiku 独自の視点・補足情報も追加する
+- 各情報源の URL を必ず記載
+- 日本語で記述（技術用語・モデル名は原語のまま）
+- 月次まとめらしい俯瞰的なトレンド表（マークダウン表）を末尾に入れる
+- 英語タイトルのリンクには日本語訳を併記
+
+# append_to_readme の引数
+- week_label: "{year}年{month_int}月"
+- week_path: "./articles/haiku_monthly/{year}-{month}.md"
+
+# update_index の引数（append_to_readme と同じ値を使用）
+- week_label: "{year}年{month_int}月"
+- week_path: "./articles/haiku_monthly/{year}-{month}.md"
+
+# コミットメッセージ形式
+```
+{year}-{month} Haiku月次まとめを追加（Claude Haiku生成）
+
+Co-Authored-By: {model} via Anthropic API <noreply@anthropic.com>
+```
+
+# 事前収集済み情報（BeautifulSoupで取得済み）
+{prefetch}
+"""
+
+# 後方互換エイリアス
+SYSTEM_PROMPT_TMPL = SYSTEM_PROMPT_WEEKLY_TMPL
+
 
 def build_system_prompt(args) -> str:
     today = datetime.now(JST).strftime("%Y-%m-%d")
     prefetch = args.prefetch if args.prefetch else "（なし — すべて search_web / fetch_url で収集すること）"
-    return SYSTEM_PROMPT_TMPL.format(
+    if args.mode == "monthly":
+        return SYSTEM_PROMPT_MONTHLY_TMPL.format(
+            today=today,
+            mode=args.mode,
+            year=args.year,
+            month=args.month,
+            month_int=int(args.month),
+            prefetch=prefetch,
+            model=args.model,
+        )
+    return SYSTEM_PROMPT_WEEKLY_TMPL.format(
         today=today,
         mode=args.mode,
         year=args.year,

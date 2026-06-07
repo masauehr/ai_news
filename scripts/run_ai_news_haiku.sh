@@ -48,6 +48,9 @@ log "今日: ${TODAY} / 実行日ファイル: ${YEAR}-${WEEK_FILE_MMDD} / 対�
 
 cd "${PROJECT_DIR}"
 
+MONTH=$(TZ=Asia/Tokyo date +%m)
+HAIKU_MONTHLY_FILE="${PROJECT_DIR}/articles/haiku_monthly/${YEAR}-${MONTH}.md"
+
 # --- 実行済みチェック（今週分のファイルが既にあればスキップ）---
 if [ -f "${HAIKU_WEEKLY_FILE}" ]; then
   log "実行日分 Haiku 記事（${YEAR}-${WEEK_FILE_MMDD}）は実行済み。スキップします。"
@@ -66,10 +69,6 @@ fi
 
 log "=== ai_news Haiku 自動実行開始 ==="
 
-# --- モード判定（第1週 = 月次も考慮、ただしHaikuは週次のみ）---
-MODE="weekly"
-log "モード: ${MODE}"
-
 # --- 事前スクレイピング（Ollama版と共通の fetch_news.py を流用）---
 log "BeautifulSoup で記事一覧を事前取得中..."
 SCRAPED_NEWS=$("${PYTHON_BIN}" "${PROJECT_DIR}/scripts/fetch_news.py" 2>>"${LOG_FILE}" || true)
@@ -80,55 +79,73 @@ else
   log "スクレイピング完了（$(echo "${SCRAPED_NEWS}" | wc -l) 行取得）"
 fi
 
-# --- Haikuエージェント実行（タイムアウト時リトライ最大2回）---
-MAX_RETRY=2
-RETRY=0
-SUCCESS=false
+# --- 共通: エージェント実行関数（リトライ付き）---
+run_haiku_agent() {
+  local _mode="$1"
+  local _max_retry=2
+  local _retry=0
+  local _success=false
 
-while [ ${RETRY} -lt ${MAX_RETRY} ]; do
-  RETRY=$((RETRY + 1))
-  log "Haikuエージェントを起動します... model=${HAIKU_MODEL} (試行 ${RETRY}/${MAX_RETRY})"
+  while [ ${_retry} -lt ${_max_retry} ]; do
+    _retry=$((_retry + 1))
+    log "Haikuエージェントを起動します... mode=${_mode} model=${HAIKU_MODEL} (試行 ${_retry}/${_max_retry})"
 
-  if "${PYTHON_BIN}" "${PROJECT_DIR}/scripts/haiku_agent.py" \
-      --mode "${MODE}" \
-      --week-file "${WEEK_FILE_MMDD}" \
-      --week-label "${WEEK_LABEL}" \
-      --year "${YEAR}" \
-      --month "$(TZ=Asia/Tokyo date +%m)" \
-      --model "${HAIKU_MODEL}" \
-      --prefetch "${SCRAPED_NEWS}" \
-      2>&1 | tee -a "${LOG_FILE}"; then
-    SUCCESS=true
-    break
-  else
-    EXIT_CODE=$?
-    log "Haikuエージェントが終了コード ${EXIT_CODE} で失敗しました。"
-    if [ ${RETRY} -lt ${MAX_RETRY} ]; then
-      log "30秒後にリトライします..."
-      sleep 30
+    if "${PYTHON_BIN}" "${PROJECT_DIR}/scripts/haiku_agent.py" \
+        --mode "${_mode}" \
+        --week-file "${WEEK_FILE_MMDD}" \
+        --week-label "${WEEK_LABEL}" \
+        --year "${YEAR}" \
+        --month "${MONTH}" \
+        --model "${HAIKU_MODEL}" \
+        --prefetch "${SCRAPED_NEWS}" \
+        2>&1 | tee -a "${LOG_FILE}"; then
+      _success=true
+      break
+    else
+      EXIT_CODE=$?
+      log "Haikuエージェントが終了コード ${EXIT_CODE} で失敗しました。"
+      if [ ${_retry} -lt ${_max_retry} ]; then
+        log "30秒後にリトライします..."
+        sleep 30
+      fi
     fi
-  fi
-done
+  done
 
-if [ "${SUCCESS}" = false ]; then
-  log "ERROR: ${MAX_RETRY}回試行しましたがすべて失敗しました。手動確認が必要です。"
-  exit 1
+  if [ "${_success}" = false ]; then
+    log "ERROR: ${_max_retry}回試行しましたがすべて失敗しました（mode=${_mode}）。手動確認が必要です。"
+    return 1
+  fi
+  return 0
+}
+
+# --- 週次記事生成（常に実行）---
+log "モード: weekly"
+run_haiku_agent "weekly" || exit 1
+log "=== Haiku 週次記事生成完了 ==="
+
+# --- 月次記事生成（第1週のみ）---
+if [ "${MODE}" = "monthly" ]; then
+  if [ -f "${HAIKU_MONTHLY_FILE}" ]; then
+    log "Haiku 月次記事（${YEAR}-${MONTH}）は実行済み。スキップします。"
+  else
+    log "=== Haiku 月次記事生成開始 ==="
+    run_haiku_agent "monthly" || log "WARN: 月次記事生成に失敗しました（手動で実行してください）"
+    log "=== Haiku 月次記事生成完了 ==="
+  fi
 fi
 
-log "=== Haiku 記事生成完了 ==="
-
-# --- 比較ページ生成（Ollama版記事が揃っている場合のみ）---
+# --- 週次比較ページ生成（Ollama版記事が揃っている場合のみ）---
 OLLAMA_FILE="${PROJECT_DIR}/articles/weekly/${YEAR}-${WEEK_FILE_MMDD}.md"
 COMPARE_FILE="${PROJECT_DIR}/articles/compare/${YEAR}-${WEEK_FILE_MMDD}.md"
 
 if [ -f "${OLLAMA_FILE}" ] && [ ! -f "${COMPARE_FILE}" ]; then
-  log "=== 比較ページ生成開始 ==="
+  log "=== 週次比較ページ生成開始 ==="
   "${PYTHON_BIN}" "${PROJECT_DIR}/scripts/generate_compare.py" \
-    --week-file "${WEEK_MON_MMDD}" \
+    --week-file "${WEEK_FILE_MMDD}" \
     --week-label "${WEEK_LABEL}" \
     --year "${YEAR}" \
     2>&1 | tee -a "${LOG_FILE}" || log "WARN: 比較ページ生成に失敗しました（手動で実行してください）"
-  log "=== 比較ページ生成完了 ==="
+  log "=== 週次比較ページ生成完了 ==="
 elif [ ! -f "${OLLAMA_FILE}" ]; then
   log "WARN: Ollama版記事（${OLLAMA_FILE}）が存在しません。比較ページはスキップします。"
   log "      Ollama版が生成された後、以下のコマンドで手動生成できます:"
