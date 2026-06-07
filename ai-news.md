@@ -15,12 +15,14 @@ macOS の launchd からローカルLLMエージェント（Ollama + tool callin
 | 毎週土曜 09:00 | Ollama（qwen3.6:35b-mlx） | 週次 | 直近7日間の生成AIニュースを収集 → 週次記事を生成・push |
 | 月の第1土曜 09:00 | Ollama | 月次 | 週次記事に加えて月次まとめ記事も生成・push |
 | 毎週土曜 13:00 | Claude Haiku（Anthropic API） | 週次 | 同じ週の記事を別ファイルに生成・push → 比較ページを自動生成 |
+| 月の第1土曜 13:00 | Claude Haiku（Anthropic API） | 月次 | Haiku版月次まとめを生成・push → 月次比較ページも自動生成 |
 
 > **変更履歴**
 > - 2026-05-17: 「毎日 09:00 チェック」→「毎週土曜 09:00」に変更
 > - 2026-05-24: 記事生成エンジンを Claude CLI → **Ollama ローカルLLM** に変更
 > - 2026-05-25: **Claude Haiku（Anthropic API）による並行実行 + モデル比較ページ自動生成を追加**
 > - 2026-05-31: **ファイル名・期間ラベルの基準を「実行日」ベースに変更**（実行日7日前〜実行日を対象期間とする）
+> - 2026-06-07: **Haiku月次記事・月次比較ページを追加**。Sonnet評価セクション（`.sonnet-eval`）をcompare layoutに追加。ホームページをSonnet評価付き最新比較に変更。フッター表記を修正。
 
 ---
 
@@ -30,8 +32,10 @@ macOS の launchd からローカルLLMエージェント（Ollama + tool callin
 |---|---|---|---|
 | `articles/weekly/YYYY-MMDD.md` | Ollama 週次記事（8〜12トピック） | Ollama | 毎週土曜 09:00 |
 | `articles/haiku_weekly/YYYY-MMDD.md` | Haiku 週次記事（同じ週を別視点で生成） | Claude Haiku | 毎週土曜 13:00 |
-| `articles/compare/YYYY-MMDD.md` | Ollama と Haiku の記事を2カラムで並べた比較ページ | generate_compare.py | 毎週土曜 13:00以降 |
-| `articles/monthly/YYYY-MM.md` | 月次まとめ記事 | Ollama | 毎月第1土曜 |
+| `articles/compare/YYYY-MMDD.md` | Ollama と Haiku の週次記事を2カラムで並べた比較ページ（Sonnet評価付き） | generate_compare.py | 毎週土曜 13:00以降 |
+| `articles/monthly/YYYY-MM.md` | Ollama 月次まとめ記事 | Ollama | 毎月第1土曜 |
+| `articles/haiku_monthly/YYYY-MM.md` | Haiku 月次まとめ記事 | Claude Haiku | 毎月第1土曜 13:00 |
+| `articles/compare/monthly-YYYY-MM.md` | Ollama と Haiku の月次記事を2カラムで並べた比較ページ（Sonnet評価付き） | generate_compare.py | 毎月第1土曜 13:00以降 |
 | `README.md` | 最新記事一覧（自動更新） | — | 記事生成時 |
 
 GitHub URL: https://github.com/masauehr/ai_news  
@@ -69,30 +73,51 @@ launchd（毎週土曜 13:00）
   ↓
 run_ai_news_haiku.sh が起動
   ↓
-実行日分のファイル（articles/haiku_weekly/YYYY-MMDD.md、MMDD=実行日）が存在する？
+今日が月の第1土曜日か？（DAY_OF_MONTH <= 7）
+  ├─ Yes → MODE="monthly"
+  └─ No  → MODE="weekly"
+  ↓
+実行日分の週次ファイル（articles/haiku_weekly/YYYY-MMDD.md）が存在する？
   ├─ Yes → 比較ページが未生成なら generate_compare.py のみ実行して終了
   └─ No  → ~/.anthropic_env から ANTHROPIC_API_KEY を読み込む
               ↓
             fetch_news.py でニュースサイトを事前スクレイピング（Ollama版と共通）
               ↓
-            haiku_agent.py を起動（Anthropic API tool use エージェント）
+            【週次】haiku_agent.py を起動（--mode weekly）
               ↓
             ┌─ search_web()        DuckDuckGo で直近ニュースを検索
             ├─ fetch_url()         trafilatura / requests でページ取得
             ├─ write_article()     articles/haiku_weekly/ に記事を保存
-            ├─ append_to_readme()  README.md の Haiku セクションにリンクを追加
-            ├─ update_index()      index.md の Haiku セクションを更新
+            ├─ append_to_readme()  README.md の「Haiku週次まとめ」セクションにリンクを追加
+            ├─ update_index()      articles/haiku_weekly/index.md を更新
             └─ git_commit_push()   git add / commit / push
               ↓
-            Ollama 版記事（articles/weekly/YYYY-MMDD.md）が存在する？
-              ├─ Yes → generate_compare.py を実行
+            MODE == "monthly" かつ月次ファイル（articles/haiku_monthly/YYYY-MM.md）が未生成？
+              ├─ Yes → 【月次】haiku_agent.py を起動（--mode monthly）
               │          ↓
-              │        両記事を読み込んで 2カラム比較ページを生成
+              │        ┌─ read_file()        Ollama版月次記事を参照
+              │        ├─ search_web()       月次補足情報を収集
+              │        ├─ write_article()    articles/haiku_monthly/ に月次記事を保存
+              │        ├─ append_to_readme() README.md の「Haiku月次まとめ」セクションに追加
+              │        ├─ update_index()     articles/haiku_monthly/index.md を更新
+              │        └─ git_commit_push()  git add / commit / push
+              └─ No  → 月次生成スキップ
+              ↓
+            Ollama 版週次記事（articles/weekly/YYYY-MMDD.md）が存在する？
+              ├─ Yes → generate_compare.py を実行（週次比較ページ生成）
+              │          ↓
+              │        両記事を読み込んで 2カラム比較ページ + Sonnet評価を生成
               │        articles/compare/YYYY-MMDD.md を保存
               │        articles/compare/index.md を更新
-              │        index.md の比較セクションを更新
               │        git commit / push
-              └─ No  → 比較ページ生成をスキップ（警告メッセージをログに記録）
+              └─ No  → 比較ページ生成をスキップ（警告ログを記録）
+              ↓
+            MODE == "monthly" かつ月次比較ファイルが未生成？
+              ├─ Yes → generate_compare.py を実行（月次比較ページ生成）
+              │          ↓
+              │        articles/compare/monthly-YYYY-MM.md を保存
+              │        git commit / push
+              └─ No  → 月次比較スキップ
 ```
 
 ### エージェントの動作詳細
@@ -113,11 +138,21 @@ Ollama の `/api/chat` API（tool calling 対応）を使う。
 
 Anthropic SDK の tool use（`client.messages.create`）を使う。
 
-1. システムプロンプトはOllama版と同じ構造（収集キーワード・フォーマット指定）
+**週次モード（`--mode weekly`）:**
+1. `SYSTEM_PROMPT_WEEKLY_TMPL` を使用。収集キーワード・フォーマット指定はOllama版と同じ構造
 2. `write_article` の保存先は `articles/haiku_weekly/`（Ollama版と分離）
 3. `append_to_readme` は README.md の「### Haiku週次まとめ」セクションに追加
-4. 最大40ターン・ループ検出・URLキャッシュ機構はOllama版と同一
-5. 再試行は最大2回（Ollama版は3回）
+4. `update_index` は `articles/haiku_weekly/index.md` を更新
+
+**月次モード（`--mode monthly`）:**
+1. `SYSTEM_PROMPT_MONTHLY_TMPL` を使用。前月の Ollama月次記事を `read_file` で参照してサマリー生成
+2. `write_article` の保存先は `articles/haiku_monthly/`
+3. `append_to_readme` は README.md の「### Haiku月次まとめ」セクションに追加
+4. `update_index` は `articles/haiku_monthly/index.md` を更新
+
+**共通:**
+- 最大40ターン・ループ検出・URLキャッシュ機構はOllama版と同一
+- 再試行は最大2回（Ollama版は3回）
 
 **デフォルトモデル:** `claude-haiku-4-5-20251001`（環境変数 `HAIKU_MODEL` で変更可能）
 
@@ -204,28 +239,32 @@ BeautifulSoup で取得できない JS 描画ページや特定 URL の詳細取
 
 ```
 ~/projects/ai_news/
-├── README.md                         # 概要・最新記事一覧（GitHub公開）
-├── SPEC.md                           # 収集対象・記事フォーマット仕様（GitHub公開）
-├── CLAUDE.md                         # Claude向け自動生成指示（ローカル専用・非公開）
+├── README.md                              # 概要・最新記事一覧（GitHub公開）
+├── SPEC.md                                # 収集対象・記事フォーマット仕様（GitHub公開）
+├── CLAUDE.md                              # Claude向け自動生成指示（ローカル専用・非公開）
+├── index.md                               # ホームページ（GitHub Pages）最新比較 + Sonnet評価
 ├── _layouts/
-│   ├── default.html                  # 通常記事レイアウト（GitHub Pages）
-│   └── compare.html                  # 2カラム比較レイアウト（GitHub Pages）
+│   ├── default.html                       # 通常記事レイアウト（GitHub Pages）
+│   └── compare.html                       # 2カラム比較レイアウト（.sonnet-eval CSS含む）
 ├── articles/
-│   ├── weekly/YYYY-MMDD.md          # Ollama 週次記事（土曜 09:00）
-│   ├── haiku_weekly/YYYY-MMDD.md    # Haiku 週次記事（土曜 13:00）
-│   ├── compare/YYYY-MMDD.md         # モデル比較ページ（土曜 13:00 以降）
-│   └── monthly/YYYY-MM.md           # 月次まとめ記事（第1土曜）
+│   ├── weekly/YYYY-MMDD.md               # Ollama 週次記事（土曜 09:00）
+│   ├── haiku_weekly/YYYY-MMDD.md         # Haiku 週次記事（土曜 13:00）
+│   ├── monthly/YYYY-MM.md                # Ollama 月次まとめ記事（第1土曜）
+│   ├── haiku_monthly/YYYY-MM.md          # Haiku 月次まとめ記事（第1土曜 13:00）
+│   └── compare/
+│       ├── YYYY-MMDD.md                  # 週次比較ページ（Sonnet評価付き）
+│       └── monthly-YYYY-MM.md            # 月次比較ページ（Sonnet評価付き）
 ├── scripts/
-│   ├── local_agent.py               # Ollama エージェント（公開）
-│   ├── haiku_agent.py               # Haiku エージェント（公開）
-│   ├── generate_compare.py          # 比較ページ生成（公開）
-│   ├── fetch_news.py                # 事前スクレイピング（公開）
-│   ├── run_ai_news.sh               # Ollama launchd スクリプト（非公開）
-│   ├── run_ai_news_haiku.sh         # Haiku launchd スクリプト（非公開）
-│   ├── com.user.ai_news.plist       # launchd 設定 09:00（非公開）
-│   └── com.user.ai_news_haiku.plist # launchd 設定 13:00（非公開）
-├── ai_news.log                       # Ollama 実行ログ（非公開）
-└── ai_news_haiku.log                 # Haiku 実行ログ（非公開）
+│   ├── local_agent.py                     # Ollama エージェント（公開）
+│   ├── haiku_agent.py                     # Haiku エージェント（公開、月次モード対応）
+│   ├── generate_compare.py               # 比較ページ生成（公開）
+│   ├── fetch_news.py                      # 事前スクレイピング（公開）
+│   ├── run_ai_news.sh                     # Ollama launchd スクリプト（非公開）
+│   ├── run_ai_news_haiku.sh              # Haiku launchd スクリプト（月次対応、非公開）
+│   ├── com.user.ai_news.plist            # launchd 設定 09:00（非公開）
+│   └── com.user.ai_news_haiku.plist     # launchd 設定 13:00（非公開）
+├── ai_news.log                            # Ollama 実行ログ（非公開）
+└── ai_news_haiku.log                      # Haiku 実行ログ（非公開）
 ```
 
 ### GitHub公開範囲
@@ -578,6 +617,52 @@ rm ~/Library/LaunchAgents/com.user.ai_news.plist
 
 ## 設計判断メモ
 
+### 2026-06-07: Haiku月次記事・月次比較ページ・Sonnet評価セクションを追加
+
+#### Haiku月次記事の追加（`haiku_monthly/`）
+
+**変更内容:**
+- `haiku_agent.py` に `SYSTEM_PROMPT_MONTHLY_TMPL` を追加（月次専用システムプロンプト）
+- `build_system_prompt()` が `--mode` 引数で週次/月次プロンプトを切り替え
+- `tool_append_to_readme()` と `tool_update_index()` でパスに "haiku_monthly" が含まれるかを検出し、
+  該当する README セクション（`### Haiku月次まとめ`）と index ファイル（`haiku_monthly/index.md`）を更新
+
+**月次実行タイミング:**
+- `run_ai_news_haiku.sh` が `DAY_OF_MONTH <= 7`（月の第1土曜）を検出して `MODE="monthly"` に設定
+- 既に月次ファイルが存在する場合はスキップ
+
+#### 月次比較ページの追加（`compare/monthly-YYYY-MM.md`）
+
+- `generate_compare.py` を月次モードで呼び出し（`--mode monthly` など）、
+  `articles/monthly/YYYY-MM.md` と `articles/haiku_monthly/YYYY-MM.md` を2カラムで並べる
+- ファイル名規則: `compare/monthly-YYYY-MM.md`（週次は `compare/YYYY-MMDD.md`）
+- `articles/compare/index.md` に「## 月次比較」セクションを追加
+
+#### Sonnet評価セクション（`.sonnet-eval` CSS クラス）
+
+**変更内容:**
+- `_layouts/compare.html` に `.sonnet-eval` CSS クラスブロックを追加（紫系カラー）
+- compare ページの Markdown で `<div class="sonnet-eval" markdown="1">` を使用
+
+**`markdown="1"` が必須な理由 (→ 後述の「GitHub Pages技術解説」参照):**
+- Kramdown は `<div>` ブロック内の Markdown をデフォルトでは HTML として扱い、
+  `# 見出し` や `| テーブル |` を変換しない
+- `markdown="1"` を付与することで Kramdown が div 内も Markdown として処理する
+- インラインスタイル（`style="..."` 属性）では Kramdown の Markdown 変換が働かないため、
+  CSS クラスに分離した上で `markdown="1"` を組み合わせる必要があった
+
+#### ホームページ（`index.md`）をSonnet評価付き最新比較に変更
+
+- `layout: compare` を使用し、最新週の Ollama と Haiku の全文 + Sonnet評価を掲載
+- 旧: `layout: default` で単純に Ollama 記事の概要のみ掲載
+
+#### フッター修正
+
+- `_layouts/default.html`: `Powered by Ollama ローカルLLM` → `Ollama ローカルLLM & Claude Haiku による自動生成`
+- Haiku版記事も default.html を使うため、サイト全体のフッターが誤表示されていた
+
+---
+
 ### 2026-05-31: ファイル名・期間ラベルを実行日ベースに変更
 
 **変更前:** ファイル名 = 今週月曜日（例: 5/30 実行 → `2026-0525.md`、ラベル `5/25〜5/31`）  
@@ -758,6 +843,137 @@ unload/load をせずに plist のみ書き換えると、launchd がメモリ�
 
 ---
 
+---
+
+## GitHub Pages 技術解説
+
+### .md ファイルの公開と通常の HTML 公開の違い
+
+GitHub Pages では、リポジトリに置いたファイルをそのままブラウザに配信する。
+ファイルの拡張子によって処理方法が異なる。
+
+| ファイル形式 | ブラウザでの動作 | 変換エンジン |
+|---|---|---|
+| `.html` | そのまま HTML として表示 | なし（変換不要） |
+| `.md`（Jekyll有効時） | HTML に自動変換されてから配信 | **Kramdown**（Jekyllのデフォルト） |
+| `.md`（Jekyll無効時） | テキストとして表示（Markdownがそのまま見える） | なし |
+
+このリポジトリでは Jekyll が有効なため、`.md` ファイルはビルド時に HTML に変換される。
+ブラウザのアドレスバーでは `/articles/weekly/2026-0606` のように拡張子なしで表示される
+（実際には `/articles/weekly/2026-0606.html` として配信）。
+
+### Jekyll / Kramdown の処理フロー
+
+```
+GitHubへ push
+  ↓
+GitHub Pages が Jekyll ビルドを自動実行
+  ↓
+各 .md ファイルを処理:
+  1. front matter（---〜---）を読み取り、layout を決定
+  2. Markdown 本文を Kramdown で HTML に変換
+  3. _layouts/{layout}.html のテンプレートに埋め込む（{{ content }} の位置）
+  4. 完成した HTML を .html ファイルとして配信
+  ↓
+ブラウザからは https://masauehr.github.io/ai_news/articles/weekly/2026-0606 でアクセス可能
+```
+
+### front matter（フロントマター）
+
+各 Markdown ファイルの冒頭に YAML 形式で記述するメタデータ。Jekyll が読み取る。
+
+```yaml
+---
+layout: compare    # 使用するレイアウトテンプレート（_layouts/ 内のファイル名）
+title: "週次比較ページ"  # ページタイトル
+---
+```
+
+| フィールド | 説明 |
+|---|---|
+| `layout` | 使用するレイアウト（`default` または `compare`） |
+| `title` | `<title>` タグに使われるページタイトル |
+
+front matter がない .md ファイルは、Jekyll がデフォルトレイアウトで処理するか、
+設定によってはそのままテキストとして扱われる。
+
+### `_layouts/` の役割
+
+```
+_layouts/
+├── default.html    # 週次・月次・通常記事のレイアウト
+└── compare.html    # 2カラム比較ページのレイアウト（カスタムCSS内蔵）
+```
+
+- レイアウトは HTML で書かれた「テンプレート」
+- `{{ content }}` という Liquid タグの位置に .md の変換結果が挿入される
+- CSS はレイアウトファイルの `<style>` タグ内に直接記述（外部CSS不使用）
+- ナビゲーション・ヘッダー・フッターはレイアウト側で管理
+
+### `markdown="1"` 属性の意味
+
+**問題:** Kramdown は `<div>` や `<section>` などの HTML ブロック要素の**中**にある
+Markdown 記法（見出し・テーブル・箇条書き等）をデフォルトでは変換しない。
+
+```markdown
+<!-- これはダメ: <div>内のMarkdownが変換されない -->
+<div class="sonnet-eval">
+## 見出し
+| A | B |
+|---|---|
+| 1 | 2 |
+</div>
+
+<!-- これが正しい: markdown="1"を付けると変換される -->
+<div class="sonnet-eval" markdown="1">
+## 見出し
+| A | B |
+|---|---|
+| 1 | 2 |
+</div>
+```
+
+**注意点:**
+- `markdown="1"` は Kramdown 固有の拡張機能。他の Markdown エンジンでは動作しない
+- GitHub Pages の標準 Kramdown では動作する
+- インライン style 属性（`<div style="...">`）を使う場合も同様に `markdown="1"` が必要
+
+### ブラウザでの表示確認方法
+
+```bash
+# ローカルで Jekyll ビルドして確認（要 Ruby + Jekyll）
+cd ~/projects/ai_news
+bundle exec jekyll serve
+
+# ブラウザで http://localhost:4000/ai_news/ を開く
+```
+
+または、GitHub へ push 後に https://masauehr.github.io/ai_news/ で確認する。
+ビルドには通常 30〜90 秒かかる。
+
+### よくある表示崩れの原因
+
+| 症状 | 原因 | 対処 |
+|---|---|---|
+| `<div>` 内の見出し・テーブルが表示されない | `markdown="1"` が抜けている | 対象 `<div>` に `markdown="1"` を追加 |
+| CSS クラスのスタイルが効かない | `compare.html` に .sonnet-eval 等のCSS定義がない | `_layouts/compare.html` の `<style>` に追加 |
+| 特定ページだけレイアウトが違う | front matter の `layout:` が間違っている | ファイル冒頭の front matter を確認 |
+| アドレスバーに .md のまま表示 | Jekyll が無効 / front matter がない | `_config.yml` と front matter を確認 |
+| 画像が表示されない | URL が絶対パスでなく相対パス | `{{ site.baseurl }}/images/...` の形式で記述 |
+| リンクが 404 になる | `site.baseurl` が設定されていない | `_config.yml` に `baseurl: /ai_news` を確認 |
+
+### `_config.yml` の設定
+
+```yaml
+title: 生成AI週次ダイジェスト
+description: 生成AIの最新情報を週次・月次で自動収集・要約
+baseurl: /ai_news          # GitHub Pages のサブパス（リポジトリ名）
+url: https://masauehr.github.io
+markdown: kramdown         # デフォルト（明示的に設定することも可）
+```
+
+---
+
 ## トラブルシューティング
 
 **Ollama 版（共通）**
@@ -780,6 +996,9 @@ unload/load をせずに plist のみ書き換えると、launchd がメモリ�
 |---|---|---|
 | `ANTHROPIC_API_KEY が設定されていません` | APIキー未設定 | `~/.anthropic_env` に `ANTHROPIC_API_KEY=sk-ant-...` を記載して `chmod 600` |
 | Haiku 記事が生成されない | launchd 未登録または APIキーエラー | `ai_news_haiku.log` でエラーを確認 |
+| Haiku 月次記事が生成されない | 第1土曜でない、またはファイルが既に存在する | `DAY_OF_MONTH` と `haiku_monthly/` を確認 |
 | 比較ページが生成されない | Ollama 版記事が未生成（13:00時点） | Ollama 版完了後に `generate_compare.py` を手動実行 |
+| 月次比較ページが生成されない | Haiku月次ファイルか Ollama月次ファイルが未生成 | 両ファイルを確認後 `generate_compare.py --mode monthly` で手動実行 |
 | Haiku 記事の内容が薄い | Haiku の文章生成能力の限界 | `HAIKU_MODEL=claude-sonnet-4-6` で上位モデルに変更 |
-| 比較ページのレイアウトが崩れる | `_layouts/compare.html` の問題 | Jekyll の `markdown="1"` が有効か確認 |
+| 比較ページのレイアウトが崩れる | `_layouts/compare.html` の問題 | Jekyll の `markdown="1"` が有効か確認（→ GitHub Pages技術解説参照） |
+| Sonnet評価のテーブルや見出しが表示されない | `markdown="1"` が抜けている | compare ページの `<div class="sonnet-eval">` に `markdown="1"` を追加 |
