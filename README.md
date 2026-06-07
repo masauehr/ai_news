@@ -62,6 +62,8 @@ ai_news/
 
 ### 週次まとめ（Ollama / qwen3.6:35b-mlx）
 
+- [5/30〜6/6](./articles/weekly/2026-0606.md)
+- [5/23〜5/30](./articles/weekly/2026-0530.md)
 - [5/25〜5/31](./articles/weekly/2026-0525.md)
 - [5/18〜5/24](./articles/weekly/2026-0518.md)
 - [5/11〜5/17](./articles/weekly/2026-0511.md)
@@ -83,17 +85,28 @@ ai_news/
 - [5/25〜5/31](./articles/haiku_weekly/2026-0525.md)
 <!-- articles/haiku_weekly/ のファイルへのリンクがここに追加される -->
 
+### Haiku月次まとめ（Claude Haiku）
+
+- [2026年6月](./articles/haiku_monthly/2026-06.md)
+<!-- articles/haiku_monthly/ のファイルへのリンクがここに追加される -->
+
 ### モデル比較（Ollama vs Haiku）
+
+- [5/30〜6/6](./articles/compare/2026-0606.md)（Claude Sonnet 評価付き）
+- [5/23〜5/30](./articles/compare/2026-0530.md)
+- [5/25〜5/31](./articles/compare/2026-0525.md)
 
 <!-- articles/compare/ のファイルへのリンクがここに追加される -->
 
-### 月次まとめ
+### 月次まとめ（Ollama）
 
 - [2026年6月](./articles/monthly/2026-06.md)
 - [2026年5月](./articles/monthly/2026-05.md)
-- [2026年5月](./articles/monthly/2026-05.md)
-- [2026年5月](./articles/monthly/2026-05.md)
 - [2026年4月](./articles/monthly/2026-04.md)
+
+### 月次比較（Ollama vs Haiku）
+
+- [2026年6月](./articles/compare/monthly-2026-06.md)（Claude Sonnet 評価付き）
 
 <!-- articles/monthly/ のファイルへのリンクがここに追加される -->
 
@@ -184,14 +197,15 @@ tail -f ~/projects/ai_news/ai_news_haiku.log  # Haiku ログ
 
 <!-- 最新の週次まとめ記事をここに表示 -->
 
-# 生成AI週次ダイジェスト（5/18〜5/24）
+# 生成AI週次ダイジェスト（5/30〜6/6）
 
-> 自動生成: 2026-05-18 | 対象期間: 2026-05-12 〜 2026-05-18
+> 自動生成: 2026-06-06 | 対象期間: 2026-05-30 〜 2026-06-06
 
 ## 今週のハイライト
 
-1. **Google、Gemini IntelligenceをAndroid全体に展開** — GeminiがAndroid全機種でアプリをまたいで自律操作。Googlebook（Gemini専用ノートPC）も予告。
-2. **OpenAI、GPT-5.5-Cyber を審査済みセキュリティ研究者に限定公開** — サイバー攻撃発見能力でAnthropicのMythosと性能が伯仲、政府アクセス交渉も進行。
-3. **Anthropicがサブスクリプション体系を刷新（6月15日施行）** — エージェント用途を別課金プールに分離。実質値上げとなり開発者コミュニティで議論。
+1. **Anthropic: Claude Opus 4.8** — Super-Agentベンチマークでのトップ性能、Legal Agent Benchmark最高スコア、Online-Mind2Web 84%など大幅強化。Fast Modeはコスト3分の1で2.5倍速。
+2. **Google DeepMind: Gemini 3.5 Flash + Gemini Omni** — エージェント特化モデル（Terminal-Bench 76.2%、MCP Atlas 83.6%）と動画生成マルチモーダルモデルの2本立て発表。
+3. **OpenAI: ChatGPT Dreaming V3** — メモリ機能を刷新。計算コスト5分の1で無料ユーザーへも展開。
+4. **デジタル庁: 源内OSSとして公開** — 全府省庁18万人を対象に大規模実証を開始。国産LLM7モデルを試用。
 
-[→ 全文を読む](./articles/weekly/2026-0518.md)
+[→ Ollama版 全文を読む](./articles/weekly/2026-0606.md) | [→ Haiku版 全文を読む](./articles/haiku_weekly/2026-0606.md) | [→ Sonnet評価付き比較](./articles/compare/2026-0606.md)

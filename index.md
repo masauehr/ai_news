@@ -4,7 +4,7 @@ title: 生成AI週次ダイジェスト
 ---
 
 <div class="compare-header">
-  <h1>🔬 モデル比較（5/23〜5/30）</h1>
+  <h1>🔬 モデル比較（5/30〜6/6）</h1>
   <div class="compare-meta">
     <span class="badge ollama">🖥️ Ollama</span>
     <span style="font-family:monospace;font-size:0.82rem;color:#666">qwen3.6:35b-mlx（土曜 09:00 生成）</span>
@@ -23,167 +23,87 @@ title: 生成AI週次ダイジェスト
 </div>
 <div class="panel-body" markdown="1">
 
-# 生成AI週次ダイジェスト（5/23〜5/30）
+# 生成AI週次ダイジェスト（5/30〜6/6）
 
-今週は、Anthropicの超大規模資金調達と最新モデル発表、OpenAIのCodex Windows完全対応、GoogleのGemini Omni登場など、主要プレイヤーから衝撃的なニュースが続出した週となりました。以下に主要トピックをまとめます。
+今週は主要プレイヤーが相次いで大規模アップデートを発表した週です。AnthropicはClaude Opus 4.8でエージェント性能とハンスネスを大幅強化、Google DeepMindはGemini 3.5 FlashとGemini Omniの2本立てでエージェント・マルチモーダル領域を牽引しました。OpenAIはChatGPTのメモリ機能「Dreaming V3」を更新し、Microsoftは画像生成モデルMAI-Image-2.5を発表。またデジタル庁はガバメントAI「源内」をOSSとして公開し、全府省庁への展開を開始するなど、日本国内のAI動向も活発です。
 
 ---
 
-## 1. Anthropic: Claude Opus 4.8発表、Series Hで650億ドル調達、Stainless買収
+## 1. Anthropic: Claude Opus 4.8 — エージェント性能とハンスネスの大幅強化
 
-Anthropicは今週、複数の大規模なアップデートを発表しました。
+Anthropicは5月28日（米国時間）、Claude Opusシリーズをアップグレードした**Claude Opus 4.8**を発表しました。Opus 4.7からの改善に加え、複数の新機能を同時にリリースしています。
 
-### Claude Opus 4.8 のリリース
-Claude Opus 4.8 が2026年5月28日にリリースされました[^1]。Opus 4.7からのアップグレードで、価格は据え置き（$5/$25 per million tokens）です。主な特徴は以下の通りです：
-
-- **Super-Agentベンチマーク**で全ケースを完遂した唯一のモデルとなり、GPT-5.5と同等のコストで先行
-- **SWE-Bench Pro**: 69.2%（Opus 4.7の64.3%から大幅向上）
+### 主な特徴
+- **Super-Agentベンチマーク**でGPT-5.5を凌駕し、全ケースをエンドツーエンドで完了した唯一のモデルに
 - **Legal Agent Benchmark**で過去最高スコアを記録し、10%以上のall-passを達成
-- **Online-Mind2Web**で84%という、Computer Useモデルとして最高のスコア
-- **Fast Mode**が従来比3倍の速度で、コストは1/3に
-- **Dynamic Workflows**機能により、大規模な問題解決に対応可能に
-- 不確実性へのフラグ機能が強化され、誤った自信を持った回答が大幅に減少
+- **Online-Mind2Web**で84%という最高スコアを記録
+- **ハンスネスの強化**: Opus 4.7と比較してコードの欠陥を見逃す率が約4分の1に減少
+- **Fast Modeの価格改定**: 2.5倍速で動作し、コストは従来比3分の1に
 
-Claude Opus 4.8 は Claude Pro, Max, Team, Enterprise で利用可能です。
-
-### Series H 650億ドル調達（バリュエーション9650億ドル）
-AnthropicはSeries Hで650億ドルの資金調達に成功し、ポストマネーバリュエーションは9650億ドルとなりました[^2]。リード投資家はAltimeter Capital、Dragoneer、Greenoaks、Sequoia Capitalです。
-
-- 年間収益率は470億ドルを突破
-- AWS（最大5GW）、Google Cloud（5GWの次世代TPU）、SpaceX（Colossus）とのCompute契約を締結
-- Micron、Samsung、SK hynixとのインフラパートナーシップも発表
-
-### Stainless の買収
-AnthropicはStainlessを買収しました[^3]。StainlessはClaude APIの公式SDK生成ツールを提供する企業で、AnthropicはMCP（Model Context Protocol）のエコシステム強化を目的としています。
-
-### Claude Design の登場
-Anthropic Labsより**Claude Design**がリリースされました[^4]。Claude Opus 4.7ベースのビジュアル作成ツールで、デザイン、プロトタイプ、スライド、マーケティング資料などを自然言語で作成できます。Canvaとの連携や、Claude Codeへの引き継ぎ機能も備えています。
+**参考URL**: [Introducing Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8)
 
 ---
 
-## 2. OpenAI: Codex Computer Use Windows対応、Rosalind Biodefenseプログラム
+## 2. Google DeepMind: Gemini 3.5 Flash — エージェント特化モデルの登場
 
-### Codex Computer Use がWindowsに対応
-OpenAIは5月29日、Codex AppのComputer Use機能をWindows 11に正式展開しました[^5]。これにより、macOSに続きWindowsでもCodexが画面を「見て」、クリックやタイピングなどの操作を自律的に行えるようになりました。
+Google DeepMindはGemini 3.5シリーズの第一弾として**Gemini 3.5 Flash**を発表しました。
 
-- **モバイルリモートコントロール**: ChatGPTモバイルアプリ（iOS/Android）からWindows PCのCodexセッションを遠隔操作可能
-- **背景でのComputer Use**: タスクがバックグラウンドで実行され、ユーザーは他の作業が可能
-- **スレッド管理**: 複数の並列タスクを効率的に管理
+### 主な特徴
+- **Terminal-Bench 2.1**: 76.2%、**GDPval-AA**: 1656 Elo、**MCP Atlas**: 83.6%など、エージェントベンチマークで先行モデルを凌駕
+- **出力トークン/秒**において他のフロンティアモデル比4倍高速
+- **Gemini Spark**: 3.5 Flashを基盤とした個人用AIエージェントがベータテスト開始
 
-### Rosalind Biodefense プログラム開始
-OpenAIは5月29日、**Rosalind Biodefense**プログラムを開始しました[^6]。生命科学研究用のGPT-Rosalindモデルを、認定されたバイオ防御開発者や米政府パートナーに無償で提供します。
-
-- パンデミック準備や生物防御の研究支援が目的
-- APIコストはOpenAIが負担
-- GPT-Rosalindは4月に発表された生命科学研究特化モデル
-
-### Codex Pro の登場
-Codex ProがPublic API Betaとしてリリースされました。WindowsネイティブでのComputer Use対応や、モバイルからの遠隔操作機能などが追加されています。
+**参考URL**: [Gemini 3.5: frontier intelligence with action](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/)
 
 ---
 
-## 3. Google: Gemini Omni と Gemini 3.5 Flash を発表
+## 3. Google DeepMind: Gemini Omni — マルチモーダル生成の新たな地平
 
-GoogleはI/O 2026（5月19-21日）で複数のAI製品を発表しました。
+**Gemini Omni**は「推論」と「創造」を融合した新しいモデルファミリー。画像・音声・動画・テキストを入力として受け取り、高品質な動画を生成することができます。
 
-### Gemini Omni
-**Gemini Omni**は、テキスト・画像・音声・ビデオのすべての入力を統合し、動画生成・編集を行う新しいマルチモーダルモデルです[^7]。
+- **Conversation-based Video Editing**: 自然言語による動画編集、キャラクターの一貫性・物理法則の保持を実現
+- **Physics-aware Generation**: 重力・流体力学などの物理的に妥当なシーンを生成
 
-- **Gemini Omni Flash**がまず提供開始（Geminiアプリ、Google Flow、YouTube Shorts）
-- 会話による動画編集：自然言語でプロンプトを入力して動画を編集
-- 物理法則や文脈を理解した動画生成が可能
-- 画像、音声、テキストの組み合わせ入力に対応
-
-### Gemini 3.5 Flash
-**Gemini 3.5 Flash**も同時に発表されました。高速推論と高精度を両立したモデルです。
-
-### Gemini Drops（2026年5月版）
-Google WorkspaceのAI機能アップデート「Gemini Drops」も公開され、Vids、スプレッドシート、Meet、チャットなど各アプリの新機能がGA移行しました[^8]。
+**参考URL**: [Introducing Gemini Omni](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-omni/)
 
 ---
 
-## 4. ローカルLLM / Ollama 動向
+## 4. OpenAI: ChatGPT Dreaming V3 — メモリ機能の刷新
 
-今週はローカルLLM関連の具体的な新モデルリリース情報は限定的でしたが、以下の動向が確認できました：
+OpenAIは6月4日、ChatGPTのメモリ機能を大幅に刷新した**「Dreaming V3」**を導入すると発表しました。
 
-- **Ollama**: 引き続き主要なローカルLLM実行環境として活用され、Qwen3、ELYZAなどの日本語対応モデルが主流
-- **Hugging Face Blog**: Trimming（剪定）技術、Borealis（Audio LLM）、MONET（画像生成）、KV Caching最適化など、オープンソースLLMの技術動向が活発
-- **1-bit LLM / BitNet**: 軽量化・高速化の手法に関する研究が継続的に進められている
+- **計算コスト5分の1**: 無料ユーザーへの展開が可能に
+- **Memory Summaryページ**: ユーザーの好み・プロジェクト・制約条件を要約して表示
+- **時間的な鮮度の自動更新**: 旅行後には「行った」と自動更新など、陳腐化問題を解消
 
----
-
-## 5. AIエージェント / MCP / AutoGen 動向
-
-### AnthropicのMCPエコシステム強化
-AnthropicはStainless買収により、MCP（Model Context Protocol）のエコシステムを強化しました。Claude Agentsが外部システムとよりシームレスに連携できるようになります。
-
-### AutoGen のメンテナンスモード
-MicrosoftのAutoGenは2025年10月にメンテナンスモードへ移行しており、2026年3月時点で新機能追加は停止、バグ修正とセキュリティ修正のみが行われる状態です[^9]。
-
-### MCP採用の拡大
-GoogleがAnthropicのMCPプロトコルをサポートすると発表しました[^10]。これにより、OpenAI、Anthropic、Googleの主要AIプラットフォーム間でエージェント接続の標準化が進みます。
+**参考URL**: [ChatGPTのメモリ機能が刷新（Techno Edge）](https://www.techno-edge.net/article/2026/06/05/5150.html)
 
 ---
 
-## 6. 日本国内動向
+## 5. Microsoft: MAI-Image-2.5 — 画像生成・編集モデルの大幅進化
 
-### 生成AIが「業務インフラ」として定着
-日本の生成AIニュースでは、生成AIが単なるツールから「業務の中で動く存在（エージェント）」へと変化しているという報告がありました[^11]。経産省・総務省のAIガイドラインを前提に、企業側での実装・運用対応が本格化しています。
+**MAI-Image-2.5**はArena Image Edit No.2、Arena Text-to-Image No.3を達成する画像生成・編集モデルです。
 
-### 行政・法務分野でのAIガバナンス
-- AIガバナンスが「実務運用フェーズ」へ移行
-- 生成物の責任所在や説明義務に関する議論が具体化
-- 経産省・総務省のガイドラインに基づいた企業側の対応が進行中
+- **Fine-grained Edit Control**: 物体の置換、テキスト更新、モーションブラー除去など精密な編集
+- **Face and Identity Consistency**: 顔の同一性を保持
 
-### デジタル庁ニュース
-デジタル庁からは以下の更新がありました：
-- JP PINTの「サービスプロバイダーミーティング／ユーザーズミーティング」および「民間事業者の取組」を更新
-- 公金受取口座登録状況ダッシュボードのデータ更新
-- マイナンバーカード普及・利活用ダッシュボードのデータ更新
+**参考URL**: [Introducing MAI-Image-2.5](https://microsoft.ai/news/introducing-mai-image-2-5/)
 
 ---
 
-## 7. その他注目ニュース
+## 6. Google DeepMind: Gemma 4 12B / NVIDIA: Cosmos 3
 
-### OpenAI: GPT-Rosalind の生命科学研究への応用
-GPT-Rosalindは、分子やタンパク質の相互作用を推論する生命科学研究特化モデルです。バイオ医薬品開発やパンデミック予測に活用されています[^12]。
+**Gemma 4 12B** はノートPC（16GB VRAM）で動作するマルチモーダルエージェントモデル。エンコーダーフリーアーキテクチャを採用し、26B MoEに迫る推論性能を持つ。
 
-### Anthropic: Claude Is A Space To Think
-Claudeが「思考するための空間」として進化しており、複雑な問題解決において段階的な推論を重視するアプローチが強化されました。
-
-### Hugging Face: LeRobot Humanoid
-Hugging Faceは、3Dプリント可能な低コストヒューマノイドロボット「LeRobot Humanoid」を公開しました。ロボット学習のためのオープンソースプラットフォームです[^13]。
+**NVIDIA Cosmos 3** はMoT（Mixture-of-Transformers）アーキテクチャで全モダリティを統合。Physical AI向けオムニモデル（Nano 16B / Super 64B）として公開。
 
 ---
 
-## 今週のまとめ
+## 7. デジタル庁: ガバメントAI「源内」OSS公開 & 全府省展開
 
-今週はAnthropicが650億ドルの調達とClaude Opus 4.8発表、OpenAIがCodexのWindows完全対応とバイオ防御プログラム開始、GoogleがGemini Omni（動画生成AI）を発表するなど、主要プレイヤーから大規模なアップデートが続出しました。特に注目すべきは：
+デジタル庁がガバメントAI**「源内」**をOSSとして公開し、全府省庁約18万人を対象とした大規模実証を開始。国産LLM（tsuzumi 2、Sarashina2 miniなど）7モデルの試用も本格化。
 
-1. **Anthropicの9650億ドルバリュエーション**: AI業界におけるAnthropicの存在感が飛躍的に拡大
-2. **OpenAI CodexのWindows対応**: Computer UseがmacOSに続きWindowsでも利用可能に
-3. **Google Gemini Omni**: テキスト・画像・音声・ビデオを統合した初のマルチモーダル動画生成モデル
-4. **MCPエコシステムの標準化**: OpenAI、Anthropic、GoogleがMCPプロトコルを採用
-
-日本国内では、生成AIが「業務インフラ」として定着し、エージェントとしての活用が本格化する動きが見られます。
-
----
-
-**参考文献**
-
-[^1]: [Introducing Claude Opus 4.8 - Anthropic](https://www.anthropic.com/news/claude-opus-4-8)
-[^2]: [Anthropic raises $65B in Series H funding at $965B post-money valuation - Anthropic](https://www.anthropic.com/news/series-h)
-[^3]: [Anthropic acquires Stainless - Anthropic](https://www.anthropic.com/news/anthropic-acquires-stainless)
-[^4]: [Introducing Claude Design by Anthropic Labs - Anthropic](https://www.anthropic.com/news/claude-design-anthropic-labs)
-[^5]: [OpenAI Brings Full Computer Control to Codex on Windows - explainx.ai](https://explainx.ai/blog/openai-codex-computer-use-windows-mobile-control-2026)
-[^6]: [Exclusive: OpenAI launches biodefense program - Axios](https://www.axios.com/2026/05/29/openai-biodefense-program)
-[^7]: [Introducing Gemini Omni - Google DeepMind Blog](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-omni/)
-[^8]: [Google、2026年5月の Workspace Drop を発表 - HelenTech](https://helentech.jp/news-google-workspace-drop-86834/)
-[^9]: [AutoGenがメンテナンスモード入り — 2026年AIエージェントフレームワ... - Qiita](https://qiita.com/nogataka/items/6685c6f2ca20a2ac887f)
-[^10]: [Google joins OpenAI in adopting Anthropic's protocol for connecting AI agents - ZDNet](https://www.zdnet.com/article/google-joins-openai-in-adopting-anthropics-protocol-for-connecting-ai-agents-why-it-matters/)
-[^11]: [日本の生成AIニュースまとめ（2026年5月第2週）｜DESIGN STUDIO garden](https://note.com/dsg_id/n/n17e11f5c7093)
-[^12]: [Introducing GPT-Rosalind for life sciences research - OpenAI](https://openai.com/index/introducing-gpt-rosalind/)
-[^13]: [LeRobot Humanoid: An Open, Low-Cost, 3D-Printed Humanoid for Robot Learning - Hugging Face Blog](https://huggingface.co/blog/VirgileBatto/lerobot-humanoid)
+**参考URL**: [ガバメントAI「源内」（デジタル庁）](https://www.digital.go.jp/policies/genai)
 
 </div>
 </div>
@@ -195,134 +115,134 @@ Hugging Faceは、3Dプリント可能な低コストヒューマノイドロボ
 </div>
 <div class="panel-body" markdown="1">
 
-# 生成AI週次ダイジェスト（5/23〜5/30）
+# 生成AI週次ダイジェスト（5/30〜6/6）
 
-## 概要
-2026年5月23日〜5月30日の生成AI関連の最新ニュースをまとめました。Anthropicが史上最高の資金調達に成功し企業評価が$900B に達するなど、AI企業の企業価値評価が加熱。一方、日本では国産LLMの開発動向が活発化し、デジタル庁の生成AI活用推進が本格化しています。
+## 今週のハイライト
 
----
-
-## 主要トピック
-
-### 1. **Anthropic、$65B の資金調達で企業価値 $900B に達成**
-- **概要**: Anthropicが$65億の新規資金調達を実施し、企業評価が$900億に達し、OpenAI（$730億）を上回る世界最高の生成AI企業となった
-- **背景**: Series H ラウンドで複数の機関投資家が参加し、AI開発への投資競争が加熱している状況を反映している
-- **出所**: [Anthropic News / Series H](https://www.anthropic.com/news/series-h)、[New York Times](https://www.nytimes.com/2026/05/28/technology/anthropic-tops-openai-valuation.html)
-
-### 2. **Claude Opus 4.8 発表、Design 機能と推論機能が強化**
-- **概要**: AnthropicがClaude Opus 4.8を発表し、デザイン機能と思考空間（思考推論）機能が統合された。ユーザーは「thinking」モードでAIに考えさせることが可能に
-- **新機能**: 
-  - Claude Design：画像生成・編集・デザイン提案機能
-  - Claude Is A Space To Think：問題解決前に思考プロセスを可視化
-- **出所**: [Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8)、[Claude Design Anthropic Labs](https://www.anthropic.com/news/claude-design-anthropic-labs)、[Claude Is A Space To Think](https://www.anthropic.com/news/claude-is-a-space-to-think)
-
-### 3. **Google、Gemini Omni と Gemini 3.5 をリリース**
-- **概要**: Googleが最新版Geminiモデルを発表。Gemini Omnは完全なマルチモーダル対応で、Gemini 3.5は「frontier intelligence with action」をコンセプトに、エージェント機能を強化
-- **特徴**:
-  - リアルタイム音声・映像処理
-  - 複数の外部システムとの連携
-  - 科学研究向け専門機能（Gemini for Science）も同時提供開始
-- **出所**: [Introducing Gemini Omni](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-omni/)、[Gemini 3.5: frontier intelligence with action](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/)、[Gemini for Science](https://blog.google/innovation-and-ai/technology/research/gemini-for-science-io-2026/)
-
-### 4. **OpenAI、自己改善型のタックスエージェント開発と Frontier Governance Framework 発表**
-- **概要**: OpenAIが税務申告用AI エージェント（Codex ベース）の開発進捗と、AI モデルガバナンスのフレームワークを発表。Gartnerで企業向けコーディングエージェントで業界No.1に認定
-- **主な発表**:
-  - Building self-improving tax agents with Codex
-  - OpenAI's Frontier Governance Framework
-  - Rosalind Biodefense：生物防御研究向けAIツール
-  - Dell Technologies との企業環境導入パートナーシップ
-- **出所**: [OpenAI News](https://openai.com/news/)
-
-### 5. **国産LLM開発が本格化：NII の LLM-jp-4 公開**
-- **概要**: 国立情報学研究所（NII）が国産大規模言語モデル「LLM-jp-4」を公開。GPT-4o や Qwen3-8B を上回る日本語性能を達成した
-- **取組状況**:
-  - デジタル庁が「源内（Gennai）」プラットフォーム構想を推進中
-  - ソフトバンク、NEC、ソニー、ホンダが「日本AI基盤モデル開発」新会社設立
-  - 無償提供・オープンソース化により AI 主権強化を目指す
-- **出所**: note / 複数著者、[NII プレスリリース](https://www.nii.ac.jp/news/release/2026/0403/)、Digital Agency ニュース
-
-### 6. **Microsoft BitNet b1.58 の商用利用拡大**
-- **概要**: Microsoft Research が開発した「BitNet b1.58」という 1-bit LLM（各重みが{-1, 0, 1}の3値）が GitHub で公開。2Bパラメータながら LLaMA 相当の性能を実現
-- **利点**:
-  - 超低消費電力（CPU推論可能）
-  - ローカルエッジデバイスでの展開が現実的に
-  - $1,500 で構築可能なAIシステムの開発事例も報告
-- **出所**: [GitHub - microsoft/BitNet](https://github.com/microsoft/BitNet)、[エンジニア向け技術解説](https://jobirun.com/microsoft-bitnet-b158-2b-4t-native-1bit-llm-explained/)
-
-### 7. **YouTube、カスタムフィード機能でプロンプトベース動画推奨を開始**
-- **概要**: YouTubeがユーザーの自然言語プロンプトに基づいて、ホーム画面に表示される動画を動的に調整できる「カスタムフィード」機能をデスクトップ・モバイルで提供開始
-- **機能**: プロンプト入力により、好みの動画ジャンルや形式を細かくカスタマイズ可能
-- **出所**: [Techno Edge](https://www.techno-edge.net/article/2026/05/28/5118.html)
-
-### 8. **Meta、AIペンダント開発中で今年内に4種類のスマートグラス発売予定**
-- **概要**: Meta がAIアシスタント機能搭載のペンダント型デバイスを開発中。同時に年内にスマートグラス製品を最大4種類発売予定
-- **戦略**: ウェアラブルデバイスにおける AI 統合を加速
-- **出所**: [Techno Edge](https://www.techno-edge.net/article/2026/05/31/5125.html)
-
-### 9. **Anthropic、Stainless Software を買収—API 開発ツール統合進む**
-- **概要**: Anthropic が SDK・API 開発ツール企業 Stainless Software を買収し、開発者向けツール統合を加速
-- **狙い**: AI モデル API の使いやすさ・統合性を向上
-- **出所**: [Anthropic News - Anthropic Acquires Stainless](https://www.anthropic.com/news/anthropic-acquires-stainless)
-
-### 10. **Hugging Face、PapersWithCode をリローンチ—AI論文と実装の統合**
-- **概要**: Hugging Face が機械学習論文リポジトリ「PapersWithCode」を新機能搭載でリローンチ。論文公開と実装コード・モデルウェイトの連携を強化
-- **新機能**: より詳細な論文分類、実装リンク、モデル比較機能
-- **出所**: [Relaunching PapersWithCode with new features](https://huggingface.co/blog/nielsr/paperswithcode-launch)
-
-### 11. **Hugging Face、LeRobot Humanoid などロボットAIモデル公開**
-- **概要**: Hugging Face がオープンソース人形ロボット学習用フレームワーク「LeRobot Humanoid」と、オーディオ LLM 学習レシピ「Borealis」を公開
-- **内容**:
-  - 3Dプリント可能で低コストなロボット向けAI学習キット
-  - 音声理解・処理の新しい学習パラダイム
-- **出所**: [LeRobot Humanoid](https://huggingface.co/blog/VirgileBatto/lerobot-humanoid)、[Borealis](https://huggingface.co/blog/AlexWortega/borealis)
-
-### 12. **Intel Arc G シリーズ、携帯型ゲーミングPC 向け新プロセッサ発表**
-- **概要**: Intel が携帯型ゲーミングPC専用の新プロセッサ「Arc Gシリーズ」を発表。Acer 「Predator Atlas 8」に搭載予定。Qualcomm も低価格 Windows ノート向け「Snapdragon C」（NPU搭載）を発表し、エッジAI の組み込みが加速
-- **出所**: [Techno Edge](https://www.techno-edge.net/article/2026/05/29/5119.html)、[Acer Predator Atlas 8](https://www.techno-edge.net/article/2026/05/29/5120.html)、[Snapdragon C](https://www.techno-edge.net/article/2026/05/29/5121.html)
-
-### 13. **生成AIの業務利用が「インフラ化」段階へ—日本企業の変化**
-- **概要**: 日本企業による生成AI活用がチャットツールから「業務インフラ」へのシフトが加速。AIガバナンス・エージェント化（自動実行）が実装運用フェーズに進展
-- **進捗**:
-  - 経産省・総務省のAIガイドラインをベースに企業導入が進行中
-  - 建設業・小売業・製造業など各業界での事例化
-  - 社内データ連携・自動ワークフロー構築が主流に
-- **出所**: note / DESIGN STUDIO garden、AINOW（業界別事例）
+本週は、OpenAIのChatGPT新機能発表、Googleの大型モデル発表、そして日本の国産AI動向が活発化した週となりました。世界規模でのAIエージェント機能の進化と日本政府による国産LLM活用の本格始動が注目されます。
 
 ---
 
-## 今週の注目トレンド
+## 海外動向
 
-1. **AI企業の企業価値評価が $900B レベルに達成**  
-   Anthropic が OpenAI を抜き、AI スタートアップの IPO 準備が現実化
+### 1. ChatGPTのメモリ機能刷新「Dreaming V3」全ユーザーに導入
+**情報源**: [TechnoEdge / OpenAI](https://www.techno-edge.net/article/2026/06/05/5150.html)
 
-2. **エージェント AI とマルチモーダル化が急速に進行**  
-   Google Gemini、Claude、OpenAI が相次ぎエージェント機能を強化
+OpenAIは2026年6月4日、ChatGPTのメモリ（記憶）機能を大幅に刷新した「Dreaming V3」システムを全ユーザーに導入すると発表しました。
 
-3. **日本の AI 主権確保への動き**  
-   国産 LLM（LLM-jp-4、源内など）開発と デジタル庁による推進が加速
+### 2. Google Labsの実験的アプリ「Dreambeans」を公開
+**情報源**: [TechnoEdge / Google Labs](https://www.techno-edge.net/article/2026/06/04/5142.html)
 
-4. **1-bit LLM や低コスト AI モデルが実用段階へ**  
-   BitNet b1.58 などエッジデバイスでのAI動作が現実化
+Google Labsは、AIを活用して毎日ユーザーのためにパーソナライズされたストーリーを生成する実験的アプリ「Dreambeans」を公開しました。
 
-5. **業務インフラ化による AI ガバナンス強化**  
-   チャットツール段階から自動実行エージェントへの転換が本格化
+### 3. Google、6GB RAMで動く高性能エージェント「Gemma 4 12B」を公開
+**情報源**: [TechnoEdge / Google DeepMind](https://www.techno-edge.net/article/2026/06/04/5144.html)
+
+Google DeepMindは、わずか6GBのRAMで動作する高性能モデル「Gemma 4 12B」を発表しました。推論性能は26B MoEレベルに匹敵し、エンコーダなしのマルチモーダル対応も実現。
+
+### 4. NVIDIAが物理AI推論用オムニモデル「NVIDIA Cosmos 3」を公開
+**情報源**: [Hugging Face Blog / NVIDIA](https://huggingface.co/blog/nvidia/cosmos-3-for-physical-ai)
+
+NVIDIAは物理AI推論とアクション実行のための初のオープンオムニモデル「NVIDIA Cosmos 3」をHugging Faceで公開しました。
+
+### 5. Meta、Facebookクリエイター向けAIツール「Creator Assistant」を発表
+**情報源**: [TechnoEdge / Meta](https://www.techno-edge.net/article/2026/06/05/5147.html)
+
+Metaは、Facebookのクリエイター向けダッシュボード上にAIツール「Creator Assistant」を統合しました。
 
 ---
 
-## 関連ニュースソース
+## 国内動向
 
-- **企業ニュース**: [Anthropic News](https://www.anthropic.com/news), [OpenAI News](https://openai.com/news/), [Google DeepMind Blog](https://deepmind.google/)
-- **技術情報**: [Hugging Face Blog](https://huggingface.co/blog), [GitHub](https://github.com)
-- **日本向け情報**: デジタル庁, AINOW, note / 複数著者
-- **テック・ハードウェア**: [Techno Edge](https://www.techno-edge.net/)
+### 6. 国立情報学研究所が国産LLM「LLM-jp-4」シリーズを公開
+**情報源**: [国立情報学研究所](https://www.nii.ac.jp/news/release/2026/0403.html)
+
+NIIは、約12兆トークンの良質なコーパスで学習した「LLM-jp-4」を発表。一部ベンチマークではGPT-4oやQwen3-8Bを上回る日本語性能を達成。
+
+### 7. デジタル庁の「源内」で国産LLM試用を本格化 - 18万人の政府職員対象
+
+全府省庁約18万人の職員を対象にtsuzumi 2（NTTグループ）、Sarashina2 mini（ソフトバンク）など7国産LLMの大規模実証を実施予定。
+
+### 8. 日本AI基盤モデル開発会社の設立 - 8社による共同出資体制
+**情報源**: [note / 孤独なプログラマー](https://note.com/ken_1101/n/ndb64ea9832c9)
+
+ソフトバンク、NEC、ホンダ、ソニーグループなど8社が共同出資し、「日本AI基盤モデル開発」が正式に設立されました。政府は2026年度予算として生成AI関連に約5,198億円を計上。
 
 ---
 
-**記事作成日**: 2026年5月31日  
-**更新**: Claude Haiku 生成
+## 技術トレンド・ビジネス動向
+
+### 9. 1-bit LLM「BitNet a4.8」の実用化進展
+**情報源**: [Microsoft Research / GitHub](https://github.com/microsoft/BitNet)
+
+BitNet a4.8ではハイブリッド量子化により16倍のメモリ削減を実現した1-bit LLMが現実のものとなっています。
+
+### 10. Googleの科学向けAI「Gemini for Science」 / 生成AIのビジネス活用拡大
+
+Gemini for Scienceでマルチエージェント科学研究支援が進化。医療・保険・マーケティング分野での生成AI活用も急速に進展しています。
+
+---
+
+**発行**: 2026年6月6日 / **生成**: Claude Haiku
 
 </div>
 </div>
+
+</div>
+
+---
+
+<div style="background:#f8f4ff;border-left:4px solid #7c5cbf;padding:1.2rem 1.5rem;margin:2rem 0;border-radius:0 8px 8px 0;">
+
+## 🧠 Claude Sonnet による比較・評価（2026-06-07）
+
+*両記事を読んだ Claude Sonnet 4.6 が、情報カバレッジ・技術精度・読みやすさの観点から評価します。*
+
+---
+
+### カバレッジの違い
+
+**Ollama 記事が独自にカバーしたトピック**（Haiku には未掲載）:
+- Claude Opus 4.8 の詳細（SWE-Bench Pro: 69.2%、Online-Mind2Web: 84%などベンチマーク数値）
+- Gemini 3.5 Flash の詳細（Terminal-Bench 2.1: 76.2%、MCP Atlas: 83.6%）
+- Gemini Omni の詳細（Physics-aware Generation、Knowledge-grounded Creativity）
+- Microsoft MAI-Image-2.5（Arena Image Edit No.2 などの具体的な順位）
+- Project Glasswing 拡大（150組織、10,000件以上の脆弱性発見）
+- Chris Olah 氏の教皇レオ14世 AI 回勅講演
+
+**Haiku 記事が独自にカバーしたトピック**（Ollama には未掲載）:
+- NII 国産LLM「LLM-jp-4」公開（GPT-4o を超える日本語性能）
+- 日本AI基盤モデル開発会社の設立（8社共同、政府予算5,198億円）
+- Microsoft BitNet a4.8 の詳細（16倍メモリ削減）
+- Google Gemini for Science（マルチエージェント科学研究支援）
+- Meta Creator Assistant（Facebook クリエイター向けAIツール）
+- Google Dreambeans（毎日パーソナルストーリー生成の実験的アプリ）
+- 生成AIのビジネス活用動向（医療・保険・マーケティング）
+
+---
+
+### 各観点の評価
+
+| 観点 | Ollama (qwen3.6:35b-mlx) | Haiku (claude-haiku-4-5) |
+|------|--------------------------|--------------------------|
+| **情報の深さ** | ⭐⭐⭐⭐⭐ ベンチマーク数値・技術仕様まで詳細 | ⭐⭐⭐ 概要把握に適したコンパクトな記述 |
+| **カバレッジ** | ⭐⭐⭐⭐ 主要モデルリリースを網羅 | ⭐⭐⭐⭐⭐ 国内動向含め幅広くカバー |
+| **国内AI動向** | ⭐⭐ 源内のみ1件 | ⭐⭐⭐⭐⭐ LLM-jp-4、8社共同会社など充実 |
+| **読みやすさ** | ⭐⭐⭐ 専門的で情報密度が高い | ⭐⭐⭐⭐⭐ セクション分類で構造的 |
+| **情報源の明示** | ⭐⭐⭐⭐⭐ URLが脚注形式で全件記載 | ⭐⭐⭐⭐ 各トピックに情報源を明記 |
+| **ビジネス視点** | ⭐⭐⭐ 技術寄り | ⭐⭐⭐⭐ 活用動向・業界動向を整理 |
+
+---
+
+### 総評
+
+今週は「エージェント性能の向上」と「日本のAI主権確立への動き」という2つの大きなテーマが並走した週でした。
+
+**Ollama 記事**は、Claude Opus 4.8の具体的なベンチマーク数値（SWE-Bench Pro: 69.2%、Online-Mind2Web: 84%）やGemini 3.5 FlashのMCP Atlas 83.6%など、**一次情報に近い技術詳細**を提供する点で優れています。Project Glasswingの拡大やChris Olah氏の教皇回勅講演など、より深い背景情報もカバーしており、技術者や研究者向けの参照資料として有用です。
+
+**Haiku 記事**は、NII の LLM-jp-4 公開や日本AI基盤モデル開発会社（8社共同、政府予算5,198億円）など、**日本国内のAI動向を充実してカバー**している点が際立ちます。「海外動向 / 国内動向 / 技術トレンド / ビジネス活用」という明確なセクション構成で、幅広い読者にとって読みやすい構成です。
+
+**両記事を合わせて読むことで、今週のAI動向を最も立体的に把握できます**。技術的な深さを求めるなら Ollama、日本国内動向・ビジネス視点を含む広いカバレッジを求めるなら Haiku が適しています。
 
 </div>
 
@@ -333,6 +253,7 @@ Hugging Faceは、3Dプリント可能な低コストヒューマノイドロボ
 <div class="past-col">
 <h3>🔬 モデル比較</h3>
 <ul class="article-list compact">
+  <li><a href="{{ site.baseurl }}/articles/compare/2026-0606">5/30〜6/6</a><span class="date">2026-06-06</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-0530">5/23〜5/30</a><span class="date">2026-05-30</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-0525">5/25〜5/31</a><span class="date">2026-05-25</span></li>
 </ul>
@@ -342,11 +263,11 @@ Hugging Faceは、3Dプリント可能な低コストヒューマノイドロボ
 <div class="past-col">
 <h3>🖥️ Ollama週次</h3>
 <ul class="article-list compact">
+  <li><a href="{{ site.baseurl }}/articles/weekly/2026-0606">5/30〜6/6</a><span class="date">2026-06-06</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-0530">5/23〜5/30</a><span class="date">2026-05-30</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-0525">5/25〜5/31</a><span class="date">2026-05-25</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-0518">5/18〜5/24</a><span class="date">2026-05-18</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-0511">5/11〜5/17</a><span class="date">2026-05-11</span></li>
-  <li><a href="{{ site.baseurl }}/articles/weekly/2026-0504">5/4〜5/10</a><span class="date">2026-05-04</span></li>
 </ul>
 <a href="{{ site.baseurl }}/articles/weekly/" class="view-all">すべて見る →</a>
 </div>
@@ -354,6 +275,7 @@ Hugging Faceは、3Dプリント可能な低コストヒューマノイドロボ
 <div class="past-col">
 <h3>⚡ Haiku週次</h3>
 <ul class="article-list compact">
+  <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-0606">5/30〜6/6</a><span class="date">2026-06-06</span></li>
   <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-0530">5/23〜5/30</a><span class="date">2026-05-30</span></li>
   <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-0525">5/25〜5/31</a><span class="date">2026-05-25</span></li>
 </ul>
@@ -363,7 +285,7 @@ Hugging Faceは、3Dプリント可能な低コストヒューマノイドロボ
 <div class="past-col">
 <h3>📅 月次まとめ</h3>
 <ul class="article-list compact">
-  <li><a href="{{ site.baseurl }}/articles/monthly/2026-05">2026年5月</a><span class="date">2026-05</span></li>
+  <li><a href="{{ site.baseurl }}/articles/monthly/2026-06">2026年6月</a><span class="date">2026-06</span></li>
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-05">2026年5月</a><span class="date">2026-05</span></li>
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-04">2026年4月</a><span class="date">2026-04</span></li>
 </ul>
