@@ -6,6 +6,10 @@ _site/
 .jekyll-cache/
 .jekyll-metadata
 
+# ローカルビルド用（Ruby 環境固有のため除外）
+Gemfile.lock
+vendor/
+
 # macOS
 .DS_Store
 
