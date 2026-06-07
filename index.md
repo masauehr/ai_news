@@ -192,7 +192,7 @@ Gemini for Scienceでマルチエージェント科学研究支援が進化。�
 
 ---
 
-<div style="background:#f8f4ff;border-left:4px solid #7c5cbf;padding:1.2rem 1.5rem;margin:2rem 0;border-radius:0 8px 8px 0;">
+<div class="sonnet-eval" markdown="1">
 
 ## 🧠 Claude Sonnet による比較・評価（2026-06-07）
 
