@@ -15,7 +15,9 @@ exclude:
   - scripts/
   - CLAUDE.md
   - SPEC.md
-  - ai_news.log
+  - ai-news.md
+  - plan.md
+  - "*.log"
   - .claude/
   - Gemfile
   - Gemfile.lock
