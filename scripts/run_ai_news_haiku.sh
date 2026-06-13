@@ -69,6 +69,15 @@ fi
 
 log "=== ai_news Haiku 自動実行開始 ==="
 
+# --- モード判定（第1週 = 月次も生成）---
+if [ "${DAY_OF_MONTH}" -le 7 ]; then
+  MODE="monthly"
+  log "モード: 月次（月初週）"
+else
+  MODE="weekly"
+  log "モード: 週次"
+fi
+
 # --- 事前スクレイピング（Ollama版と共通の fetch_news.py を流用）---
 log "BeautifulSoup で記事一覧を事前取得中..."
 SCRAPED_NEWS=$("${PYTHON_BIN}" "${PROJECT_DIR}/scripts/fetch_news.py" 2>>"${LOG_FILE}" || true)
