@@ -136,7 +136,7 @@ macOS の launchd が `scripts/run_ai_news.sh` を呼び出し、
 |---|---|
 | 毎週土曜 09:00 JST | Ollama（qwen3.6:35b-mlx）が週次記事を自動生成・git push |
 | 毎月第1土曜 09:00 JST | 上記に加えて月次まとめも生成 |
-| 毎週土曜 13:00 JST | Claude Haiku が同じ週の記事を別ファイルに生成 → 比較ページを自動作成 |
+| 毎週土曜 13:00 JST | Claude Haiku が同じ週の記事を別ファイルに生成 → 比較ページを自動作成 → Claude Sonnet が両記事を評価 |
 
 ### 使用モデル
 
@@ -144,6 +144,7 @@ macOS の launchd が `scripts/run_ai_news.sh` を呼び出し、
 |---|---|---|
 | 09:00 | `qwen3.6:35b-mlx` | Ollama ローカルLLM（デフォルト） |
 | 13:00 | `claude-haiku-4-5-20251001` | Anthropic API（Claude Haiku） |
+| 13:00（比較評価） | `claude-sonnet-4-6` | Anthropic API（Claude Sonnet） |
 
 ```bash
 # 一時的にモデルを変更して実行
