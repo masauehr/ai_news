@@ -1,7 +1,7 @@
 title: 生成AI週次ダイジェスト
 description: 生成AI（LLM・画像生成・マルチモーダル等）の最新情報を週次・月次でまとめたダイジェスト
 baseurl: "/ai_news"
-url: "https://masauehr.github.io"
+url: "https://uehr.net"
 lang: ja
 
 markdown: kramdown
