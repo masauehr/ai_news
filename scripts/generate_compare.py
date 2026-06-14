@@ -15,6 +15,8 @@ import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+import anthropic
+
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 JST = timezone(timedelta(hours=9))
 
@@ -62,12 +64,83 @@ def insert_li_at_top_of_ul(md_path: Path, new_li: str) -> bool:
     return inserted
 
 
+def generate_sonnet_eval(ollama_content: str, haiku_content: str, week_label: str) -> str:
+    """Claude Sonnet APIで両記事を評価し、sonnet-evalセクションのMarkdownを返す"""
+    client = anthropic.Anthropic()
+    today_str = datetime.now(JST).strftime("%Y-%m-%d")
+
+    prompt = f"""以下の2つの生成AIニュース週次まとめ記事（{week_label}）を読んで、比較・評価を行ってください。
+
+## Ollama記事（qwen3.6:35b-mlx生成）
+
+{ollama_content}
+
+---
+
+## Haiku記事（claude-haiku-4-5生成）
+
+{haiku_content}
+
+---
+
+以下の形式で出力してください。HTMLタグは使わず、Markdown記法のみで記述してください。
+
+### カバレッジの違い
+
+**Ollama 記事が独自にカバーしたトピック**（Haikuには未掲載）:
+- （箇条書きで列挙）
+
+**Haiku 記事が独自にカバーしたトピック**（Ollamaには未掲載）:
+- （箇条書きで列挙）
+
+---
+
+### 各観点の評価
+
+| 観点 | Ollama (qwen3.6:35b-mlx) | Haiku (claude-haiku-4-5) |
+|------|--------------------------|--------------------------|
+| **情報の深さ** | ⭐×N 説明 | ⭐×N 説明 |
+| **カバレッジ** | ⭐×N 説明 | ⭐×N 説明 |
+| **国内AI動向** | ⭐×N 説明 | ⭐×N 説明 |
+| **読みやすさ** | ⭐×N 説明 | ⭐×N 説明 |
+| **情報源の明示** | ⭐×N 説明 | ⭐×N 説明 |
+| **ビジネス視点** | ⭐×N 説明 | ⭐×N 説明 |
+
+---
+
+### 総評
+
+（200〜300字程度。今週の特徴的なテーマ、各モデルの強み・弱みを端的に述べ、「両記事を合わせて読むことで〜」という締め方で締める）
+"""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=2048,
+        messages=[{"role": "user", "content": prompt}],
+    )
+
+    eval_body = message.content[0].text.strip()
+
+    return f"""<div class="sonnet-eval" markdown="1">
+
+## 🧠 Claude Sonnet による比較・評価（{today_str}）
+
+*両記事を読んだ Claude Sonnet 4.6 が、情報カバレッジ・技術精度・読みやすさの観点から評価します。*
+
+---
+
+{eval_body}
+
+</div>"""
+
+
 def update_top_page(
     week_label: str,
     week_file: str,
     year: str,
     ollama_content: str,
     haiku_content: str,
+    sonnet_eval_section: str = "",
 ) -> None:
     """index.md を最新比較コンテンツ + 過去記事グリッドで完全に書き換える"""
 
@@ -122,6 +195,8 @@ title: 生成AI週次ダイジェスト
 </div>
 
 </div>
+
+{sonnet_eval_section}
 
 <div class="past-articles">
 <h2>📚 過去の記事</h2>
@@ -183,6 +258,15 @@ def generate(week_file: str, week_label: str, year: str) -> bool:
     ollama_content = strip_front_matter(ollama_path.read_text(encoding="utf-8"))
     haiku_content  = strip_front_matter(haiku_path.read_text(encoding="utf-8"))
 
+    # Sonnet評価生成
+    log("Claude Sonnet で評価文を生成中...")
+    try:
+        sonnet_eval_section = generate_sonnet_eval(ollama_content, haiku_content, week_label)
+        log("Sonnet評価生成完了")
+    except Exception as e:
+        log(f"WARN: Sonnet評価生成に失敗しました: {e}")
+        sonnet_eval_section = ""
+
     # 比較ページ（articles/compare/YYYY-MMDD.md）
     if not compare_path.exists():
         compare_md = f"""---
@@ -228,6 +312,8 @@ title: モデル比較（{week_label}）
 </div>
 
 </div>
+
+{sonnet_eval_section}
 """
         compare_path.parent.mkdir(parents=True, exist_ok=True)
         compare_path.write_text(compare_md, encoding="utf-8")
@@ -246,7 +332,7 @@ title: モデル比較（{week_label}）
         log("articles/compare/index.md 更新完了")
 
     # トップページを最新比較コンテンツで完全書き換え
-    update_top_page(week_label, week_file, year, ollama_content, haiku_content)
+    update_top_page(week_label, week_file, year, ollama_content, haiku_content, sonnet_eval_section)
 
     # git commit & push
     files = [
