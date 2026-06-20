@@ -8,6 +8,7 @@ title: Haiku週次まとめ一覧
 Claude Haiku（Anthropic API）が自動生成した週次ダイジェスト。毎週土曜 13:00 に自動実行。
 
 <ul class="article-list">
+  <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-0620">6/13〜6/20</a><span class="date">2026-06-20</span></li>
   <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-0614">6/7〜6/14</a><span class="date">2026-06-14</span></li>
   <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-0613">6/6〜6/13</a><span class="date">2026-06-13</span></li>
   <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-0606">5/30〜6/6</a><span class="date">2026-06-06</span></li>
