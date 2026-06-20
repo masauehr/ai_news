@@ -83,6 +83,7 @@ ai_news/
 
 ### Haiku週次まとめ（Claude Haiku）
 
+- [6/13〜6/20](./articles/haiku_weekly/2026-0620.md)
 - [6/7〜6/14](./articles/haiku_weekly/2026-0614.md)
 - [6/6〜6/13](./articles/haiku_weekly/2026-0613.md)
 - [5/30〜6/6](./articles/haiku_weekly/2026-0606.md)
