@@ -320,10 +320,15 @@ ollama pull qwen3.6:35b-mlx   # デフォルトモデル（19〜21GB）
 ollama pull qwen3.6:27b-mlx
 ```
 
-### 4. Anthropic API キーの設定（Haiku版のみ）
+### 4. Anthropic API キーの設定（Haiku版のみ）※2026-07-13時点で移行中・下記メモ参照
+
+> ⚠️ **暫定情報**: 2026-07-13 に Haiku/Sonnet の実行方式を Anthropic API から
+> Claude Code CLI（Pro/Maxサブスクリプション）方式に変更する作業を進めている。
+> 詳細・検証状況は下記「設計判断メモ」の `2026-07-13` エントリを参照。
+> 本番反映が完了したらこのセクション自体を書き換える予定（現時点では旧手順を残してある）。
 
 ```bash
-# ~/.anthropic_env に API キーを記載（パーミッション 600 必須）
+# 旧方式（Anthropic API課金）: ~/.anthropic_env に API キーを記載（パーミッション 600 必須）
 echo 'ANTHROPIC_API_KEY=sk-ant-...' > ~/.anthropic_env
 chmod 600 ~/.anthropic_env
 ```
@@ -616,6 +621,56 @@ rm ~/Library/LaunchAgents/com.user.ai_news.plist
 ---
 
 ## 設計判断メモ
+
+### 2026-07-13: Haiku/Sonnet実行を Anthropic API → Claude Code CLI（サブスク）方式に変更【一時メモ・要清書】
+
+**背景（障害）:**
+- 2026-07-04・2026-07-11 の Haiku自動実行が `anthropic.Anthropic()` 経由のAPI呼び出しで
+  `Your credit balance is too low to access the Anthropic API` により失敗
+- 2026-07-05・2026-07-12 の weather_digest（同一方式）でも同時多発
+- 原因は Claude Pro/Max **サブスクリプション**とは別勘定の **Anthropic API プリペイドクレジット**残高切れ。
+  Claude Code / claude.ai チャットはサブスク課金で無関係だが、`haiku_agent.py` と `generate_compare.py`
+  の Sonnet評価は `anthropic` Python SDK で生API を直叩きしていたため影響を受けた
+- 同時期、`stock_analysis` / `rakuten_margin` は `~/.local/bin/claude`（Claude Code CLI）を
+  `--model haiku --dangerously-skip-permissions` で subprocess 呼び出しする方式のため無傷と判明
+  （ANTHROPIC_API_KEY を環境にセットしていないため、CLIはOAuthログイン＝サブスク認証にフォールバックする）
+
+**変更内容（ai_newsのみ。weather_digestは未着手）:**
+- `haiku_agent.py`: `anthropic.Anthropic()` の tool-use ループ（`TOOLS`定義・`search_web`/`fetch_url`/
+  `write_article`/`read_file`）を全廃。代わりに以下のハイブリッド構成にした
+  - **取材・記事執筆**: `claude --print --dangerously-skip-permissions --model haiku
+    --allowedTools "WebSearch,WebFetch,Write,Read" --max-budget-usd <N>` を subprocess 呼び出し
+    （プロンプトは stdin 経由）。実行前に `ANTHROPIC_API_KEY` / `ANTHROPIC_BASE_URL` を
+    環境変数から明示的に `pop()` し、API課金経路に落ちないようにしている
+  - **README.md / index.md 更新・git commit/push**: 引き続き Python の決定論的な関数
+    （`append_to_readme` / `update_index` / `git_commit_push`。ロジックは旧版から変更なし）で実行。
+    Claude Code CLI 側には Bash/Edit を許可しておらず、記事ファイル1つ以外は書けない
+  - 安全策として、CLI呼び出し前後で `git status --porcelain` を比較し、想定外のファイルが
+    変更されていた場合は README更新・commit/push を中断するガードを追加
+- `generate_compare.py`: `generate_sonnet_eval()` 内の `client.messages.create(model="claude-sonnet-4-6")`
+  を `claude --print --model sonnet --allowedTools ""`（ツールなし単発呼び出し）に置き換え
+- `run_ai_news_haiku.sh`: `~/.anthropic_env` の読み込み・`ANTHROPIC_API_KEY` 必須チェックを削除。
+  代わりに `~/.local/bin/claude` の存在確認と `unset ANTHROPIC_API_KEY` に変更。
+  `HAIKU_MODEL` のデフォルト値も `claude-haiku-4-5-20251001`（フルモデルID）→ `haiku`（CLIエイリアス）に変更。
+  ついでに既存のタイプミス（`WEEK_MON_MMDD` → `WEEK_FILE_MMDD`、実行済みスキップ時の比較ページ生成が
+  常に失敗していた）も修正
+- 依存ライブラリ: `haiku_agent.py`・`generate_compare.py` は `anthropic` SDK が不要になった
+  （`local_agent.py`＝Ollama版は引き続き `requests`/`ddgs`/`trafilatura` を使用するため変更なし）
+
+**検証状況（2026-07-13時点）:**
+- `claude --model haiku` / `--model sonnet` とも ANTHROPIC_API_KEY なしでクレジットエラーが出ないことを確認
+- scratchpad（本番リポジトリ外）で実際のプロンプト全文（WebSearch 10クエリ + WebFetch 2件 + Write）を
+  流し、実記事1本の生成に成功。指示通り記事ファイル以外には書き込んでいないことを確認
+- **本番リポジトリでのエンドツーエンド実行（README/index更新・git push含む）は未実施。**
+  stock_analysis 等、他の自動化と Pro/Max サブスクリプションの利用枠を共有するため、
+  利用量に余裕がある時間帯にユーザー確認の上で実行する方針（2026-07-13時点で保留中）
+
+**未対応:**
+- weather_digest への同様の移行は未着手（ai_newsでの安定稼働確認後に着手する想定）
+- 上記「本番実行」が完了したら、この節を正式な手順（実行フロー図・エージェント動作詳細・
+  セットアップ手順の書き換え）に反映して整理すること
+
+---
 
 ### 2026-06-07: Haiku月次記事・月次比較ページ・Sonnet評価セクションを追加
 
