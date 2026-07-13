@@ -3,6 +3,11 @@
 # launchd から毎週土曜 13:00 に呼び出される。
 # Ollama版（09:00）と同じ週の記事を Haiku で別ファイルに生成し、
 # 両者の比較ページを自動作成する。
+#
+# 【2026-07-13 変更】Anthropic API（従量課金クレジット）ではなく、
+# Claude Code CLI（Pro/Maxサブスクリプション）経由で実行するように変更した。
+# stock_analysis / rakuten_margin と同じ方式。ANTHROPIC_API_KEY は使わない
+# （設定されていても haiku_agent.py / generate_compare.py 側で明示的に除去する）。
 
 set -euo pipefail
 
@@ -10,7 +15,8 @@ set -euo pipefail
 PROJECT_DIR="/Users/masahiro/projects/ai_news"
 LOG_FILE="${PROJECT_DIR}/ai_news_haiku.log"
 PYTHON_BIN="/opt/anaconda3/bin/python3"
-HAIKU_MODEL="${HAIKU_MODEL:-claude-haiku-4-5-20251001}"
+CLAUDE_BIN="${HOME}/.local/bin/claude"
+HAIKU_MODEL="${HAIKU_MODEL:-haiku}"
 TODAY=$(TZ=Asia/Tokyo date +%Y-%m-%d)
 DAY_OF_MONTH=$(TZ=Asia/Tokyo date +%d)
 YEAR=$(TZ=Asia/Tokyo date +%Y)
@@ -26,21 +32,14 @@ log() {
   echo "[$(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "${LOG_FILE}"
 }
 
-# --- ANTHROPIC_API_KEY の読み込み ---
-if [ -z "${ANTHROPIC_API_KEY:-}" ]; then
-  if [ -f "${HOME}/.anthropic_env" ]; then
-    # shellcheck disable=SC1090
-    source "${HOME}/.anthropic_env"
-    log "ANTHROPIC_API_KEY を ~/.anthropic_env から読み込みました"
-  fi
-fi
-
-if [ -z "${ANTHROPIC_API_KEY:-}" ]; then
-  log "ERROR: ANTHROPIC_API_KEY が設定されていません"
-  log "  ~/.anthropic_env に ANTHROPIC_API_KEY=sk-ant-... を記載してください"
+# --- Claude Code CLI の存在確認（サブスクリプション認証。APIキーは使わない）---
+if [ ! -x "${CLAUDE_BIN}" ]; then
+  log "ERROR: Claude Code CLI が見つかりません: ${CLAUDE_BIN}"
   exit 1
 fi
-export ANTHROPIC_API_KEY
+# ANTHROPIC_API_KEY が環境に残っているとAPIクレジット課金経路に戻ってしまうため、
+# このプロセス内では明示的に外す（haiku_agent.py / generate_compare.py 側でも二重に除去する）
+unset ANTHROPIC_API_KEY || true
 
 # --- 開始 ---
 log "=== ai_news Haiku 起動チェック ==="
@@ -59,7 +58,7 @@ if [ -f "${HAIKU_WEEKLY_FILE}" ]; then
   if [ ! -f "${COMPARE_FILE}" ]; then
     log "比較ページが未生成のため生成を試みます..."
     "${PYTHON_BIN}" "${PROJECT_DIR}/scripts/generate_compare.py" \
-      --week-file "${WEEK_MON_MMDD}" \
+      --week-file "${WEEK_FILE_MMDD}" \
       --week-label "${WEEK_LABEL}" \
       --year "${YEAR}" \
       2>&1 | tee -a "${LOG_FILE}" || true

@@ -10,15 +10,15 @@ generate_compare.py — Ollama記事とHaiku記事を並べた比較ページを
 """
 
 import argparse
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-import anthropic
-
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 JST = timezone(timedelta(hours=9))
+CLAUDE_BIN = str(Path.home() / ".local" / "bin" / "claude")
 
 
 def log(msg: str) -> None:
@@ -64,9 +64,33 @@ def insert_li_at_top_of_ul(md_path: Path, new_li: str) -> bool:
     return inserted
 
 
+def run_claude_cli_text(prompt: str, model: str = "sonnet", budget_usd: str = "1.00", timeout_sec: int = 600) -> str:
+    """Claude Code CLI（Pro/Maxサブスクリプション）にプロンプトを渡し、応答テキストを返す。
+    ANTHROPIC_API_KEY は明示的に除去し、APIクレジットではなくサブスク認証を強制する。"""
+    env = os.environ.copy()
+    env.pop("ANTHROPIC_API_KEY", None)
+    env.pop("ANTHROPIC_BASE_URL", None)
+
+    cmd = [
+        CLAUDE_BIN,
+        "--print",
+        "--dangerously-skip-permissions",
+        "--model", model,
+        "--max-budget-usd", budget_usd,
+        "--allowedTools", "",
+        "--input-format", "text",
+    ]
+    result = subprocess.run(
+        cmd, input=prompt, text=True, cwd=PROJECT_DIR, env=env,
+        capture_output=True, timeout=timeout_sec,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"Claude Code CLI が終了コード {result.returncode} で失敗: {result.stderr[:500]}")
+    return result.stdout.strip()
+
+
 def generate_sonnet_eval(ollama_content: str, haiku_content: str, week_label: str) -> str:
-    """Claude Sonnet APIで両記事を評価し、sonnet-evalセクションのMarkdownを返す"""
-    client = anthropic.Anthropic()
+    """Claude Sonnet（Claude Code CLI経由）で両記事を評価し、sonnet-evalセクションのMarkdownを返す"""
     today_str = datetime.now(JST).strftime("%Y-%m-%d")
 
     prompt = f"""以下の2つの生成AIニュース週次まとめ記事（{week_label}）を読んで、比較・評価を行ってください。
@@ -113,13 +137,7 @@ def generate_sonnet_eval(ollama_content: str, haiku_content: str, week_label: st
 （200〜300字程度。今週の特徴的なテーマ、各モデルの強み・弱みを端的に述べ、「両記事を合わせて読むことで〜」という締め方で締める）
 """
 
-    message = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=2048,
-        messages=[{"role": "user", "content": prompt}],
-    )
-
-    eval_body = message.content[0].text.strip()
+    eval_body = run_claude_cli_text(prompt, model="sonnet", budget_usd="1.00")
 
     return f"""<div class="sonnet-eval" markdown="1">
 
