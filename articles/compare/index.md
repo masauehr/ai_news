@@ -12,6 +12,7 @@ Ollama（qwen3.6:35b-mlx）と Claude Haiku の記事を並べて比較。Claude
 毎月第1土曜日に自動生成。
 
 <ul class="article-list">
+  <li><a href="{{ site.baseurl }}/articles/compare/2026-0725">7/18〜7/25</a><span class="date">2026-07-25</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-0718">7/11〜7/18</a><span class="date">2026-07-18</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-0627">6/20〜6/27</a><span class="date">2026-06-27</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-0620">6/13〜6/20</a><span class="date">2026-06-20</span></li>
