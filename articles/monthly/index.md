@@ -11,6 +11,7 @@ title: 月次まとめ一覧
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-07">2026年7月</a><span class="date">2026-07</span></li>
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-07">2026年7月</a><span class="date">2026-07</span></li>
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-07">2026年7月</a><span class="date">2026-07</span></li>
+  <li><a href="{{ site.baseurl }}/articles/monthly/2026-07">2026年7月</a><span class="date">2026-07</span></li>
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-06">2026年6月</a><span class="date">2026-06</span></li>
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-06">2026年6月</a><span class="date">2026-06</span></li>
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-06">2026年6月</a><span class="date">2026-06</span></li>
