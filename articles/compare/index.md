@@ -5,7 +5,9 @@ title: モデル比較一覧
 
 # モデル比較一覧
 
-Ollama（qwen3.6:35b-mlx）と Claude Haiku の記事を並べて比較。Claude Sonnet による評価付き。
+Ollama（qwen3.6:35b-mlx）と Claude Haiku の記事を2カラムで並べて比較。
+週によっては追加のローカルモデル（ornith-1.5:35b / nemotron-3.5-lightning:30b-mlx）も下段に掲載。
+Claude Sonnet による全モデル横断の評価付き。
 
 ## 月次比較
 

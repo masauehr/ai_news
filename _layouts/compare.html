@@ -20,6 +20,11 @@
       --ollama-bg: #e8f5e9;
       --haiku-color: #c62828;
       --haiku-bg: #ffebee;
+      /* 追加ローカルモデル（比較用サブモデル） */
+      --ornith-color: #e65100;
+      --ornith-bg: #fff3e0;
+      --nemotron-color: #4527a0;
+      --nemotron-bg: #ede7f6;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -101,13 +106,38 @@
       font-weight: 600;
       font-size: 0.8rem;
     }
-    .badge.ollama { background: var(--ollama-bg); color: var(--ollama-color); }
-    .badge.haiku  { background: var(--haiku-bg);  color: var(--haiku-color); }
+    .badge.ollama   { background: var(--ollama-bg);   color: var(--ollama-color); }
+    .badge.haiku    { background: var(--haiku-bg);    color: var(--haiku-color); }
+    .badge.ornith   { background: var(--ornith-bg);   color: var(--ornith-color); }
+    .badge.nemotron { background: var(--nemotron-bg); color: var(--nemotron-color); }
 
-    /* 2カラム比較エリア */
+    /* 2カラム比較エリア（メイン: Ollama vs Haiku） */
     .compare-wrapper {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* 追加ローカルモデル（比較用）— 1カラム縦積み */
+    .compare-extra-header {
+      margin: 2.5rem 0 1rem;
+      border-top: 2px dashed var(--border);
+      padding-top: 1.5rem;
+    }
+    .compare-extra-header h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .compare-extra-header p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+    .compare-extra {
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 1.5rem;
       align-items: start;
     }
@@ -129,8 +159,10 @@
       top: 0;
       z-index: 10;
     }
-    .ollama-panel .panel-header-bar { background: var(--ollama-bg); border-bottom-color: #a5d6a7; }
-    .haiku-panel  .panel-header-bar { background: var(--haiku-bg);  border-bottom-color: #ef9a9a; }
+    .ollama-panel   .panel-header-bar { background: var(--ollama-bg);   border-bottom-color: #a5d6a7; }
+    .haiku-panel    .panel-header-bar { background: var(--haiku-bg);    border-bottom-color: #ef9a9a; }
+    .ornith-panel   .panel-header-bar { background: var(--ornith-bg);   border-bottom-color: #ffb74d; }
+    .nemotron-panel .panel-header-bar { background: var(--nemotron-bg); border-bottom-color: #b39ddb; }
 
     .model-badge {
       display: inline-block;
@@ -139,8 +171,10 @@
       font-size: 0.78rem;
       font-weight: 700;
     }
-    .ollama-panel .model-badge { background: var(--ollama-color); color: white; }
-    .haiku-panel  .model-badge { background: var(--haiku-color);  color: white; }
+    .ollama-panel   .model-badge { background: var(--ollama-color);   color: white; }
+    .haiku-panel    .model-badge { background: var(--haiku-color);    color: white; }
+    .ornith-panel   .model-badge { background: var(--ornith-color);   color: white; }
+    .nemotron-panel .model-badge { background: var(--nemotron-color); color: white; }
 
     .model-name {
       font-size: 0.82rem;
@@ -292,6 +326,8 @@
       padding: 0.45rem 0.9rem;
     }
     .sonnet-eval tr:nth-child(even) td { background: #f3eefc; }
+    /* モデル数が増えると評価表が横に広がるため、はみ出す場合はセクションごと横スクロール */
+    .sonnet-eval { overflow-x: auto; }
 
     /* 過去記事セクション */
     .past-articles {
@@ -367,7 +403,7 @@
   <footer>
     <p>
       自動生成 by <a href="https://github.com/masauehr/ai_news" target="_blank" rel="noopener">masauehr/ai_news</a>
-      &nbsp;|&nbsp; Ollama ローカルLLM × Claude Haiku 比較
+      &nbsp;|&nbsp; Ollama ローカルLLM（qwen3.6 / ornith / nemotron）× Claude Haiku 比較
     </p>
   </footer>
 </body>

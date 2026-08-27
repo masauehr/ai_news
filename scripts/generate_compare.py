@@ -1,6 +1,13 @@
 #!/opt/anaconda3/bin/python3
 """
-generate_compare.py — Ollama記事とHaiku記事を並べた比較ページを生成する
+generate_compare.py — 複数モデルの週次記事を並べた比較ページを生成する
+
+メイン比較（2カラム）: Ollama（qwen3.6:35b-mlx） vs Claude Haiku
+追加ローカルモデル（縦積み・任意）: articles/weekly_<variant>/ に記事があれば下段に追加
+  - ornith   … ornith-1.5:35b（土曜 10:00 生成）
+  - nemotron … nemotron-3.5-lightning:30b-mlx（土曜 11:00 生成）
+
+Claude Sonnet による比較・評価は、その週に揃っている全モデルを対象にする。
 
 使い方:
   python3 generate_compare.py \
@@ -19,6 +26,26 @@ from pathlib import Path
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 JST = timezone(timedelta(hours=9))
 CLAUDE_BIN = str(Path.home() / ".local" / "bin" / "claude")
+
+# 追加ローカルモデル（比較用サブモデル）の定義
+#   key      : articles/weekly_<key>/ のディレクトリ接尾辞・CSSクラス接頭辞
+#   badge    : パネルヘッダーのバッジ表記
+#   model    : モデル名（表示用）
+#   schedule : 生成タイミングの説明
+VARIANT_MODELS = [
+    {
+        "key": "ornith",
+        "badge": "🦉 ornith",
+        "model": "ornith-1.5:35b",
+        "schedule": "土曜 10:00 生成",
+    },
+    {
+        "key": "nemotron",
+        "badge": "🌩️ nemotron",
+        "model": "nemotron-3.5-lightning:30b-mlx",
+        "schedule": "土曜 11:00 生成",
+    },
+]
 
 
 def log(msg: str) -> None:
@@ -89,52 +116,196 @@ def run_claude_cli_text(prompt: str, model: str = "sonnet", budget_usd: str = "1
     return result.stdout.strip()
 
 
-def generate_sonnet_eval(ollama_content: str, haiku_content: str, week_label: str) -> str:
-    """Claude Sonnet（Claude Code CLI経由）で両記事を評価し、sonnet-evalセクションのMarkdownを返す"""
+# ------------------------------------------------------------------ #
+# モデル情報の収集
+# ------------------------------------------------------------------ #
+
+def collect_models(week_file: str, year: str) -> list:
+    """その週に揃っている全モデルの記事を読み込み、描画用の dict リストを返す。
+
+    返す各要素: {css, badge, model, schedule, content}
+      css   … CSSクラス接頭辞（ollama / haiku / ornith / nemotron）
+    先頭2件（ollama / haiku）が無ければ空リストを返す（比較不成立）。
+    """
+    ollama_path = PROJECT_DIR / f"articles/weekly/{year}-{week_file}.md"
+    haiku_path = PROJECT_DIR / f"articles/haiku_weekly/{year}-{week_file}.md"
+
+    if not ollama_path.exists():
+        log(f"SKIP: Ollama記事が存在しません: {ollama_path}")
+        return []
+    if not haiku_path.exists():
+        log(f"SKIP: Haiku記事が存在しません: {haiku_path}")
+        return []
+
+    models = [
+        {
+            "css": "ollama",
+            "badge": "🖥️ Ollama",
+            "model": "qwen3.6:35b-mlx",
+            "schedule": "土曜 09:00 生成",
+            "content": strip_front_matter(ollama_path.read_text(encoding="utf-8")),
+        },
+        {
+            "css": "haiku",
+            "badge": "⚡ Claude Haiku",
+            "model": "claude-haiku-4-5",
+            "schedule": "土曜 13:00 生成",
+            "content": strip_front_matter(haiku_path.read_text(encoding="utf-8")),
+        },
+    ]
+
+    for v in VARIANT_MODELS:
+        vpath = PROJECT_DIR / f"articles/weekly_{v['key']}/{year}-{week_file}.md"
+        if vpath.exists():
+            models.append({
+                "css": v["key"],
+                "badge": v["badge"],
+                "model": v["model"],
+                "schedule": v["schedule"],
+                "content": strip_front_matter(vpath.read_text(encoding="utf-8")),
+            })
+            log(f"追加モデルを検出: {v['key']} ({vpath.name})")
+        else:
+            log(f"追加モデルなし（スキップ）: {v['key']}")
+
+    return models
+
+
+# ------------------------------------------------------------------ #
+# Markdown ブロック生成
+# ------------------------------------------------------------------ #
+
+def _panel(m: dict) -> str:
+    return f"""<div class="compare-panel {m['css']}-panel">
+<div class="panel-header-bar">
+  <span class="model-badge">{m['badge']}</span>
+  <span class="model-name">{m['model']}</span>
+</div>
+<div class="panel-body" markdown="1">
+
+{m['content']}
+
+</div>
+</div>"""
+
+
+def build_compare_block(models: list, week_label: str, sonnet_eval_section: str) -> str:
+    """比較ヘッダー + メイン2カラム + 追加モデル縦積み + Sonnet評価 をまとめた Markdown を返す。"""
+    main_models = models[:2]      # ollama / haiku
+    extra_models = models[2:]     # ornith / nemotron ...
+
+    meta_badges = [
+        '<span class="badge ollama">🖥️ Ollama</span> '
+        '<span style="font-family:monospace;font-size:0.82rem;color:#666">qwen3.6:35b-mlx（土曜 09:00 生成）</span>',
+        '<span style="margin: 0 0.5rem;">vs</span>',
+        '<span class="badge haiku">⚡ Claude</span> '
+        '<span style="font-family:monospace;font-size:0.82rem;color:#666">claude-haiku-4-5（土曜 13:00 生成）</span>',
+    ]
+    for m in extra_models:
+        meta_badges.append(
+            f'<span class="badge {m["css"]}">{m["badge"]}</span> '
+            f'<span style="font-family:monospace;font-size:0.82rem;color:#666">{m["model"]}（{m["schedule"]}）</span>'
+        )
+    meta_html = "\n    ".join(meta_badges)
+
+    main_panels = "\n\n".join(_panel(m) for m in main_models)
+
+    extra_block = ""
+    if extra_models:
+        extra_panels = "\n\n".join(_panel(m) for m in extra_models)
+        extra_block = f"""
+<div class="compare-extra-header">
+  <h2>🧩 追加ローカルモデル（比較用）</h2>
+  <p>メイン比較と同じ週・同じ収集条件で、別のローカルLLMが生成した週次まとめです。</p>
+</div>
+
+<div class="compare-extra">
+
+{extra_panels}
+
+</div>
+"""
+
+    return f"""<div class="compare-header">
+  <h1>🔬 モデル比較（{week_label}）</h1>
+  <div class="compare-meta">
+    {meta_html}
+  </div>
+</div>
+
+<div class="compare-wrapper">
+
+{main_panels}
+
+</div>
+{extra_block}
+{sonnet_eval_section}"""
+
+
+# ------------------------------------------------------------------ #
+# Sonnet 評価
+# ------------------------------------------------------------------ #
+
+def generate_sonnet_eval(models: list, week_label: str) -> str:
+    """Claude Sonnet（Claude Code CLI経由）で全モデルの記事を評価し、
+    sonnet-evalセクションのMarkdownを返す。"""
     today_str = datetime.now(JST).strftime("%Y-%m-%d")
 
-    prompt = f"""以下の2つの生成AIニュース週次まとめ記事（{week_label}）を読んで、比較・評価を行ってください。
+    # 記事本文セクション
+    article_sections = []
+    for m in models:
+        article_sections.append(
+            f"## {m['badge']} 記事（{m['model']} 生成）\n\n{m['content']}"
+        )
+    articles_md = "\n\n---\n\n".join(article_sections)
 
-## Ollama記事（qwen3.6:35b-mlx生成）
+    # 評価表のヘッダー行（モデルごとに1列）
+    header_cols = " | ".join(f"**{m['badge']}**<br>{m['model']}" for m in models)
+    sep_cols = "|".join(["------"] * (len(models) + 1))
+    model_list_str = "、".join(f"{m['badge']}（{m['model']}）" for m in models)
 
-{ollama_content}
+    prompt = f"""以下の {len(models)} つの生成AIニュース週次まとめ記事（{week_label}）を読んで、比較・評価を行ってください。
+いずれも同じ週・同じ収集条件で、異なるモデルが生成したものです。
+
+対象モデル: {model_list_str}
 
 ---
 
-## Haiku記事（claude-haiku-4-5生成）
-
-{haiku_content}
+{articles_md}
 
 ---
 
 以下の形式で出力してください。HTMLタグは使わず、Markdown記法のみで記述してください。
+（表のヘッダー行のみ、指定どおり `<br>` を含めてそのまま使ってください）
 
 ### カバレッジの違い
 
-**Ollama 記事が独自にカバーしたトピック**（Haikuには未掲載）:
-- （箇条書きで列挙）
+各モデルが「独自にカバーしたトピック」（他モデルには未掲載のもの）を、モデルごとに箇条書きで列挙してください。
 
-**Haiku 記事が独自にカバーしたトピック**（Ollamaには未掲載）:
-- （箇条書きで列挙）
+- **{models[0]['badge']}**: （箇条書き）
+- **{models[1]['badge']}**: （箇条書き）
+{chr(10).join(f"- **{m['badge']}**: （箇条書き）" for m in models[2:])}
 
 ---
 
 ### 各観点の評価
 
-| 観点 | Ollama (qwen3.6:35b-mlx) | Haiku (claude-haiku-4-5) |
-|------|--------------------------|--------------------------|
-| **情報の深さ** | ⭐×N 説明 | ⭐×N 説明 |
-| **カバレッジ** | ⭐×N 説明 | ⭐×N 説明 |
-| **国内AI動向** | ⭐×N 説明 | ⭐×N 説明 |
-| **読みやすさ** | ⭐×N 説明 | ⭐×N 説明 |
-| **情報源の明示** | ⭐×N 説明 | ⭐×N 説明 |
-| **ビジネス視点** | ⭐×N 説明 | ⭐×N 説明 |
+| 観点 | {header_cols} |
+|{sep_cols}|
+| **情報の深さ** | {" | ".join(["⭐×N 説明"] * len(models))} |
+| **カバレッジ** | {" | ".join(["⭐×N 説明"] * len(models))} |
+| **国内AI動向** | {" | ".join(["⭐×N 説明"] * len(models))} |
+| **読みやすさ** | {" | ".join(["⭐×N 説明"] * len(models))} |
+| **情報源の明示** | {" | ".join(["⭐×N 説明"] * len(models))} |
+| **ビジネス視点** | {" | ".join(["⭐×N 説明"] * len(models))} |
 
 ---
 
 ### 総評
 
-（200〜300字程度。今週の特徴的なテーマ、各モデルの強み・弱みを端的に述べ、「両記事を合わせて読むことで〜」という締め方で締める）
+（300〜400字程度。今週の特徴的なテーマ、各モデルの強み・弱みを端的に述べ、
+特にローカルモデル同士（Ollama系）の違いに触れること。
+「各記事を合わせて読むことで〜」という締め方で締める）
 """
 
     eval_body = run_claude_cli_text(prompt, model="sonnet", budget_usd="1.00")
@@ -143,7 +314,7 @@ def generate_sonnet_eval(ollama_content: str, haiku_content: str, week_label: st
 
 ## 🧠 Claude Sonnet による比較・評価（{today_str}）
 
-*両記事を読んだ Claude Sonnet 4.6 が、情報カバレッジ・技術精度・読みやすさの観点から評価します。*
+*その週に揃った全モデルの記事を読んだ Claude Sonnet が、情報カバレッジ・技術精度・読みやすさの観点から評価します。*
 
 ---
 
@@ -152,12 +323,13 @@ def generate_sonnet_eval(ollama_content: str, haiku_content: str, week_label: st
 </div>"""
 
 
+# ------------------------------------------------------------------ #
+# トップページ更新
+# ------------------------------------------------------------------ #
+
 def update_top_page(
     week_label: str,
-    week_file: str,
-    year: str,
-    ollama_content: str,
-    haiku_content: str,
+    models: list,
     sonnet_eval_section: str = "",
 ) -> None:
     """index.md を最新比較コンテンツ + 過去記事グリッドで完全に書き換える"""
@@ -170,51 +342,14 @@ def update_top_page(
     # Liquid の {{ }} は f-string と衝突するので {{ }} にエスケープ
     baseurl = "{{ site.baseurl }}"
 
+    compare_block = build_compare_block(models, week_label, sonnet_eval_section)
+
     index_md = f"""---
 layout: compare
 title: 生成AI週次ダイジェスト
 ---
 
-<div class="compare-header">
-  <h1>🔬 モデル比較（{week_label}）</h1>
-  <div class="compare-meta">
-    <span class="badge ollama">🖥️ Ollama</span>
-    <span style="font-family:monospace;font-size:0.82rem;color:#666">qwen3.6:35b-mlx（土曜 09:00 生成）</span>
-    <span style="margin: 0 0.5rem;">vs</span>
-    <span class="badge haiku">⚡ Claude</span>
-    <span style="font-family:monospace;font-size:0.82rem;color:#666">claude-haiku-4-5（土曜 13:00 生成）</span>
-  </div>
-</div>
-
-<div class="compare-wrapper">
-
-<div class="compare-panel ollama-panel">
-<div class="panel-header-bar">
-  <span class="model-badge">🖥️ Ollama</span>
-  <span class="model-name">qwen3.6:35b-mlx</span>
-</div>
-<div class="panel-body" markdown="1">
-
-{ollama_content}
-
-</div>
-</div>
-
-<div class="compare-panel haiku-panel">
-<div class="panel-header-bar">
-  <span class="model-badge">⚡ Claude Haiku</span>
-  <span class="model-name">claude-haiku-4-5</span>
-</div>
-<div class="panel-body" markdown="1">
-
-{haiku_content}
-
-</div>
-</div>
-
-</div>
-
-{sonnet_eval_section}
+{compare_block}
 
 <div class="past-articles">
 <h2>📚 過去の記事</h2>
@@ -260,30 +395,31 @@ title: 生成AI週次ダイジェスト
     log(f"index.md をトップ比較ページとして更新: {week_label}")
 
 
+# ------------------------------------------------------------------ #
+# メイン処理
+# ------------------------------------------------------------------ #
+
 def generate(week_file: str, week_label: str, year: str) -> bool:
-    ollama_path  = PROJECT_DIR / f"articles/weekly/{year}-{week_file}.md"
-    haiku_path   = PROJECT_DIR / f"articles/haiku_weekly/{year}-{week_file}.md"
     compare_path = PROJECT_DIR / f"articles/compare/{year}-{week_file}.md"
     compare_index = PROJECT_DIR / "articles/compare/index.md"
 
-    if not ollama_path.exists():
-        log(f"SKIP: Ollama記事が存在しません: {ollama_path}")
-        return False
-    if not haiku_path.exists():
-        log(f"SKIP: Haiku記事が存在しません: {haiku_path}")
+    models = collect_models(week_file, year)
+    if not models:
         return False
 
-    ollama_content = strip_front_matter(ollama_path.read_text(encoding="utf-8"))
-    haiku_content  = strip_front_matter(haiku_path.read_text(encoding="utf-8"))
+    model_names = " / ".join(m["css"] for m in models)
+    log(f"比較対象モデル: {model_names}")
 
     # Sonnet評価生成
     log("Claude Sonnet で評価文を生成中...")
     try:
-        sonnet_eval_section = generate_sonnet_eval(ollama_content, haiku_content, week_label)
+        sonnet_eval_section = generate_sonnet_eval(models, week_label)
         log("Sonnet評価生成完了")
     except Exception as e:
         log(f"WARN: Sonnet評価生成に失敗しました: {e}")
         sonnet_eval_section = ""
+
+    compare_block = build_compare_block(models, week_label, sonnet_eval_section)
 
     # 比較ページ（articles/compare/YYYY-MMDD.md）
     if not compare_path.exists():
@@ -292,46 +428,7 @@ layout: compare
 title: モデル比較（{week_label}）
 ---
 
-<div class="compare-header">
-  <h1>🔬 モデル比較（{week_label}）</h1>
-  <div class="compare-meta">
-    <span class="badge ollama">🖥️ Ollama</span>
-    <span style="font-family:monospace;font-size:0.82rem;color:#666">qwen3.6:35b-mlx（土曜 09:00 生成）</span>
-    <span style="margin: 0 0.5rem;">vs</span>
-    <span class="badge haiku">⚡ Claude</span>
-    <span style="font-family:monospace;font-size:0.82rem;color:#666">claude-haiku-4-5（土曜 13:00 生成）</span>
-  </div>
-</div>
-
-<div class="compare-wrapper">
-
-<div class="compare-panel ollama-panel">
-<div class="panel-header-bar">
-  <span class="model-badge">🖥️ Ollama</span>
-  <span class="model-name">qwen3.6:35b-mlx</span>
-</div>
-<div class="panel-body" markdown="1">
-
-{ollama_content}
-
-</div>
-</div>
-
-<div class="compare-panel haiku-panel">
-<div class="panel-header-bar">
-  <span class="model-badge">⚡ Claude Haiku</span>
-  <span class="model-name">claude-haiku-4-5</span>
-</div>
-<div class="panel-body" markdown="1">
-
-{haiku_content}
-
-</div>
-</div>
-
-</div>
-
-{sonnet_eval_section}
+{compare_block}
 """
         compare_path.parent.mkdir(parents=True, exist_ok=True)
         compare_path.write_text(compare_md, encoding="utf-8")
@@ -350,7 +447,7 @@ title: モデル比較（{week_label}）
         log("articles/compare/index.md 更新完了")
 
     # トップページを最新比較コンテンツで完全書き換え
-    update_top_page(week_label, week_file, year, ollama_content, haiku_content, sonnet_eval_section)
+    update_top_page(week_label, models, sonnet_eval_section)
 
     # git commit & push
     files = [
@@ -358,8 +455,15 @@ title: モデル比較（{week_label}）
         "articles/compare/index.md",
         "index.md",
     ]
+    # 追加モデルの記事ファイルも（存在すれば）コミット対象に含める
+    for v in VARIANT_MODELS:
+        vrel = f"articles/weekly_{v['key']}/{year}-{week_file}.md"
+        if (PROJECT_DIR / vrel).exists():
+            files.append(vrel)
+
     commit_msg = (
         f"{year}-{week_file} モデル比較ページを追加・トップページを更新\n\n"
+        f"対象モデル: {model_names}\n\n"
         f"Co-Authored-By: generate_compare.py <noreply@local>"
     )
     try:
@@ -376,7 +480,7 @@ title: モデル比較（{week_label}）
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Ollama vs Haiku 比較ページ生成")
+    parser = argparse.ArgumentParser(description="複数モデル 週次比較ページ生成")
     parser.add_argument("--week-file",  required=True, help="MMDD形式（例: 0525）")
     parser.add_argument("--week-label", required=True, help="例: 5/25〜5/31")
     parser.add_argument("--year",       required=True, help="例: 2026")
