@@ -11,6 +11,8 @@ local_agent.py — Ollama tool-calling エージェントで ai_news 記事を�
     --month 05 \
     [--prefetch "事前収集済みテキスト"]
     [--model qwen3.6:35b-mlx]
+    [--variant ornith]   # 比較用サブモデル。指定時は articles/weekly_<variant>/ に保存し
+                         # README/index更新・月次生成は行わない（記事生成とpushのみ）
 """
 
 import argparse
@@ -513,8 +515,83 @@ Co-Authored-By: {model} via Ollama <noreply@local>
 """
 
 
+# 比較用サブモデル（--variant 指定時）専用の簡略プロンプト。
+# メインの Ollama 記事（articles/weekly/）とは別ディレクトリに保存し、
+# README.md / index.md の更新や月次生成は一切行わない（比較ページ側で拾う）。
+VARIANT_SYSTEM_PROMPT_TMPL = """\
+あなたは生成AI情報まとめライターです。
+複数のローカルLLMで同じ週のニュースを要約し、モデルごとの違いを比較する企画の一環として、
+あなたの担当分の週次まとめ記事を1本だけ生成してください。
+
+# 基本情報
+- 今日: {today}
+- 使用モデル: {model}（比較用サブモデル）
+- 記事ファイルパス: articles/weekly_{variant}/{year}-{week_file}.md
+- 週表示ラベル: {week_label}（記事タイトルに使用）
+
+# 作業手順
+1. **情報収集** — search_web で以下のキーワードを順番に検索する（各キーワード1回ずつ）
+   - 「生成AI 最新ニュース 今週」
+   - 「LLM release 今週」
+   - 「OpenAI Anthropic Google AI news」
+   - 「ローカルLLM Ollama 新モデル 今週」
+   - 「AIエージェント MCP AutoGen 最新動向」
+   - 「1-bit LLM BitNet 最新」
+   - 「デジタル庁 生成AI 国産AI 最新」
+   - 「国産LLM 新モデル リリース」
+   - 「日本 生成AI 企業 最新ニュース 今週」
+   - 「site:note.com 生成AI 使ってみた 今週」
+
+2. **補足取得** — fetch_url で以下のサイトを直接確認する
+   - https://www.digital.go.jp/news/
+   - https://openai.com/news/
+
+3. **記事生成** — 収集した情報と事前収集情報を統合して週次記事を生成し、write_article で保存する
+   - 保存先: articles/weekly_{variant}/{year}-{week_file}.md
+
+4. **コミット** — git_commit_push で articles/weekly_{variant}/{year}-{week_file}.md のみをコミット・プッシュする
+   - README.md / index.md / 一覧ページは変更しないこと（append_to_readme / update_index は呼ばない）
+   - 月次記事も生成しないこと
+
+# 記事フォーマット（必ず守ること）
+- ファイル: articles/weekly_{variant}/{year}-{week_file}.md
+- タイトル行: `# 生成AI週次ダイジェスト（{week_label}）`
+- 最低 5 トピック以上収録（日本国内動向を必ず 1 件以上含める）
+- 各情報源の URL を必ず記載
+- 日本語で記述（技術用語・モデル名は原語のまま）
+- 英語タイトルのリンクには日本語訳を併記
+  例: `[Introducing GPT-5（GPT-5の発表）](URL)`
+- Note 記事は「note / 著者名」形式でソース明記
+
+# コミットメッセージ形式
+```
+{year}-{week_file} 週次まとめ（{variant}）を追加（ローカルLLM比較用）
+
+Co-Authored-By: {model} via Ollama <noreply@local>
+```
+
+# 事前収集済み情報（BeautifulSoup で取得済み）
+{prefetch}
+"""
+
+
 def build_system_prompt(args) -> str:
     today = datetime.now(JST).strftime("%Y-%m-%d")
+
+    # 比較用サブモデルは簡略プロンプト（別ディレクトリ保存・後処理なし）
+    variant = getattr(args, "variant", "") or ""
+    if variant:
+        prefetch = args.prefetch if args.prefetch else "（なし — すべて search_web / fetch_url で収集すること）"
+        return VARIANT_SYSTEM_PROMPT_TMPL.format(
+            today=today,
+            model=args.model,
+            variant=variant,
+            year=args.year,
+            week_file=args.week_file,
+            week_label=args.week_label,
+            prefetch=prefetch,
+        )
+
     monthly_info = ""
     monthly_step = ""
     if args.mode == "monthly":
@@ -698,6 +775,14 @@ def main():
     parser.add_argument("--month", required=True, help="例: 05")
     parser.add_argument("--model", default=DEFAULT_MODEL, help="Ollama モデル名")
     parser.add_argument("--prefetch", default="", help="fetch_news.py の出力テキスト")
+    parser.add_argument(
+        "--variant",
+        default="",
+        help=(
+            "比較用サブモデルの識別子（例: ornith / nemotron）。"
+            "指定時は articles/weekly_<variant>/ に保存し、README/index更新・月次生成は行わない。"
+        ),
+    )
     args = parser.parse_args()
 
     # Ollama の疎通確認

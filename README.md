@@ -32,28 +32,34 @@ ai_news/
 ├── README.md                         # このファイル（最新記事一覧）
 ├── SPEC.md                           # 情報収集・記事生成の仕様
 ├── articles/
-│   ├── weekly/YYYY-MMDD.md          # Ollama 週次記事（土曜 09:00 自動生成）
+│   ├── weekly/YYYY-MMDD.md          # Ollama 週次記事（qwen3.6、土曜 09:00 自動生成）
+│   ├── weekly_ornith/YYYY-MMDD.md   # 比較用サブモデル記事（ornith-1.5:35b、土曜 10:00）
+│   ├── weekly_nemotron/YYYY-MMDD.md # 比較用サブモデル記事（nemotron-3.5-lightning、土曜 11:00）
 │   ├── haiku_weekly/YYYY-MMDD.md    # Haiku 週次記事（土曜 13:00 自動生成）
-│   ├── compare/YYYY-MMDD.md         # モデル比較ページ（13:00 以降 自動生成）
+│   ├── compare/YYYY-MMDD.md         # モデル比較ページ（13:00 以降 自動生成／全モデル横断）
 │   └── monthly/YYYY-MM.md           # 月次まとめ（第1土曜 自動生成）
 └── scripts/
-    ├── local_agent.py               # Ollama エージェント（09:00 実行）
+    ├── local_agent.py               # Ollama エージェント（09:00 / 比較用サブモデルも兼用）
     ├── haiku_agent.py               # Claude Haiku エージェント（13:00 実行）
     ├── generate_compare.py          # 比較ページ生成スクリプト
     ├── fetch_news.py                # BeautifulSoup 事前スクレイピング
-    ├── run_ai_news.sh               # Ollama 実行スクリプト（launchd）
+    ├── run_ai_news.sh               # Ollama 実行スクリプト（launchd、AI_NEWS_VARIANT対応）
     ├── run_ai_news_haiku.sh         # Haiku 実行スクリプト（launchd）
-    ├── com.user.ai_news.plist       # launchd 設定（09:00）
-    └── com.user.ai_news_haiku.plist # launchd 設定（13:00）
+    ├── com.user.ai_news.plist       # launchd 設定（土曜 09:00 qwen3.6）
+    ├── com.user.ai_news_ornith.plist    # launchd 設定（土曜 10:00 ornith）
+    ├── com.user.ai_news_nemotron.plist  # launchd 設定（土曜 11:00 nemotron）
+    └── com.user.ai_news_haiku.plist # launchd 設定（土曜 13:00 Haiku）
 ```
 
 ### ファイル役割と更新方法
 
 | ファイル | 役割 | 更新方法 | 更新頻度 |
 |---|---|---|---|
-| `articles/weekly/YYYY-MMDD.md` | Ollama 週次まとめ | **自動生成**（09:00） | 毎週土曜 |
+| `articles/weekly/YYYY-MMDD.md` | Ollama 週次まとめ（qwen3.6） | **自動生成**（09:00） | 毎週土曜 |
+| `articles/weekly_ornith/YYYY-MMDD.md` | 比較用サブモデル（ornith-1.5:35b） | **自動生成**（10:00） | 毎週土曜 |
+| `articles/weekly_nemotron/YYYY-MMDD.md` | 比較用サブモデル（nemotron-3.5-lightning） | **自動生成**（11:00） | 毎週土曜 |
 | `articles/haiku_weekly/YYYY-MMDD.md` | Haiku 週次まとめ | **自動生成**（13:00） | 毎週土曜 |
-| `articles/compare/YYYY-MMDD.md` | モデル比較ページ | **自動生成**（13:00以降） | 毎週土曜 |
+| `articles/compare/YYYY-MMDD.md` | モデル比較ページ（その週の全モデル） | **自動生成**（13:00以降） | 毎週土曜 |
 | `articles/monthly/YYYY-MM.md` | 月次まとめ | **自動生成** | 毎月第1土曜 |
 | `README.md` | 記事一覧・プロジェクト概要 | 手動 or 自動更新 | 記事追加時 |
 
@@ -104,7 +110,7 @@ ai_news/
 - [2026年6月](./articles/haiku_monthly/2026-06.md)
 <!-- articles/haiku_monthly/ のファイルへのリンクがここに追加される -->
 
-### モデル比較（Ollama vs Haiku）
+### モデル比較（qwen3.6 vs Haiku ＋ ローカルモデル ornith / nemotron）
 
 - [5/30〜6/6](./articles/compare/2026-0606.md)（Claude Sonnet 評価付き）
 - [5/23〜5/30](./articles/compare/2026-0530.md)
@@ -146,13 +152,17 @@ macOS の launchd が `scripts/run_ai_news.sh` を呼び出し、
 |---|---|
 | 毎週土曜 09:00 JST | Ollama（qwen3.6:35b-mlx）が週次記事を自動生成・git push |
 | 毎月第1土曜 09:00 JST | 上記に加えて月次まとめも生成 |
-| 毎週土曜 13:00 JST | Claude Haiku が同じ週の記事を別ファイルに生成 → 比較ページを自動作成 → Claude Sonnet が両記事を評価 |
+| 毎週土曜 10:00 JST | 比較用サブモデル（ornith-1.5:35b）が同じ週の記事を `weekly_ornith/` に生成・git push |
+| 毎週土曜 11:00 JST | 比較用サブモデル（nemotron-3.5-lightning:30b-mlx）が同じ週の記事を `weekly_nemotron/` に生成・git push |
+| 毎週土曜 13:00 JST | Claude Haiku が同じ週の記事を別ファイルに生成 → その週に揃った全モデルの比較ページを自動作成 → Claude Sonnet が全モデルを評価 |
 
 ### 使用モデル
 
 | 実行 | モデル | 種別 |
 |---|---|---|
 | 09:00 | `qwen3.6:35b-mlx` | Ollama ローカルLLM（デフォルト） |
+| 10:00 | `ornith-1.5:35b` | Ollama ローカルLLM（比較用サブモデル） |
+| 11:00 | `nemotron-3.5-lightning:30b-mlx` | Ollama ローカルLLM（比較用サブモデル） |
 | 13:00 | `claude-haiku-4-5-20251001` | Anthropic API（Claude Haiku） |
 | 13:00（比較評価） | `claude-sonnet-4-6` | Anthropic API（Claude Sonnet） |
 
