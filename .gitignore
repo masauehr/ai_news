@@ -28,3 +28,6 @@ scripts/com.user.ai_news.plist
 scripts/com.user.ai_news_haiku.plist
 scripts/com.user.ai_news_ornith.plist
 scripts/com.user.ai_news_nemotron.plist
+
+# フェーズ2 事前収集の中間ファイル
+var/
