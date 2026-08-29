@@ -8,6 +8,7 @@ title: 週次まとめ一覧
 生成AI最新情報の週次ダイジェスト記事の一覧です。毎週土曜日に自動更新されます。
 
 <ul class="article-list">
+  <li><a href="{{ site.baseurl }}/articles/weekly/2026-0829">8/22〜8/29</a><span class="date">2026-08-29</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-0822">8/15〜8/22</a><span class="date">2026-08-22</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-0815">8/8〜8/15</a><span class="date">2026-08-15</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-0808">8/1〜8/8</a><span class="date">2026-08-08</span></li>
