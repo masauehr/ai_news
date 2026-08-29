@@ -65,6 +65,22 @@ ai_news/
 
 ---
 
+## 事前収集（agent_orchestrator 連携・任意）
+
+Haiku 週次まとめ（`run_ai_news_haiku.sh`）は、生成前に
+[agent_orchestrator](../agent_orchestrator/) の `ai_news_prefetch` パイプラインで
+「検索 → 本文取得 → ローカルLLM(Ollama)で圧縮要約」を実行し、Haiku には生スクレイプ
+ではなくそのサマリ（`var/prefetch_*.txt`）を渡す。目的は Haiku に渡す入力トークン
+（＝サブスク利用枠）の削減。
+
+- agent_orchestrator が無い／失敗した場合は `fetch_news.py` の生スクレイプに
+  自動フォールバックするため、単体でも動作する
+- 全 LLM 呼び出しは `agent_orchestrator/var/ledger.jsonl` に計測記録される
+- 設計・進捗は agent_orchestrator の `docs/STATUS.md` を参照
+- `run_ai_news_haiku.sh` は本リポジトリの .gitignore でローカル専用扱い（未コミット）
+
+---
+
 ## 最新記事
 
 <!-- 自動更新される記事一覧 -->
