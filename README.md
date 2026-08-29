@@ -1,17 +1,17 @@
 # ai_news — 生成AI最新情報ダイジェスト
 
 **🌐 公開サイト（GitHub Pages）: https://masauehr.github.io/ai_news/**  
-**🌐 公開サイト（xrea）: https://uehr.net/ai_news/**
+**🌐 公開サイト（xrea）: https://uehr.net/ai_news/** （※テスト公開のみ。自動デプロイは未接続で 2026-06-13 の内容で停止中。運用は GitHub Pages 側を正とする）
 
 > 詳しい運用マニュアルは [ai-news.md](./ai-news.md) を参照。  
-> xrea 公開の仕組みは [xrea-pages マニュアル](../pc_docs/manuals/automation/xrea-pages.md) を参照。
+> xrea 公開の仕組みは [xrea-pages マニュアル](../pc_docs/manuals/automation/xrea-pages.md) を参照（※テスト検証時のみ利用。現在は非運用）。
 
 ## クイックリンク
 
 | | リンク |
 |---|---|
 | 🌐 公開サイト（GitHub Pages） | https://masauehr.github.io/ai_news/ |
-| 🌐 公開サイト（xrea） | https://uehr.net/ai_news/ |
+| 🌐 公開サイト（xrea） | https://uehr.net/ai_news/ （※テスト公開のみ・非運用） |
 | 📰 Ollama週次まとめ | https://masauehr.github.io/ai_news/articles/weekly/ |
 | ⚡ Haiku週次まとめ | https://masauehr.github.io/ai_news/articles/haiku_weekly/ |
 | 🔬 モデル比較 | https://masauehr.github.io/ai_news/articles/compare/ |
