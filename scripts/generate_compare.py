@@ -140,7 +140,7 @@ def collect_models(week_file: str, year: str) -> list:
     models = [
         {
             "css": "ollama",
-            "badge": "🖥️ Ollama",
+            "badge": "🖥️ qwen3.6",
             "model": "qwen3.6:35b-mlx",
             "schedule": "土曜 09:00 生成",
             "content": strip_front_matter(ollama_path.read_text(encoding="utf-8")),
@@ -195,7 +195,7 @@ def build_compare_block(models: list, week_label: str, sonnet_eval_section: str)
     extra_models = models[2:]     # ornith / nemotron ...
 
     meta_badges = [
-        '<span class="badge ollama">🖥️ Ollama</span> '
+        '<span class="badge ollama">🖥️ qwen3.6</span> '
         '<span style="font-family:monospace;font-size:0.82rem;color:#666">qwen3.6:35b-mlx（土曜 09:00 生成）</span>',
         '<span style="margin: 0 0.5rem;">vs</span>',
         '<span class="badge haiku">⚡ Claude</span> '
