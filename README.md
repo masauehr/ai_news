@@ -125,6 +125,7 @@ Haiku 週次まとめ（`run_ai_news_haiku.sh`）は、生成前に
 
 ### Haiku月次まとめ（Claude Haiku）
 
+- [2026年9月](./articles/haiku_monthly/2026-09.md)
 - [2026年6月](./articles/haiku_monthly/2026-06.md)
 <!-- articles/haiku_monthly/ のファイルへのリンクがここに追加される -->
 
