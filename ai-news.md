@@ -30,6 +30,9 @@ macOS の launchd からローカルLLMエージェント（Ollama + tool callin
 > - 2026-05-31: **ファイル名・期間ラベルの基準を「実行日」ベースに変更**（実行日7日前〜実行日を対象期間とする）
 > - 2026-06-07: **Haiku月次記事・月次比較ページを追加**。Sonnet評価セクション（`.sonnet-eval`）をcompare layoutに追加。ホームページをSonnet評価付き最新比較に変更。フッター表記を修正。
 > - 2026-08-28: **比較用ローカルモデル2種（ornith-1.5:35b／土曜10:00、nemotron-3.5-lightning:30b-mlx／土曜11:00）を追加**。`run_ai_news.sh` に `AI_NEWS_VARIANT` モードを実装（`articles/weekly_<key>/` に保存・後処理なし）。`generate_compare.py` をその週に揃った全モデル対応に拡張（メイン2カラム＋追加モデル縦積み、Sonnet評価も全モデル対象）。`compare.html` に ornith/nemotron 用CSSを追加。
+> - 2026-08-28: **agent_orchestrator（メタプロジェクト）と計測連携**。`local_agent.py` の `call_ollama()` と `haiku_agent.py` の `run_claude_cli()` に、トークン・時間・コストを共有台帳（`agent_orchestrator/var/ledger.jsonl`）へ追記する数行を追加（挙動変更なし）。`run_claude_cli` は `--output-format json` + `capture_output` 化。集計は `python -m orchestrator.cli report`。詳細は [agent-orchestrator](agent-orchestrator.md)
+> - 2026-08-28: **フェーズ2 横展開**。`run_ai_news_haiku.sh`（ローカル専用）が Haiku 起動前に agent_orchestrator の `ai_news_prefetch` パイプライン（検索→本文取得→ローカルOllamaで圧縮要約）を実行し、結果を `haiku_agent.py --prefetch @file` で渡す。失敗時は従来の `fetch_news.py` 生スクレイプにフォールバック。`haiku_agent.py` は `--prefetch @/path/file` 形式に対応。
+> - 2026-09-09: **Sonnet 比較評価の採点スコアを共有台帳へ記録**。`generate_compare.py` の `generate_sonnet_eval` が評価プロンプト末尾で「6観点（情報の深さ／カバレッジ／国内AI動向／読みやすさ／情報源の明示／ビジネス視点）を Ollama 記事・Haiku 記事それぞれ 1〜5 で採点」した JSON を要求し、`orch_meter.parse_eval_scores` で抽出 → `record_eval("ai_news", ...)` で `task="evaluate"` の 1 行を追記（比較ページ本文からは JSON を除去）。判定は Δ = Haiku − Ollama ≥ −0.3 で合格、集計は `orchestrator.cli report` の「品質評価」節。agent_orchestrator を import できないときはシムが no-op になり比較ページ生成は継続。
 
 ---
 

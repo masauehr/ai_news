@@ -27,6 +27,32 @@ PROJECT_DIR = Path(__file__).resolve().parent.parent
 JST = timezone(timedelta(hours=9))
 CLAUDE_BIN = str(Path.home() / ".local" / "bin" / "claude")
 
+# Sonnet 採点の評価軸（下の比較表の行と対応させる）
+EVAL_AXES = ["情報の深さ", "カバレッジ", "国内AI動向", "読みやすさ", "情報源の明示", "ビジネス視点"]
+
+# 採点スコアを共有台帳（agent_orchestrator/var/ledger.jsonl）へ記録するシム。
+# agent_orchestrator が無い環境でも本処理を止めないよう、失敗時は無害な no-op にする。
+try:
+    sys.path.insert(0, "/Users/masahiro/projects/agent_orchestrator")
+    from orch_meter import (
+        eval_json_instruction as _eval_json_instruction,
+        parse_eval_scores as _parse_eval_scores,
+        record_eval as _record_eval,
+        strip_eval_json_block as _strip_eval_json_block,
+    )
+except Exception:  # noqa: BLE001
+    def _eval_json_instruction(*_a, **_k):
+        return ""
+
+    def _parse_eval_scores(*_a, **_k):
+        return {"parse_error": "orch_meter 未導入"}
+
+    def _record_eval(*_a, **_k):
+        return {}
+
+    def _strip_eval_json_block(text, *_a, **_k):
+        return text
+
 # 追加ローカルモデル（比較用サブモデル）の定義
 #   key      : articles/weekly_<key>/ のディレクトリ接尾辞・CSSクラス接頭辞
 #   badge    : パネルヘッダーのバッジ表記
@@ -306,9 +332,27 @@ def generate_sonnet_eval(models: list, week_label: str) -> str:
 （300〜400字程度。今週の特徴的なテーマ、各モデルの強み・弱みを端的に述べ、
 特にローカルモデル同士（Ollama系）の違いに触れること。
 「各記事を合わせて読むことで〜」という締め方で締める）
-"""
+{_eval_json_instruction(EVAL_AXES,
+                        f"{models[0]['badge']}（{models[0]['model']}）",
+                        f"{models[1]['badge']}（{models[1]['model']}）")}"""
 
+    _t0 = datetime.now(JST)
     eval_body = run_claude_cli_text(prompt, model="sonnet", budget_usd="1.00")
+    _wall_s = (datetime.now(JST) - _t0).total_seconds()
+
+    # 採点 JSON を抽出して共有台帳へ記録し、本文からは JSON ブロックを除去する
+    try:
+        scores = _parse_eval_scores(eval_body, EVAL_AXES)
+        _record_eval("ai_news", scores, label=week_label, wall_s=_wall_s,
+                     baseline_model=models[0]["model"], candidate_model=models[1]["model"])
+        if "parse_error" in scores:
+            log(f"WARN: 採点スコア抽出失敗: {scores['parse_error']}")
+        else:
+            log(f"採点記録: baseline={scores['baseline_overall']} "
+                f"candidate={scores['candidate_overall']} Δ={scores['delta']:+.2f}")
+    except Exception as e:  # noqa: BLE001
+        log(f"WARN: 採点記録に失敗: {e}")
+    eval_body = _strip_eval_json_block(eval_body)
 
     return f"""<div class="sonnet-eval" markdown="1">
 
