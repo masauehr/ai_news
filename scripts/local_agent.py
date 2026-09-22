@@ -328,10 +328,17 @@ def tool_append_to_readme(
 
 
 def _insert_li_at_top_of_ul(md_path: Path, new_li: str) -> bool:
-    """<ul class="article-list"> の直後に new_li を1行挿入する。成功したら True を返す。"""
+    """<ul class="article-list"> の直後に new_li を1行挿入する（重複チェック付き）。成功したら True を返す。
+
+    エージェントが同一ツールを複数ターンにわたって重複呼び出しすることがあるため、
+    既に同じ <li> 行が存在する場合は挿入しない。
+    """
     if not md_path.exists():
         return False
-    lines = md_path.read_text(encoding="utf-8").split("\n")
+    content = md_path.read_text(encoding="utf-8")
+    if new_li.strip() in content:
+        return False
+    lines = content.split("\n")
     result = []
     inserted = False
     for line in lines:
@@ -372,13 +379,17 @@ def tool_update_index(
 
     results = []
 
-    # 1. トップページ (index.md) — 週次・月次の両セクションを更新
+    # 1. トップページ (index.md) — 週次・月次の両セクションを更新（重複チェック付き）
     top = PROJECT_DIR / "index.md"
     if top.exists():
-        lines = top.read_text(encoding="utf-8").split("\n")
+        top_content = top.read_text(encoding="utf-8")
+        week_already = week_li.strip() in top_content
+        month_already = bool(month_li) and month_li.strip() in top_content
+        lines = top_content.split("\n")
         out = []
         in_weekly = in_monthly = False
-        weekly_done = monthly_done = False
+        weekly_done = week_already
+        monthly_done = month_already
         for line in lines:
             out.append(line)
             if '<h2 class="section-title">' in line:
@@ -390,8 +401,9 @@ def tool_update_index(
             if month_li and in_monthly and not monthly_done and line.strip() == '<ul class="article-list">':
                 out.append(month_li)
                 monthly_done = True
-        top.write_text("\n".join(out), encoding="utf-8")
-        results.append("index.md")
+        if not week_already or (month_li and not month_already):
+            top.write_text("\n".join(out), encoding="utf-8")
+            results.append("index.md")
 
     # 2. 週次一覧ページ (articles/weekly/index.md)
     if _insert_li_at_top_of_ul(PROJECT_DIR / "articles/weekly/index.md", week_li):
