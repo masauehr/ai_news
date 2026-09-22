@@ -25,6 +25,8 @@
       --ornith-bg: #fff3e0;
       --nemotron-color: #4527a0;
       --nemotron-bg: #ede7f6;
+      --qwen38-color: #00695c;
+      --qwen38-bg: #e0f2f1;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -110,6 +112,7 @@
     .badge.haiku    { background: var(--haiku-bg);    color: var(--haiku-color); }
     .badge.ornith   { background: var(--ornith-bg);   color: var(--ornith-color); }
     .badge.nemotron { background: var(--nemotron-bg); color: var(--nemotron-color); }
+    .badge.qwen38   { background: var(--qwen38-bg);   color: var(--qwen38-color); }
 
     /* 2カラム比較エリア（メイン: Ollama vs Haiku） */
     .compare-wrapper {
@@ -163,6 +166,7 @@
     .haiku-panel    .panel-header-bar { background: var(--haiku-bg);    border-bottom-color: #ef9a9a; }
     .ornith-panel   .panel-header-bar { background: var(--ornith-bg);   border-bottom-color: #ffb74d; }
     .nemotron-panel .panel-header-bar { background: var(--nemotron-bg); border-bottom-color: #b39ddb; }
+    .qwen38-panel   .panel-header-bar { background: var(--qwen38-bg);   border-bottom-color: #4db6ac; }
 
     .model-badge {
       display: inline-block;
@@ -175,6 +179,7 @@
     .haiku-panel    .model-badge { background: var(--haiku-color);    color: white; }
     .ornith-panel   .model-badge { background: var(--ornith-color);   color: white; }
     .nemotron-panel .model-badge { background: var(--nemotron-color); color: white; }
+    .qwen38-panel   .model-badge { background: var(--qwen38-color);   color: white; }
 
     .model-name {
       font-size: 0.82rem;
@@ -403,7 +408,7 @@
   <footer>
     <p>
       自動生成 by <a href="https://github.com/masauehr/ai_news" target="_blank" rel="noopener">masauehr/ai_news</a>
-      &nbsp;|&nbsp; Ollama ローカルLLM（qwen3.6 / ornith / nemotron）× Claude Haiku 比較
+      &nbsp;|&nbsp; Ollama ローカルLLM（qwen3.6 / ornith / nemotron / qwen3.8）× Claude Haiku 比較
     </p>
   </footer>
 </body>

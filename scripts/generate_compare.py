@@ -6,6 +6,7 @@ generate_compare.py — 複数モデルの週次記事を並べた比較ペー�
 追加ローカルモデル（縦積み・任意）: articles/weekly_<variant>/ に記事があれば下段に追加
   - ornith   … ornith-1.5:35b（土曜 10:00 生成）
   - nemotron … nemotron-3.5-lightning:30b-mlx（土曜 11:00 生成）
+  - qwen38   … qwen3.8:27b-mlx（土曜 12:00 生成）
 
 Claude Sonnet による比較・評価は、その週に揃っている全モデルを対象にする。
 
@@ -70,6 +71,12 @@ VARIANT_MODELS = [
         "badge": "🌩️ nemotron",
         "model": "nemotron-3.5-lightning:30b-mlx",
         "schedule": "土曜 11:00 生成",
+    },
+    {
+        "key": "qwen38",
+        "badge": "💠 qwen3.8",
+        "model": "qwen3.8:27b-mlx",
+        "schedule": "土曜 12:00 生成",
     },
 ]
 
