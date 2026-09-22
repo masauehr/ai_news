@@ -9,6 +9,7 @@
 #   - 月次生成・README/index更新は行わない（記事生成と push のみ）
 #   例: AI_NEWS_VARIANT=ornith   AI_NEWS_MODEL=ornith-1.5:35b            （土曜 10:00）
 #       AI_NEWS_VARIANT=nemotron AI_NEWS_MODEL=nemotron-3.5-lightning:30b-mlx （土曜 11:00）
+#       AI_NEWS_VARIANT=qwen38   AI_NEWS_MODEL=qwen3.8:27b-mlx            （土曜 12:00）
 
 set -euo pipefail
 

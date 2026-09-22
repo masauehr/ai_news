@@ -35,6 +35,7 @@ ai_news/
 │   ├── weekly/YYYY-MMDD.md          # Ollama 週次記事（qwen3.6、土曜 09:00 自動生成）
 │   ├── weekly_ornith/YYYY-MMDD.md   # 比較用サブモデル記事（ornith-1.5:35b、土曜 10:00）
 │   ├── weekly_nemotron/YYYY-MMDD.md # 比較用サブモデル記事（nemotron-3.5-lightning、土曜 11:00）
+│   ├── weekly_qwen38/YYYY-MMDD.md   # 比較用サブモデル記事（qwen3.8:27b-mlx、土曜 12:00）
 │   ├── haiku_weekly/YYYY-MMDD.md    # Haiku 週次記事（土曜 13:00 自動生成）
 │   ├── compare/YYYY-MMDD.md         # モデル比較ページ（13:00 以降 自動生成／全モデル横断）
 │   └── monthly/YYYY-MM.md           # 月次まとめ（第1土曜 自動生成）
@@ -48,6 +49,7 @@ ai_news/
     ├── com.user.ai_news.plist       # launchd 設定（土曜 09:00 qwen3.6）
     ├── com.user.ai_news_ornith.plist    # launchd 設定（土曜 10:00 ornith）
     ├── com.user.ai_news_nemotron.plist  # launchd 設定（土曜 11:00 nemotron）
+    ├── com.user.ai_news_qwen38.plist    # launchd 設定（土曜 12:00 qwen3.8）
     └── com.user.ai_news_haiku.plist # launchd 設定（土曜 13:00 Haiku）
 ```
 
@@ -58,6 +60,7 @@ ai_news/
 | `articles/weekly/YYYY-MMDD.md` | Ollama 週次まとめ（qwen3.6） | **自動生成**（09:00） | 毎週土曜 |
 | `articles/weekly_ornith/YYYY-MMDD.md` | 比較用サブモデル（ornith-1.5:35b） | **自動生成**（10:00） | 毎週土曜 |
 | `articles/weekly_nemotron/YYYY-MMDD.md` | 比較用サブモデル（nemotron-3.5-lightning） | **自動生成**（11:00） | 毎週土曜 |
+| `articles/weekly_qwen38/YYYY-MMDD.md` | 比較用サブモデル（qwen3.8:27b-mlx） | **自動生成**（12:00） | 毎週土曜 |
 | `articles/haiku_weekly/YYYY-MMDD.md` | Haiku 週次まとめ | **自動生成**（13:00） | 毎週土曜 |
 | `articles/compare/YYYY-MMDD.md` | モデル比較ページ（その週の全モデル） | **自動生成**（13:00以降） | 毎週土曜 |
 | `articles/monthly/YYYY-MM.md` | 月次まとめ | **自動生成** | 毎月第1土曜 |
