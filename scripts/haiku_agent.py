@@ -83,9 +83,13 @@ def append_to_readme(week_label: str, week_path: str) -> str:
 
 
 def _insert_li_at_top_of_ul(md_path: Path, new_li: str) -> bool:
+    """<ul class="article-list"> の直後に new_li を1行挿入する（重複チェック付き）。"""
     if not md_path.exists():
         return False
-    lines = md_path.read_text(encoding="utf-8").split("\n")
+    content = md_path.read_text(encoding="utf-8")
+    if new_li.strip() in content:
+        return False
+    lines = content.split("\n")
     result = []
     inserted = False
     for line in lines:
