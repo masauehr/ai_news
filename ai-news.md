@@ -1196,3 +1196,13 @@ weather_digest で偽情報サイト（nihonnews.jp.net）へのリンクを複�
 - Sonnet 評価は、これらの注記や裏付けのない断定的な主張があれば、評価冒頭で注意喚起する
 - 信頼できる出典が省略されていたら、ログの `link_guard:` 行を見て `ALLOW_DOMAINS` に追加する
 - 不審サイトを見つけたら `BLOCK_DOMAINS` に追加する（weather_digest 側にも追加すること）
+
+## ローカル専用ファイルの管理（2026-10-07 変更）
+
+- `CLAUDE.md` と launchd の plist（`scripts/com.user.ai_news*.plist`）は、絶対パスを含むため公開しない。
+  実体は非公開リポジトリ `masauehr/local_configs` に置き、ai_news にはシンボリックリンクを置いている
+  （詳しくは [local-configs.md](local-configs.md)）。
+- `CLAUDE.md` は過去の履歴に残っていたため、`git filter-repo` で全履歴から削除し強制 push した。
+- 実行スクリプト（`run_ai_news.sh`・`run_ai_news_haiku.sh`）は、絶対パスをスクリプト位置からの相対解決
+  （`PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"`）に書き換え、公開リポジトリでの管理に戻した。
+  以前は `.gitignore` に記載しながら追跡が続いていた（追跡開始後に追記したため除外が効いていなかった）。
