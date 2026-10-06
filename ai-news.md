@@ -16,10 +16,11 @@ macOS の launchd からローカルLLMエージェント（Ollama + tool callin
 | 月の第1土曜 09:00 | Ollama | 月次 | 週次記事に加えて月次まとめ記事も生成・push |
 | 毎週土曜 10:00 | Ollama（ornith-1.5:35b／比較用サブモデル） | 週次 | 同じ週の記事を `articles/weekly_ornith/` に生成・push（README/index更新なし） |
 | 毎週土曜 11:00 | Ollama（nemotron-3.5-lightning:30b-mlx／比較用サブモデル） | 週次 | 同じ週の記事を `articles/weekly_nemotron/` に生成・push（README/index更新なし） |
+| 毎週土曜 12:00 | Ollama（qwen3.8:27b-mlx／比較用サブモデル） | 週次 | 同じ週の記事を `articles/weekly_qwen38/` に生成・push（README/index更新なし） |
 | 毎週土曜 13:00 | Claude Haiku（Anthropic API） | 週次 | 同じ週の記事を別ファイルに生成・push → その週に揃った全モデルの比較ページを自動生成 |
 | 月の第1土曜 13:00 | Claude Haiku（Anthropic API） | 月次 | Haiku版月次まとめを生成・push → 月次比較ページも自動生成 |
 
-> 比較用サブモデル（ornith / nemotron）は `run_ai_news.sh` を `AI_NEWS_VARIANT=<key>` 付きで起動する軽量モード。
+> 比較用サブモデル（ornith / nemotron / qwen38）は `run_ai_news.sh` を `AI_NEWS_VARIANT=<key>` 付きで起動する軽量モード。
 > 記事生成と push のみを行い、README.md / index.md / 一覧ページの更新・月次生成はしない。
 > モデルは https://masauehr.github.io/local_agent/ の比較で選定したローカルモデル。
 
@@ -30,6 +31,7 @@ macOS の launchd からローカルLLMエージェント（Ollama + tool callin
 > - 2026-05-31: **ファイル名・期間ラベルの基準を「実行日」ベースに変更**（実行日7日前〜実行日を対象期間とする）
 > - 2026-06-07: **Haiku月次記事・月次比較ページを追加**。Sonnet評価セクション（`.sonnet-eval`）をcompare layoutに追加。ホームページをSonnet評価付き最新比較に変更。フッター表記を修正。
 > - 2026-08-28: **比較用ローカルモデル2種（ornith-1.5:35b／土曜10:00、nemotron-3.5-lightning:30b-mlx／土曜11:00）を追加**。`run_ai_news.sh` に `AI_NEWS_VARIANT` モードを実装（`articles/weekly_<key>/` に保存・後処理なし）。`generate_compare.py` をその週に揃った全モデル対応に拡張（メイン2カラム＋追加モデル縦積み、Sonnet評価も全モデル対象）。`compare.html` に ornith/nemotron 用CSSを追加。
+> - 2026-09-22: **比較用ローカルモデル qwen3.8:27b-mlx（土曜12:00）を追加**。既存の `AI_NEWS_VARIANT` 機構（ornith/nemotron と同一コード経路）に `qwen38` を追加しただけで `local_agent.py` / `run_ai_news.sh` は無変更。`generate_compare.py` の `VARIANT_MODELS` に追記、`compare.html` に qwen38 用CSS（teal系）を追加、`com.user.ai_news_qwen38.plist`（土曜12:00・非公開）を新設。
 > - 2026-08-28: **agent_orchestrator（メタプロジェクト）と計測連携**。`local_agent.py` の `call_ollama()` と `haiku_agent.py` の `run_claude_cli()` に、トークン・時間・コストを共有台帳（`agent_orchestrator/var/ledger.jsonl`）へ追記する数行を追加（挙動変更なし）。`run_claude_cli` は `--output-format json` + `capture_output` 化。集計は `python -m orchestrator.cli report`。詳細は [agent-orchestrator](agent-orchestrator.md)
 > - 2026-08-28: **フェーズ2 横展開**。`run_ai_news_haiku.sh`（ローカル専用）が Haiku 起動前に agent_orchestrator の `ai_news_prefetch` パイプライン（検索→本文取得→ローカルOllamaで圧縮要約）を実行し、結果を `haiku_agent.py --prefetch @file` で渡す。失敗時は従来の `fetch_news.py` 生スクレイプにフォールバック。`haiku_agent.py` は `--prefetch @/path/file` 形式に対応。
 > - 2026-09-09: **Sonnet 比較評価の採点スコアを共有台帳へ記録**。`generate_compare.py` の `generate_sonnet_eval` が評価プロンプト末尾で「6観点（情報の深さ／カバレッジ／国内AI動向／読みやすさ／情報源の明示／ビジネス視点）を Ollama 記事・Haiku 記事それぞれ 1〜5 で採点」した JSON を要求し、`orch_meter.parse_eval_scores` で抽出 → `record_eval("ai_news", ...)` で `task="evaluate"` の 1 行を追記（比較ページ本文からは JSON を除去）。判定は Δ = Haiku − Ollama ≥ −0.3 で合格、集計は `orchestrator.cli report` の「品質評価」節。agent_orchestrator を import できないときはシムが no-op になり比較ページ生成は継続。
@@ -43,6 +45,7 @@ macOS の launchd からローカルLLMエージェント（Ollama + tool callin
 | `articles/weekly/YYYY-MMDD.md` | Ollama 週次記事（8〜12トピック） | Ollama（qwen3.6:35b-mlx） | 毎週土曜 09:00 |
 | `articles/weekly_ornith/YYYY-MMDD.md` | 比較用サブモデル週次記事 | Ollama（ornith-1.5:35b） | 毎週土曜 10:00 |
 | `articles/weekly_nemotron/YYYY-MMDD.md` | 比較用サブモデル週次記事 | Ollama（nemotron-3.5-lightning:30b-mlx） | 毎週土曜 11:00 |
+| `articles/weekly_qwen38/YYYY-MMDD.md` | 比較用サブモデル週次記事 | Ollama（qwen3.8:27b-mlx） | 毎週土曜 12:00 |
 | `articles/haiku_weekly/YYYY-MMDD.md` | Haiku 週次記事（同じ週を別視点で生成） | Claude Haiku | 毎週土曜 13:00 |
 | `articles/compare/YYYY-MMDD.md` | その週に揃った全モデルの週次記事を並べた比較ページ（メイン2カラム＝qwen3.6 vs Haiku＋追加モデル縦積み、Sonnet評価付き） | generate_compare.py | 毎週土曜 13:00以降 |
 | `articles/monthly/YYYY-MM.md` | Ollama 月次まとめ記事 | Ollama | 毎月第1土曜 |
@@ -147,13 +150,14 @@ Ollama の `/api/chat` API（tool calling 対応）を使う。
 **デフォルトモデル:** `qwen3.6:35b-mlx`（環境変数 `AI_NEWS_MODEL` で変更可能）
 
 **比較用サブモデルモード（`AI_NEWS_VARIANT`）:**
-`run_ai_news.sh` を `AI_NEWS_VARIANT=ornith`（または `nemotron`）付きで起動すると:
+`run_ai_news.sh` を `AI_NEWS_VARIANT=ornith`（または `nemotron` / `qwen38`）付きで起動すると:
 - ログ: `ai_news_<variant>.log`／実行済み判定ファイル: `articles/weekly_<variant>/YYYY-MMDD.md`
 - 常に週次モード（月次判定はスキップ）
 - `local_agent.py --variant <variant>` が `VARIANT_SYSTEM_PROMPT_TMPL`（簡略版）を使う
   → 情報収集 → `write_article`（`articles/weekly_<variant>/` へ）→ `git_commit_push`（その1ファイルのみ）
   → `append_to_readme` / `update_index` は呼ばない
-- launchd 登録は `com.user.ai_news_ornith.plist`（土曜10:00）/ `com.user.ai_news_nemotron.plist`（土曜11:00）。
+- launchd 登録は `com.user.ai_news_ornith.plist`（土曜10:00）/ `com.user.ai_news_nemotron.plist`（土曜11:00）/
+  `com.user.ai_news_qwen38.plist`（土曜12:00）。
   モデル名・variant は各 plist の `EnvironmentVariables`（`AI_NEWS_MODEL` / `AI_NEWS_VARIANT`）で指定。
 
 #### Haiku エージェント（`haiku_agent.py`）
@@ -184,15 +188,15 @@ Anthropic SDK の tool use（`client.messages.create`）を使う。
 
 1. `collect_models()` がその週に揃っているモデル記事を検出する
    - 必須: `articles/weekly/YYYY-MMDD.md`（qwen3.6）と `articles/haiku_weekly/YYYY-MMDD.md`（Haiku）。どちらか欠けたら比較不成立でスキップ
-   - 任意: `articles/weekly_ornith/YYYY-MMDD.md` / `articles/weekly_nemotron/YYYY-MMDD.md`（`VARIANT_MODELS` で定義）。あれば追加
+   - 任意: `articles/weekly_ornith/YYYY-MMDD.md` / `articles/weekly_nemotron/YYYY-MMDD.md` / `articles/weekly_qwen38/YYYY-MMDD.md`（`VARIANT_MODELS` で定義）。あれば追加
 2. Jekyll front matter を除去して本文だけを抽出する
 3. `_layouts/compare.html` を使った Markdown を生成する
-   - `build_compare_block()`: 比較ヘッダー（全モデルのバッジ）＋メイン2カラム（`.compare-wrapper` = qwen3.6 vs Haiku）＋追加モデル縦積み（`.compare-extra` = ornith / nemotron）
+   - `build_compare_block()`: 比較ヘッダー（全モデルのバッジ）＋メイン2カラム（`.compare-wrapper` = qwen3.6 vs Haiku）＋追加モデル縦積み（`.compare-extra` = ornith / nemotron / qwen38）
 4. `generate_sonnet_eval()`: Claude Code CLI（`--model sonnet`）にその週の全モデル記事を渡し、モデル数ぶんの列を持つ評価表と総評を生成
 5. `articles/compare/index.md` と `index.md` の比較セクションを更新する
 6. git commit / push する（追加モデルの記事ファイルも存在すればコミット対象に含める）
 
-> 追加モデル（ornith 10:00 / nemotron 11:00）は比較生成（13:00〜）より前に走るため通常は間に合う。
+> 追加モデル（ornith 10:00 / nemotron 11:00 / qwen38 12:00）は比較生成（13:00〜）より前に走るため通常は間に合う。
 > 万一 13:00 時点で未生成なら、そのモデルはその週の比較ページから欠落する（比較ページは1回だけ生成し再生成しない）。
 
 ---
@@ -279,6 +283,7 @@ BeautifulSoup で取得できない JS 描画ページや特定 URL の詳細取
 │   ├── weekly/YYYY-MMDD.md               # Ollama 週次記事（qwen3.6、土曜 09:00）
 │   ├── weekly_ornith/YYYY-MMDD.md        # 比較用サブモデル週次記事（ornith-1.5:35b、土曜 10:00）
 │   ├── weekly_nemotron/YYYY-MMDD.md      # 比較用サブモデル週次記事（nemotron-3.5-lightning:30b-mlx、土曜 11:00）
+│   ├── weekly_qwen38/YYYY-MMDD.md        # 比較用サブモデル週次記事（qwen3.8:27b-mlx、土曜 12:00）
 │   ├── haiku_weekly/YYYY-MMDD.md         # Haiku 週次記事（土曜 13:00）
 │   ├── monthly/YYYY-MM.md                # Ollama 月次まとめ記事（第1土曜）
 │   ├── haiku_monthly/YYYY-MM.md          # Haiku 月次まとめ記事（第1土曜 13:00）
@@ -295,10 +300,12 @@ BeautifulSoup で取得できない JS 描画ページや特定 URL の詳細取
 │   ├── com.user.ai_news.plist            # launchd 設定 土曜09:00 qwen3.6（非公開）
 │   ├── com.user.ai_news_ornith.plist    # launchd 設定 土曜10:00 ornith（非公開）
 │   ├── com.user.ai_news_nemotron.plist  # launchd 設定 土曜11:00 nemotron（非公開）
+│   ├── com.user.ai_news_qwen38.plist    # launchd 設定 土曜12:00 qwen3.8（非公開）
 │   └── com.user.ai_news_haiku.plist     # launchd 設定 土曜13:00 Haiku（非公開）
 ├── ai_news.log                            # Ollama（qwen3.6）実行ログ（非公開）
 ├── ai_news_ornith.log                     # ornith 実行ログ（非公開）
 ├── ai_news_nemotron.log                   # nemotron 実行ログ（非公開）
+├── ai_news_qwen38.log                     # qwen3.8 実行ログ（非公開）
 └── ai_news_haiku.log                      # Haiku 実行ログ（非公開）
 ```
 
@@ -309,7 +316,7 @@ BeautifulSoup で取得できない JS 描画ページや特定 URL の詳細取
 | `README.md` / `SPEC.md` / `articles/` / `_layouts/` | ✅ 公開 | 記事本体・仕様・Jekyll テーマは公開コンテンツ |
 | `scripts/local_agent.py` / `haiku_agent.py` / `generate_compare.py` / `fetch_news.py` | ✅ 公開 | 絶対パスを含まない汎用スクリプト |
 | `CLAUDE.md` | ❌ 非公開 | 絶対パス等の個人情報を含む |
-| `scripts/run_ai_news*.sh` / `scripts/com.user.ai_news*.plist` | ❌ 非公開 | 絶対パス等の個人情報を含む（`.gitignore` に4種の plist を明記） |
+| `scripts/run_ai_news*.sh` / `scripts/com.user.ai_news*.plist` | ❌ 非公開 | 絶対パス等の個人情報を含む（`.gitignore` に5種の plist を明記） |
 | `*.log` | ❌ 非公開 | 実行ログはローカル専用 |
 
 ---
@@ -453,6 +460,11 @@ cp ~/projects/ai_news/scripts/com.user.ai_news_nemotron.plist \
    ~/Library/LaunchAgents/com.user.ai_news_nemotron.plist
 launchctl load ~/Library/LaunchAgents/com.user.ai_news_nemotron.plist
 
+# 比較用サブモデル qwen3.8（土曜 12:00）
+cp ~/projects/ai_news/scripts/com.user.ai_news_qwen38.plist \
+   ~/Library/LaunchAgents/com.user.ai_news_qwen38.plist
+launchctl load ~/Library/LaunchAgents/com.user.ai_news_qwen38.plist
+
 # Haiku 版（13:00）
 cp ~/projects/ai_news/scripts/com.user.ai_news_haiku.plist \
    ~/Library/LaunchAgents/com.user.ai_news_haiku.plist
@@ -460,8 +472,8 @@ launchctl load ~/Library/LaunchAgents/com.user.ai_news_haiku.plist
 
 # 登録確認
 launchctl list | grep ai_news
-# → com.user.ai_news / com.user.ai_news_ornith / com.user.ai_news_nemotron / com.user.ai_news_haiku
-#   の4つが表示されれば OK
+# → com.user.ai_news / com.user.ai_news_ornith / com.user.ai_news_nemotron / com.user.ai_news_qwen38 / com.user.ai_news_haiku
+#   の5つが表示されれば OK
 ```
 
 #### launchd設定（com.user.ai_news.plist）の最小構成
@@ -610,6 +622,7 @@ AI_NEWS_MODEL=qwen3.6:27b-mlx bash ~/projects/ai_news/scripts/run_ai_news.sh
 # 比較用サブモデルを手動実行（articles/weekly_<variant>/ に生成）
 AI_NEWS_VARIANT=ornith   AI_NEWS_MODEL=ornith-1.5:35b                bash ~/projects/ai_news/scripts/run_ai_news.sh
 AI_NEWS_VARIANT=nemotron AI_NEWS_MODEL=nemotron-3.5-lightning:30b-mlx bash ~/projects/ai_news/scripts/run_ai_news.sh
+AI_NEWS_VARIANT=qwen38   AI_NEWS_MODEL=qwen3.8:27b-mlx                bash ~/projects/ai_news/scripts/run_ai_news.sh
 tail -f ~/projects/ai_news/ai_news_ornith.log
 
 # Haiku 版
@@ -626,12 +639,14 @@ python3 ~/projects/ai_news/scripts/generate_compare.py \
 launchctl start com.user.ai_news           # Ollama 版（qwen3.6）
 launchctl start com.user.ai_news_ornith    # 比較用 ornith
 launchctl start com.user.ai_news_nemotron  # 比較用 nemotron
+launchctl start com.user.ai_news_qwen38    # 比較用 qwen3.8
 launchctl start com.user.ai_news_haiku     # Haiku 版
 
 # ログ確認
 tail -f ~/projects/ai_news/ai_news.log           # Ollama（qwen3.6）ログ
 tail -f ~/projects/ai_news/ai_news_ornith.log    # ornith ログ
 tail -f ~/projects/ai_news/ai_news_nemotron.log  # nemotron ログ
+tail -f ~/projects/ai_news/ai_news_qwen38.log    # qwen3.8 ログ
 tail -f ~/projects/ai_news/ai_news_haiku.log     # Haiku ログ
 ```
 
@@ -709,6 +724,24 @@ ai_news の週次比較にこの2モデルを定点観測として組み込む�
 - `nemotron-3.5-lightning` はタグ無しでは `ollama` に存在せず、`:30b` と `:30b-mlx` がある。
   qwen3.6 と同じく MLX 版（`nemotron-3.5-lightning:30b-mlx`）を採用。変更する場合は
   `com.user.ai_news_nemotron.plist` の `AI_NEWS_MODEL` を書き換えて reload する。
+
+---
+
+### 2026-09-22: 比較用ローカルモデル qwen3.8:27b-mlx（土曜12:00）を追加
+
+**背景:**
+Ollama にローカル導入済みの `qwen3.8:27b-mlx` を、qwen3.6 系の後継候補として定点観測に加える。
+
+**実装:**
+- 2026-08-28 の ornith/nemotron 追加時に汎用化済みの `AI_NEWS_VARIANT` 機構をそのまま使用。
+  `local_agent.py` / `run_ai_news.sh` は無変更（`--variant qwen38` を渡すだけで動く）。
+- `generate_compare.py` の `VARIANT_MODELS` に `{key: "qwen38", badge: "💠 qwen3.8", model: "qwen3.8:27b-mlx", schedule: "土曜 12:00 生成"}` を追加。
+- `_layouts/compare.html` に qwen38 用の配色（teal系 `--qwen38-color: #00695c` / `--qwen38-bg: #e0f2f1`）を追加。
+- `com.user.ai_news_qwen38.plist`（新規・非公開）で土曜12:00に登録。nemotron(11:00)の後、Haiku・比較生成(13:00)の前に完了する。
+
+**追加モデル数が増えた場合の方針（変更なし）:**
+比較ページ下段の縦積み（`.compare-extra`）に追加していく方式を維持。
+横並びカラムを増やす設計変更は行わない（2026-08-28 の判断を踏襲）。
 
 ---
 
@@ -1147,3 +1180,19 @@ markdown: kramdown         # デフォルト（明示的に設定することも
 | Haiku 記事の内容が薄い | Haiku の文章生成能力の限界 | `HAIKU_MODEL=claude-sonnet-4-6` で上位モデルに変更 |
 | 比較ページのレイアウトが崩れる | `_layouts/compare.html` の問題 | Jekyll の `markdown="1"` が有効か確認（→ GitHub Pages技術解説参照） |
 | Sonnet評価のテーブルや見出しが表示されない | `markdown="1"` が抜けている | compare ページの `<div class="sonnet-eval">` に `markdown="1"` を追加 |
+
+
+## 危ないリンクの掲載防止（link_guard、2026-10-07 導入）
+
+weather_digest で偽情報サイト（nihonnews.jp.net）へのリンクを複数モデルが掲載した事例を受け、同じ仕組みを導入した。
+`scripts/link_guard.py` が公開前に記事内の全リンクを自動検査する（全モデル共通）。
+
+| 判定 | 条件 | 記事での扱い |
+|---|---|---|
+| 許可 | 公的機関（`.go.jp` 等）、AI企業公式、arXiv・Hugging Face・GitHub、note・Qiita・Zenn、主要メディア | リンクをそのまま残す |
+| 拒否 | `BLOCK_DOMAINS`、または `jp.net` などの疑似ドメイン | 「（不審サイトのためリンク削除）」に置換。取得自体も禁止 |
+| 未確認 | 上記以外（出所不明のAIまとめサイトなど） | 「（未確認の出典のためリンク省略）」に置換 |
+
+- Sonnet 評価は、これらの注記や裏付けのない断定的な主張があれば、評価冒頭で注意喚起する
+- 信頼できる出典が省略されていたら、ログの `link_guard:` 行を見て `ALLOW_DOMAINS` に追加する
+- 不審サイトを見つけたら `BLOCK_DOMAINS` に追加する（weather_digest 側にも追加すること）
