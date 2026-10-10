@@ -14,6 +14,7 @@ Claude Sonnet による全モデル横断の評価付き。
 毎月第1土曜日に自動生成。
 
 <ul class="article-list">
+  <li><a href="{{ site.baseurl }}/articles/compare/2026-1010">10/3〜10/10</a><span class="date">2026-10-10</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-1003">9/26〜10/3</a><span class="date">2026-10-03</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-0926">9/19〜9/26</a><span class="date">2026-09-26</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-0912">9/5〜9/12</a><span class="date">2026-09-12</span></li>
