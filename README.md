@@ -108,6 +108,7 @@ Haiku 週次まとめ（`run_ai_news_haiku.sh`）は、生成前に
 
 ### Haiku週次まとめ（Claude Haiku）
 
+- [10/3〜10/10](./articles/haiku_weekly/2026-1010.md)
 - [9/26〜10/3](./articles/haiku_weekly/2026-1003.md)
 - [9/19〜9/26](./articles/haiku_weekly/2026-0926.md)
 - [9/5〜9/12](./articles/haiku_weekly/2026-0912.md)
