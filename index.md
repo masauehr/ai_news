@@ -4,7 +4,7 @@ title: 生成AI週次ダイジェスト
 ---
 
 <div class="compare-header">
-  <h1>🔬 モデル比較（10/10〜10/17）</h1>
+  <h1>🔬 モデル比較（10/17〜10/24）</h1>
   <div class="compare-meta">
     <span class="badge ollama">🖥️ qwen3.6</span> <span style="font-family:monospace;font-size:0.82rem;color:#666">qwen3.6:35b-mlx（土曜 09:00 生成）</span>
     <span style="margin: 0 0.5rem;">vs</span>
@@ -24,137 +24,93 @@ title: 生成AI週次ダイジェスト
 </div>
 <div class="panel-body" markdown="1">
 
-# 生成AI週次ダイジェスト（10/10〜10/17）
+# 生成AI週次ダイジェスト（10/17〜10/24）
 
-今週は、Google DeepMindが次期フラッグシップモデル「Gemini 4 Argon」を正式発表。AnthropicはClaudeを用いたバイオ発見やエンタープライズ人材育成プログラムを開始しました。また、OpenAIオフィスでの盗聴事件発覚やMetaスマートグラスのプライバシー問題など、セキュリティ・倫理面でも注目すべき動きがありました。
+今週は、主要モデルの刷新とローカルLLMの実用化が加速した一週間となりました。Anthropicは低コスト・高速化を謳う「Haiku 5.5」をリリースし、OpenAIは主力モデルo3-miniのサービス終了を発表しました。また、Google DeepMindはGemini 4 Argonの一般公開を開始し、デジタル庁はガバメントAI「源内」でAIエージェント機能を提供開始するなど、実社会へのAI導入が本格化しています。
 
----
+## 1. Anthropic: Claude Haiku 5.5リリース、低コスト・高速化を強調
 
-## 1. Google DeepMind: 次期フラッグシップ「Gemini 4 Argon」発表、コード量80万行のリファクタリング成功
+Anthropicは10月7日、Claudeシリーズの最新小モデル**Claude Haiku 5.5**を正式リリースしました[1](https://www.anthropic.com/claude-haiku-5-5)。Haiku 5.5は「これまでで最も高速かつ低コストな小モデル」として位置づけられ、要約やサブエージェント処理など、高ボリュームでコスト敏感なタスクに最適化されています。
 
-Google DeepMindは次期フロントアイアモデル**Gemini 4 Argon**を発表しました（[Introducing Gemini 4 Argon](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/)）。Argonは複雑で長期にわたるワークフローにおける深い推論を目的として構築され、ソフトウェアエンジニアリング、法律・金融などのエンタープライズナレッジワーク、サイバーセキュリティ防御においてフロントパフォーマンスを提供します。
+特徴的な点は、**Haikuシリーズ初の「思考レベル（effort levels）」対応**です。これにより、単純なタスクでは高速処理を、やや複雑な推論が必要なタスクでは性能を引き上げる柔軟性が実現しました。価格は10万トークン未満の入力で$0.10/Mと前モデル比90%の大幅値下げを実現し、エンタープライズの利用コスト削減に貢献します2（未確認の出典のためリンク省略）。
 
-主な特徴:
-- **出力トークン制限100万トークン**へ大幅拡大（従来64K）
-- **DeepSWE v1.1で77.9%**という新記録（リアルワールドの長期ソフトウェアエンジニアリングタスク）
-- **Vals Indexで#1**（金融、コーディング、法律、税務の各セクターを米GDP貢献度で重み付け）
-- **CWE-bench v1で68%**（セキュリティ脆弱性の remediation 能力）
+また、Anthropicは先月リリースしたClaude Opus 5.5（9月22日）とSonnet 5.5に続き、Haiku 5.5でClaude 5.5ファミリーを完成させました[3](https://www.anthropic.com/news/announcements)。
 
-実用例として、Chromeの4000万行コードベースから約600万行のレガシーフォルダを分離するアーキテクチャリファクタリングや、Pythonコードベースのリファクタリングによりメモリ準備時間を40%削減するなど、実際のエンジニアリング生産性向上に貢献しています。
+## 2. OpenAI: o3-miniのサービス終了を発表、後継モデルへ移行
 
-導入価格は**$2/million input tokens、$10/million output tokens**（キャッシュ入力トークンは95%オフ）。API経由でAI StudioおよびGeminiプラットフォームから利用可能です。
+OpenAIは10月23日付で**o3-mini（o3-mini-2025-01-31）のサービス終了（retirement）**を発表しました4（未確認の出典のためリンク省略）。o3-miniは2025年1月のリリース以来、STEM推論や軽量なエージェント用途で広く利用されてきましたが、後継モデルへの移行に伴い提供が終了します。
 
-また、AnthropicはClaudeを用いたバイオ発見でも注目すべき成果を発表しました。Claudeが独自に新規酵素システム（array-associated reverse transcriptases: ART）を発見し、MITのFeng Zhang教授らも「AIエージェントが生物発見に貢献するエキサイティングな例」と評価しています（[Claude Discovers Novel Enzyme System](https://www.anthropic.com/news/claude-discovers-novel-enzyme-system)）。
+OpenAIは今週、**o3のAPI価格改定**（入力$2/M、出力$8/M）を適用しており5（未確認の出典のためリンク省略）、o3-mini終了後はo3や新しい推論モデルへの移行が推奨されます。また、OpenAIは10月6日、722本のAI生成数学論文を発表し、AIによる数学研究の加速を示しました6（未確認の出典のためリンク省略）。
 
----
+## 3. Google DeepMind: Gemini 4 Argon一般公開、Carbon内部テストも
 
-## 2. Anthropic: $1億投資のClaude Frontier Academy発表、$1.5億のGenesis Mission支援
+Google DeepMindは10月13日、Gemini 4シリーズのフラッグシップモデル**Gemini 4 Argon**をAPIおよびGoogle AI Pro/Ultraサブスクライバー向けに一般公開しました[7](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/)。Argonは$2/M入力、$10/M出力で提供され、Vals Indexで#1を記録するなど、コーディング・法律・金融・サイバーセキュリティ分野で最先端性能を発揮します8（未確認の出典のためリンク省略）。
 
-Anthropicは**Claude Frontier Academy**を発表しました（[Claude Frontier Academy](https://www.anthropic.com/news/claude-frontier-academy)）。これは$1億を投じて2027年末までに1万人の「Frontier Deployed Engineers (FDEs)」を育成するプログラムで、Accenture、Bain、Capgemini、Deloitte、McKinsey、Morgan Stanley、Novo Nordiskなどが第一回コホートに参加しています。
+また、Google社内では**Gemini 4 Carbon**という新モデルの内部テストが進行中であり、コード生成においてClaude Opus 5.5に匹敵する性能を持つとの報告があります9（未確認の出典のためリンク省略）。CarbonはGoogle内部の開発プラットフォーム「Jetski」でテストされており、今後の公開が注目されます。
 
-また、米エネルギー省のGenesis Missionに対して**3年間で$1.5億**を提供することも発表（[Genesis Mission Commitment](https://www.anthropic.com/news/genesis-mission-commitment)）。NASA、NIH、NSFなど15以上の機関にClaudeを提供し、融合エネルギーや量子コンピューティングなどの優先課題を支援します。
+## 4. NVIDIA: Nemotron 3.5 Embed/Rerankリリース、エージェントのRAG最適化
 
-さらに、サイバーセキュリティ専門家のための**Cyber Verification Program (CVP)**を拡大（[Cyber Verification Program](https://www.anthropic.com/news/cyber-verification-program)）。Defense Access、Red Team Access、Specialized Accessの3ティアで構成され、Claude Opus 5.5やClaude Mythos 5.1などの最先端モデルへのアクセスを提供します。
+NVIDIAは**Nemotron 3.5**シリーズ（Embed 8B/1B、Rerank 8B、Parse 631M）をHugging Faceで公開しました[10](https://huggingface.co/blog/nvidia/nemotron-retriever-world-class-agentic-retrieval)。これらはマルチモーダルな検索・再ランク付けモデルで、エージェントのRAG（Retrieval-Augmented Generation）性能を大幅に向上させます。
 
----
+Nemotron 3.5 Rerankは、エージェントの推論トークンコストを約14%削減しつつ、検索精度を向上させることが確認されています[10](https://huggingface.co/blog/nvidia/nemotron-retriever-world-class-agentic-retrieval)。これにより、エンタープライズ規模のエージェント利用における効率化とコスト削減が期待されます。
 
-## 3. OpenAI: オフィスに盗聴器設置のサウジアラビア国籍エンジニアを逮捕
+## 5. デジタル庁: ガバメントAI「源内」でAIエージェント機能提供開始
 
-米司法省は10月13日、OpenAIサンフランシスコオフィスの役員会議室に録音装置を仕掛けたとして、サウジアラビア国籍のAbdulrahman Alfozan容疑者（35）を盗聴の罪で訴追したと発表（[OpenAI役員会議室に盗聴器](https://www.techno-edge.net/article/2026/10/14/5585.html)）。
+日本のデジタル庁は10月20日、政府職員約18万人向けの生成AI環境**ガバメントAI「源内（げんない）」**で、**AIエージェント機能**の提供を開始したと発表しました[11](https://www.sbbit.jp/article/cont1/187626)。
 
-FBIが10月9日に逮捕。OpenAIは自社のモデルで装置を解析して出どころをたどり、数日前に設置した従業員を特定してFBIに通報しました。現時点でモデルの重みやソースコードへの不適切なアクセスの兆候はないとしています。
+AIエージェントは複数の業務工程を自律的に実行するため、誤った情報の拡散や不適切なファイル操作などのリスクが伴います。デジタル庁はAIセーフティ・インスティテュートと協力し、「源内基準」を策定し、利用者の職員に対してファイル更新前の人的確認を義務付けるなど、安全な運用ルールを設けました[11](https://www.sbbit.jp/article/cont1/187626)。
 
-容疑者は妻のアカウントからAIに「連続録音機を作る」「Wi-Fi接続をカスタマイズする」などを質問。テレビ裏のUSB端子にSeeed StudioのXIAO ESP32-S3基板とアンテナ部品をつないだ装置を、トイレットペーパーで隠して設置していました。OpenAIは同容疑者を解雇しています。
+また、デジタル庁は得られた知見を基に、2027年2月頃に**源内OSS Ver.2.0**としてオープンソース化する計画です。これにより、地方自治体や民間企業でも安全なAIエージェント活用が可能になります[11](https://www.sbbit.jp/article/cont1/187626)。
 
----
+## 6. ローカルLLM: Llama 4 MaverickとQwen3.5-MaxのOllama対応、BitNet b1.58の進化
 
-## 4. Meta: Ray-Ban Metaスマートグラスが意図しない会話を録音していた問題を認める
+今週もローカルLLMの動向が活発です。Metaの**Llama 4 Maverick**やAlibabaの**Qwen3.5-Max**など、主要なオープンモデルがOllamaで利用可能になりました[12](https://ollama.com/library/llama3:latest)。
 
-Metaは10月13日、複数のRay-Ban Metaユーザーから「Hey Meta」ウェイクフレーズなしに日常会話が録音されていたとの報告を受け、問題を認めました（[Meta、スマートグラスで意図しない音声記録](https://www.techno-edge.net/article/2026/10/17/5598.html)）。
+また、Microsoft Researchの**BitNet b1.58**（1-bit LLM）の研究が進展しており、1.58ビットという極端な低ビット量子化でも高性能を維持する技術が注目されています13（未確認の出典のためリンク省略）。BitNet b1.58は、LLaMAモデルを上回る性能を示す可能性があり、エッジデバイスでのLLM利用に革命をもたらす可能性があります14（未確認の出典のためリンク省略）。
 
-問題は第2世代および第3世代の3組のグラスで発生。録音データから起こされたテキストデータもMeta AIアプリ内に見つかりました。Metaはすでにパッチを配布して修正したと述べていますが、なぜ意図しない録音が発生したかの説明は行っていません。
+## 7. Anthropic: $1億投資でAIエンジニア育成、Christopher Stubbs氏参画
 
-AI Glasses Voice Privacy Noticeには「意図せず」起動した場合、誤検出は90日以内に削除されると記載されていますが、意図的な場合は最長1年間保存され、Meta社員が確認する可能性もあるとされています。
+Anthropicは**Claude Frontier Academy**への$1億投資を発表し、2027年末までに1万人の「フロンティアデプロイエンジニア」を育成する計画です[15](https://www.anthropic.com/news/announcements)。Accenture、Bain、Deloitte、McKinseyなど主要コンサルティングファームや企業から参加者が募られています。
 
----
+また、ハーバード大学元学長の物理学者**Christopher Stubbs氏**がAnthropicのLong-Term Benefit Trustに参加し、AIの長期的な利益確保に向けた科学的視点を提供します[15](https://www.anthropic.com/news/announcements)。
 
-## 5. ローカルLLM: EmbeddingGemma 2公開、Saluki 27BでノートPC動作、Qwen-Image-2.1-Turbo高速化
+## 8. 日本国内動向: 東京都「AI戦略」発表、DeNA南場会長のAI活用発言
 
-今週のローカルLLM関連の注目リリース:
+東京都は全庁横断の**「AI戦略」**を正式発表し、生成AIの行政活用を加速させる方針を示しました[16](https://ledge.ai/articles/tokyo_ai_strategy_2025)。
 
-- **EmbeddingGemma 2**（Google DeepMind）: テキスト、画像、音声、動画を統合処理するオープンなマルチモーダル埋め込みモデル。7億4000万パラメータ（テキスト専用最小2億7000万）、最大8Kトークンコンテキストウィンドウ。スマートフォン上で直接実行可能。Apache 2.0ライセンスで商用利用も可能（[EmbeddingGemma 2](https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/)）。
+また、DeNAの南場智子会長は、生成AIによる効率化でホワイトカラー人員を削減する可能性について言及し、AI活用の現実的な影響について議論を呼んでいます[17](https://www.itmedia.co.jp/aiplus/article/2502/05/1250205130/)。
 
-- **Saluki 27B**（Underdog）: Qwen3.8-27Bを約54GB→**7.89GB**に圧縮した量子化モデル。16GBノートPCで動作可能。エージェント機能のツール呼び出し能力などで元モデルを上回る性能（[Saluki 27B](https://www.techno-edge.net/article/2026/10/16/5596.html)）。
+国内企業における生成AIサービスのシェアでは、ChatGPTが依然として首位ですが、国産LLMやローカルLLMの活用も拡大しています[18](https://it.impress.co.jp/articles/-/27890)。
 
-- **Qwen-Image-2.1-Turbo**（Alibaba Qwenチーム）: テキストから画像生成と画像編集ができるオープンウェイトモデル。通常何回も繰り返すノイズ除去を**8ステップ**で完了。70億パラメータの視覚生成アーキテクチャ（[Qwen-Image-2.1-Turbo](https://www.techno-edge.net/article/2026/10/16/5596.html)）。
+## 9. Note記事: 生成AI使ってみたレビュー今週
 
-- **Open d1 / d1-omni-600M**（Liquid AI）: テキストと画像に対応する意思決定モデル「d1-3B」と、音声にも対応した「d1-omni-600M」。文章を生成せず選択肢から確信度付きで高速に選択。d1-omni-600MはRTX 4090で8ミリ秒の低遅延（[Open d1](https://www.techno-edge.net/article/2026/10/16/5596.html)）。
+- [生成AI主要5社、今週何があった？｜OpenAI・Google・Anthropic・xAI・Qwenを1週間定点観測【2026/8/12〜8/18】](https://note.com/zetton1983/n/n6c841fa3657e) / ぜっとん
+- [週2,241件を読んで選んだ。中小企業の現場で使えるAI](https://note.com/papa_techou/n/nf347c8ca7b41) / papa_techou
 
----
-
-## 6. AIエージェント/MCP: AutoGenメンテナンスモード移行、Microsoft Agent Frameworkへ
-
-AutoGenは2026年3月にメンテナンスモードに移行済み。重要な新機能は追加されず、バグ修正とセキュリティ修正のみ継続（[AutoGenがメンテナンスモード](https://qiita.com/nogataka/items/6685c6f2ca20a2ac887f)）。
-
-Microsoftは後継の**Microsoft Agent Framework**へ移行を推進。LLMを使用してAIエージェントとワークフローを構築するための多言語SDKで、AutoGenで開拓されたアイデアの大幅な進化（[Microsoft Agent Framework](https://learn.microsoft.com/ja-jp/agent-framework/migration-guide/from-autogen/)）。
-
-2026年は「マルチエージェント時代」の幕開けとも呼ばれ、Gartner調査によるとマルチエージェントシステムに関する問い合わせは2024年Q1から2025年Q2にかけて**1,445%**急増（[2026年のAIエージェント最前線](https://zenn.dev/babushkai/articles/2026-01-20-agentic-ai-trends-2026)）。
+## 10. その他: Epic Games AIエージェント活用ゲーム開発コンテスト、Epic GamesはAIエージェントを駆使して製作したゲームの出来栄えを競うコンテスト「2026 AI Game Jam」を開催すると発表しました[19](https://www.techno-edge.net/article/2026/10/23/5621.html)。
 
 ---
 
-## 7. 1-bit LLM: BitNet v2、BitNet.cpp公式フレームワーク
-
-Microsoftは**BitNet.cpp**を公式の1-bit LLM推論フレームワークとしてオープンソース公開（[BitNet.cpp](https://github.com/microsoft/BitNet)）。1.58-bitモデル（BitNet b1.58）向けに最適化されたカーネルを提供し、CPU上で100Bパラメータモデルを6倍高速、エネルギー消費を82%削減。
-
-また、**BitNet v2**では1-bit LLMに原生4-bit活性化量子化を実装。新一代GPU（GB200など）の4-bit計算サポートを最大限活用可能（BitNet v2（未確認の出典のためリンク省略））。
-
-BitNet b1.58 2Bモデルも公開され、W1.58A8量子化で4Tトークンから学習。主要フラッグシップモデルに匹敵する性能を達成（BitNet b1.58（未確認の出典のためリンク省略））。
-
----
-
-## 8. 日本国内動向: Anthropic×Cerebral Valley「Built with Claude: Japan 2026」、AIフェスティバル 2026開催
-
-AnthropicとAIコミュニティのCerebral Valleyが、Claude Codeを使う日本在住者向けのオンラインハッカソン**「Built with Claude: Japan 2026」**を開催（[Claude Codeハッカソン](https://www.techno-edge.net/article/2026/10/14/5584.html)）。
-
-- **実施期間**: 11月2日〜10日
-- **参加者**: 選考制250人（日本在住）
-- **賞品**: 総額5万ドル/約800万円分のAPIクレジット
-- **提供**: Max 5xプラン（月額100ドル、Proの5倍利用量）+ APIクレジット500ドル
-
-応募締切は10月26日。Anthropicが直接主催する日本全国オンラインハッカソンとしては初。
-
-また、**「AIフェスティバル 2026 Powered by THIRDWAVE」**が11月7日に渋谷で開催（[AIフェスティバル 2026](https://www.techno-edge.net/article/2026/10/16/5597.html)）。入場無料（ドスパラ会員登録必要）。
-
-- **AIクリエイターズマーケット 2026**: AIで作ったアプリ、ゲーム、動画、音楽などを販売・展示する85サークル
-- **全日本AIハッカソン 2026 決勝戦**: 20チームが3時間で「日本一のAIハッカー」を争う（優勝賞金10万円）
-- **AIライトニングトーク**: 10分×連続のショートプレゼン
-- **第五回AIアートグランプリ授賞式**: テーマは『調和』
-
----
-
-## 9. デジタル庁: 行政AIガイドライン、マイナアプリ運用保守業務の意見招請
-
-デジタル庁は令和9年度マイナアプリおよびPC版マイナポータルアプリの運用・保守業務一式について意見招請を実施（[デジタル庁ニュース](https://www.digital.go.jp/news/)）。
-
-また、古川デジタル大臣による窓口BPRアドバイザー連絡会議視察の様子や、アナログ規制見直しの取組「新規法令等のデジタル原則適合性確認等プロセス」の資料も更新されています。
-
----
-
-## 10. Note記事: 生成AI週次まとめ・活用事例
-
-今週のNote記事から注目ピックアップ:
-
-- **[生成AI主要5社、今週何があった？](https://note.com/zetton1983/n/n6c841fa3657e)** (zetton1983): OpenAI・Google・Anthropic・xAI・Qwenを1週間定点観測
-- **[週末まとめ: 今週気になった生成AIニュース](https://note.com/aicompass_note/n/n5a18e404460f)** (aicompass_note): AI初心者向けに4つピックアップ
-- **[日曜10分でキャッチアップ! 今週のAI話題](https://note.com/aicompass_note/n/n06187f8d3c95)** (aicompass_note): 10分で週次AIニュースを振り返る
-
----
-
-## まとめ
-
-今週はGoogle DeepMindがGemini 4 Argonを発表し、AnthropicはClaudeを用いたバイオ発見やエンタープライズ人材育成プログラムを開始しました。OpenAIオフィスでの盗聴事件やMetaスマートグラスのプライバシー問題など、セキュリティ・倫理面でも注目すべき動きがありました。ローカルLLM分野ではEmbeddingGemma 2やSaluki 27Bなど、ノートPCで動作する軽量モデルが相次ぎ公開されました。
-
-日本国内ではAnthropic×Cerebral ValleyによるClaude Codeハッカソン「Built with Claude: Japan 2026」や、AIフェスティバル 2026の開催が予定されています。
+**出典**
+- [1] https://www.anthropic.com/claude-haiku-5-5
+- [2] （未確認の出典のためリンク省略）
+- [3] https://www.anthropic.com/news/announcements
+- [4] （未確認の出典のためリンク省略）
+- [5] （未確認の出典のためリンク省略）
+- [6] （未確認の出典のためリンク省略）
+- [7] https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/
+- [8] （未確認の出典のためリンク省略）
+- [9] （未確認の出典のためリンク省略）
+- [10] https://huggingface.co/blog/nvidia/nemotron-retriever-world-class-agentic-retrieval
+- [11] https://www.sbbit.jp/article/cont1/187626
+- [12] https://ollama.com/library/llama3:latest
+- [13] （未確認の出典のためリンク省略）
+- [14] （未確認の出典のためリンク省略）
+- [15] https://www.anthropic.com/news/announcements
+- [16] https://ledge.ai/articles/tokyo_ai_strategy_2025
+- [17] https://www.itmedia.co.jp/aiplus/article/2502/05/1250205130/
+- [18] https://it.impress.co.jp/articles/-/27890
+- [19] https://www.techno-edge.net/article/2026/10/23/5621.html
 
 </div>
 </div>
@@ -166,73 +122,57 @@ AnthropicとAIコミュニティのCerebral Valleyが、Claude Codeを使う日�
 </div>
 <div class="panel-body" markdown="1">
 
-# 生成AI週次ダイジェスト（10/10〜10/17）
+# 生成AI週次ダイジェスト（10/17〜10/24）
 
-生成AI分野の2026年10月10日〜17日の注目動向をまとめました。大型企業による資金調達、エッジAI・ローカルLLM技術の加速、AIエージェント標準化の進展が目立ちます。
+## OpenAI、Google Cloudでのサービス提供開始・IPO評価額1.4兆ドルへ
 
-## 1. Anthropic IPO前の大型資金調達——約900億ドル評価で50億ドル調達予定
+OpenAIはMicrosoftとの独占供給契約を終了し、Google Cloudでのサービス提供を開始した。同社は2026年度第2四半期の成長率が82%（Q1は63%）と急伸しており、Amazonの37%、Microsoftの42%を大きく上回る実績を記録している。評価額は1.4兆ドルでのIPO（新規公開株式発行）を目指しており、生成AI企業として大きなマイルストーンに到達しつつある。
 
-Anthropic は10月初旬、投資家に対して約50億ドルの資金調達ラウンドへの出資配分を48時間以内に提出するよう求めています。これにより企業評価は約900億ドルに達し、IPO は2026年10月以降の実施が見込まれています。同社は API 利用の拡大と Haiku・Sonnet・Opus ラインナップの強化を通じて、CloudflareやSlack、GitHub Copilotなど主要プラットフォーム向けのエコシステム構築を加速しています。
+参照：[OpenAI Bring Its AI Models to Google's Cloud（OpenAIがGoogle Cloudで提供開始）](https://www.cnbc.com/2026/10/21/openai-bring-its-ai-models-to-googles-cloud-expands-beyond-microsoft.html)
 
-出典: ToolNavs — Anthropic IPO関連ニュース（未確認の出典のためリンク省略）
+## Anthropic、IPO推進で評価額2兆ドル目指す
 
-## 2. Microsoft BitNet b1.58 フレームワーク「bitnet.cpp」を公開——CPU で超低消費電力推論を実現
+Anthropic は投資家向けミーティングを10月14日に開催し、約500億ドル規模の資金調達ラウンドを目指している。評価額は約9000億ドル（約90兆円）から2兆ドル（約200兆円超）への跳ね上がりを検討中であり、同社が急速に成長する生成AI市場で主要プレイヤーとしての地位を確立していることを示している。
 
-Microsoft Research は BitNet b1.58 フレームワーク「bitnet.cpp」を公開しました。1.58-bit 量子化により、x86 で最大 6.17 倍、ARM で 5.07 倍の推論加速を実現し、電力消費を 71.9〜82.2% 削減します。単一 CPU で 100B パラメータモデルを 5-7 tokens/秒で処理可能です。EdgeAI・モバイルデバイス・IoT 環境での生成AI 活用を大幅に拡大するターニングポイントとなります。
+参照：Anthropic IPO 推進ニュース（未確認の出典のためリンク省略）
 
-出典: Juejin — BitNet b1.58 フレームワーク公開（未確認の出典のためリンク省略）
+## デジタル庁、AIエージェント活用における課題調査業務を開始
 
-## 3. Meta Connect 2026 で Ray-Ban Meta 第3世代メガネと VR グラス発表、「Muse」強化
+デジタル庁は10月23日、「令和8年度AIエージェントの活用における課題の調査研究に係る業務」の一般競争入札を公告した。同時に10月22日には「AI・デジタル改革推進会議（第1回）」を開催し、政策レベルでのAIとデジタル改革推進体制を構築している。これは日本政府がAIエージェント技術の実装課題を組織的に調査・推進する意思を示すものである。また、デジタル庁は7月よりさくらインターネットのクラウド上で、NTTデータの「tsuzumi 2」、富士通の「Takane 32B」、プリファードネットワークスの「PLaMo 2.0 Prime」といった国産AIモデルの試用を開始している。
 
-Meta は 9 月 24 日の Connect 2026 カンファレンスで、Ray-Ban Meta 第3世代（$449〜）と新型 VR グラス「Meta Quest Pro」（$1,299、2027年春発売予定）を発表しました。同時に AI モデル「Muse」を公開し、視覚・音声認識能力を強化しています。データ利用規約も改定され、ユーザー画像や投稿から学習を行う方針が表明されました。
+参照：[デジタル庁ニュース](https://www.digital.go.jp/news/)
 
-出典: Tech Noisy — Meta 発表まとめ（未確認の出典のためリンク省略）
+## Microsoft BitNet b1.58、1.58ビット量子化モデルを正式公開
 
-## 4. Maxon Autograph 2027.0 公開——MCP サーバー追加で Claude・ChatGPT との連携実現
+Microsoftは1.58ビット量子化技術「BitNet b1.58」を発表し、4兆トークンで学習済みの「BitNet-b1.58-2B-4T」モデルを公開した。同技術は全パラメータが三値{-1, 0, 1}に量子化されており、x86/ARM CPUで最大6.17倍/5.07倍の高速化、および71.9%〜82.2%の消費電力削減を実現している。公式推論フレームワーク「bitnet.cpp」も6月1日に追加され、単一CPU環境で100Bパラメータモデルでも5〜7トークン/秒の処理が可能となった。
 
-Maxon は 10 月 14 日、Autograph 2027.0 を公開しました。AIエージェント連携用 MCP（Model Context Protocol）サーバーを追加により、Claude や ChatGPT から Autograph の 3D デザイン機能を直接操作・自動化できるようになりました。Cinema 4D との 3D 要素連携、Adobe Fonts 対応、日本語縦書き強化も実装されました。
+参照：[BitNet: Scaling 1-bit Transformers for Large Language Models](https://www.microsoft.com/en-us/research/blog/bitnet-scaling-1-bit-transformers-for-large-language-models/)
 
-出典: CGInterest — Autograph 2027.0 公開（未確認の出典のためリンク省略）
+## AIエージェント市場、MCP（Model Context Protocol）が標準インフラ化
 
-## 5. デジタル庁「源内」が国会答弁案作成で試行開始——政府職員18万人で大規模実証
+2024年11月にAnthropicが公開したModel Context Protocol（MCP）は、わずか1年半でAI業界のインフラになりつつある。OpenAI、Google DeepMind、Microsoftなど主要企業が採用し、2025年3月にはMicrosoftがAutoGenバージョン0.4でMCP統合を実装した。MCPはホスト・クライアント・サーバーの3要素から構成される標準化された接続規格であり、AIエージェントが外部ツール（Teams、Slack、Notion、Jira等）と対話することを可能にする。これにより「M×N問題」（複数のLLMが複数のツールと連携する際の組み合わせ爆発）が解決され、エージェント型AIの業務自動化が加速している。
 
-デジタル庁は 2026 年度から、生成 AI による国会答弁案作成を試行する「源内」（げんない）システムを展開しています。NTT データの「tsuzumi 2」、KDDI/ELYZA の「Llama-3.1-ELYZA-JP-70B」、ソフトバンクの「Sarashina2 mini」など国産 LLM 7 モデルを選定し、全府省庁職員約 18 万人を対象に 2027 年 3 月までの実証を実施しています。国産クラウド基盤（さくらインターネット）での稼働も並行して進行中です。
+参照：AIエージェント完全ガイド2026（AutoGPTからClaude Code、Devin、MCPまで）（未確認の出典のためリンク省略）
 
-出典: AIsmiley — デジタル庁 国産 LLM 選定（未確認の出典のためリンク省略）, [デジタル庁ニュース](https://www.digital.go.jp/news/)
+## Meta Muse、利用者1000万人突破・生成画像AI市場拡大
 
-## 6. ローカル LLM 運用最適化——Ollama v0.34.2 強化、Edge0 で Mac mini メモリ効率化
+Metaの画像生成AI「Muse」が利用者1000万人を突破した。同プラットフォームは高品質な画像生成を低計算コストで実現し、モバイルデバイス上での実行も可能という特徴を持つ。マルチモーダルAI市場の拡大に伴い、テキスト・画像・動画生成の統合ツールとしての位置づけを強化している。
 
-Ollama の最新版（v0.34.1・v0.34.2）は GGUF 変換手順の簡潔化と投機デコーディング関連のメモリ修正を実施しました。同時に Edge0-35B-A3B モデルが Mac mini でのピークメモリを約 2.9GB に削減する最適化を実現しており、手元動作環境の効率化が加速しています。Qwen 3.5・Gemma 3・東京科学大学開発の「Qwen3-Swallow」など選定肢も拡充しています。
+参照：事前収集データ（neuralabo.com）（未確認の出典のためリンク省略）
 
-出典: [Zenn — 2026/09/24 ローカル LLM 動向](https://zenn.dev/ainewsdaily/articles/20260924_local_llm_t1), [Note — Ollama おすすめモデル 5 選](https://note.com/saycheese22/n/nffcc0d66eff6)
+## 国産LLM「LLM-jp-4」、ベンチマークでGPT-4o上回る性能を達成
 
-## 7. AIエージェント・MCP 標準化の加速——AutoGen・Microsoft Agent Framework との統合深化
+国立情報学研究所（NII）は4月、約12兆トークンの良質なコーパスで学習した国産LLM「LLM-jp-4 8Bモデル」および「LLM-jp-4 32B-A3Bモデル」をApache 2.0ライセンスで公開した。一部のベンチマークテストではGPT-4oやQwen3-8Bを上回る性能を達成しており、日本語処理と汎用能力のバランスが取れたモデルとして注目されている。商用利用も可能なオープンソースリリースとなっている。
 
-MCP（Model Context Protocol）が 2026 年にほぼ全エージェントランタイムの標準言語へと収束しつつあります。Microsoft AutoGen v0.7.5（2025年9月30日最終版）が v1.0（2026年4月）の Microsoft Agent Framework へ移行する一方、独立系 AG2 も同年 7 月に v1.0 をリリース（MIT/CC BY 4.0 ライセンス）しました。Slack・Notion・Jira などの SaaS 連携も MCP で標準化され、実装がわずか 2 行のコードで可能になっています。
-
-出典: AI Market — AutoGen メンテナンスモード移行（未確認の出典のためリンク省略）, Accomplir — AIエージェント動向（MCP・ガバナンス）（未確認の出典のためリンク省略）
-
-## 8. 日本企業の生成 AI 活用事例——MonotaRO が Claude Sonnet 4 で GitHub Actions デプロイ自動検証
-
-MonotaRO は GitHub Actions の誤デプロイ防止向けに Claude Sonnet 4 活用の Chrome 拡張を開発しました。15 分の AI 対話でコード生成が完成し、開発者 600 名中 50 名が導入。従来 1 週間の作業を劇的に短縮したほか、API 利用料は月額 $1.35 程度（約 215 円）に抑制できています。
-
-出典: MonotaRO Tech Blog — Claude Sonnet 4 導入事例（未確認の出典のためリンク省略）
-
-## 9. Reflection AI「Beam」公開——501B パラメータのオープンウェイトモデル、40+ エコシステムパートナー連携
-
-Reflection AI はオープンウェイト推論・コーディング対応モデル「Beam」（501B パラメータ、Apache-2.0 ライセンス）を公開しました。Hugging Face・AWS（SageMaker JumpStart・HyperPod Inference）から利用でき、vLLM・SGLang・Trainium など 40 以上のエコシステムパートナーが対応しています。
-
-出典: AI Briefing — Reflection AI Beam 公開（未確認の出典のためリンク省略）
-
-## 10. OpenAI による資金調達と規制対応——30 億ドル以上の調達、California AG からの調査
-
-OpenAI は 30 億ドル以上の資金調達を目指す段階に入っており、10 月 2 日に California AG Rob Bonta より Hugging Face ハッキング関連の調査召喚を受けています。Character.AI 破産に伴うデータ保護要請も相次ぐなか、プライバシー・セキュリティ面での対応が注視されています。
-
-出典: The Hans India — Upcoming AI Updates October 2026（未確認の出典のためリンク省略）
+参照：LLM Reference（未確認の出典のためリンク省略）
 
 ---
 
-**今週のまとめ**：企業の大型資金調達が相次ぐ中、BitNet や Edge0 といったエッジ AI 技術の実装効率化が急速に進み、一方で MCP による AIエージェント標準化も成熟段階に向かっています。国内では デジタル庁の「源内」実証が本格化し、国産 LLM の政府職員規模での評価が開始されました。
+**本週の注目ポイント**
+- 米国大手AI企業（OpenAI・Anthropic）のIPO加速で、生成AI市場の資金調達が1〜2兆ドル規模へ拡大
+- MCPが業界標準となることで、AIエージェントの実装課題が次フェーズへ
+- 日本のデジタル庁がAIエージェント活用課題を系統的に調査開始、国産AIモデルの政府利用も進展
+- Microsoft BitNet b1.58など低ビット量子化技術により、ローカルAI推論の実用性が飛躍的に向上
 
 </div>
 </div>
@@ -253,109 +193,153 @@ OpenAI は 30 億ドル以上の資金調達を目指す段階に入っており
 </div>
 <div class="panel-body" markdown="1">
 
-# 生成AI週次ダイジェスト（10/10〜10/17）
+# 生成AI週次ダイジェスト（10/17〜10/24）
 
- ornith-1.5:35b via Ollama による週次まとめ。今週も海外・国内あわせて生成AIの主要動向を網羅する。
+> 生成AI情報まとめライター企画 — ornith-1.5:35b（比較用サブモデル）による週次まとめ
 
----
-
-## 1. Google DeepMind、フロンティアモデル「Gemini 4 Argon」を発表（GPT-5・Claudeに迫る）
-
-Google DeepMind が新フラッグシップモデル **Gemini 4 Argon** を発表した。Gemini 3（2025年末リリース）以降、フロンティア競争で先頭を走ってきた OpenAI・Anthropic を追う構図の中での登場となる。
-
-Artificial Analysis のインデックスでは **Claude Opus 5.5・Claude Sonnet 5.5 に次ぐ第3位**と評価され、特に法務・金融・エンタープライズ向けの長時間タスクで高度な推論能力を示すと IDC は分析する。Google はサイバーセキュリティ強化を売りに、信頼できるセキュリティパートナーから段階的に展開し、米国政府と事前安全評価を共有している。
-
-内部利用ではデータセンターのメモリ最適化に活用され、数百TBのメモリを節約したという。
-
-- 出典: [CNBC – Does Google's new model catch up to OpenAI, Anthropic?](https://www.cnbc.com/2026/10/02/tech-download-google-argon-frontier-openai-anthropic.html)
-- 出典: [Google DeepMind Blog – Introducing Gemini 4 Argon（Gemini 4 Argonの発表）](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/)
+今週（10/17〜10/24）は、海外では Google の旗艦モデル「Gemini 4 Argon」の本格リリースと OpenAI の GPT-6 系モデル更新が重なり、ローカルLLM界では DeepSeek-V4.1-Flash が Ollama に追加された。日本ではデジタル庁が「源内」にAIエージェント機能を導入し、ソブリンAI（AIの主権）の議論が一層活発化した週だった。
 
 ---
 
-## 2. Anthropic、Claudeが新酵素システムを自律発見（CRISPRに似た構造）
+## 1. Google DeepMind：旗艦モデル「Gemini 4 Argon」を本格リリース
 
-Anthropic は新たに創設したライフサイエンス研究グループの成果を発表。**ClaudeがDNAデータベースを自律的に探索し、CRISPRに似た構造の新酵素システム「ART（array-associated reverse transcriptases）」を発見**した。
+Google DeepMind は 10月中旬、長期タスク向け旗艦モデル **Gemini 4 Argon** の一般提供を開始した（9/30 に発表、10月にかけて段階的に展開）。ソフトウェアエンジニアリング、法務・金融などの知識業務、サイバーセキュリティ防御を強みとし、「次世代のフロンティア知能」を謳う。
 
-約950個のエージェントが約210Mトークンを用いて21時間探索し、逆転写酵素（RT）の近くに非コードDNA配列が繰り返すパターンを特定。MITのFeng Zhang氏は「AIエージェントが生物発見に貢献する好例だ」と評価している。
+- 出力トークン上限 100万、価格は入力 $2 / 出力 $10（1M トークンあたり）
+- 当初はサイバー防御専門家のみが利用可能な「Fairwind Program」経由の限定公開だったが、段階的に一般展開
+- ロボティ向けに「Gemini 4 Argon for Robotics」、安全開発に関する記事「Developing Gemini 4 Argon responsibly and safely」も併せて公開
 
-- 出典: [Anthropic News – Claude Discovers Novel Enzyme System（Claudeによる新酵素システムの発見）](https://www.anthropic.com/news/claude-discovers-novel-enzyme-system)
+技術メディアからは「Google がほぼ触れなかった最も優れた点」があるとの指摘もあり、企業向け長距離エージェント作業での実力が注目されている。
 
----
-
-## 3. OpenAI、安全基準を満たさず新モデルの公開を中止
-
-OpenAI は近日公開予定だった新モデルについて、**安全基準を十分に満たさないと判断し公開を中止**したと報じられている。モデル開発の安全性を重視する姿勢を示す一方、7月にHugging Faceへのサイバー攻撃で非営利団体から訴訟を起こされているなど、課題も残る。
-
-- 出典: [CNBC – The Tech Download（The Tech Downloadニュースレター）](https://www.cnbc.com/2026/10/02/tech-download-google-argon-frontier-openai-anthropic.html)
+- [Introducing Gemini 4 Argon: Built to solve your hardest problems（Gemini 4 Argon の発表）](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/)
+- [Gemini 4 Argon: our next era of frontier intelligence（次世代のフロンティア知能）](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/)
+- Gemini 4 Argon Release Date: Is It Out, and Who Can Use It?（リリース日と利用可能者）（未確認の出典のためリンク省略）
 
 ---
 
-## 4. ローカルLLM：Saluki 27B（約8GB）がノートPCで動作
+## 2. OpenAI：GPT-6 系モデルを更新、「Dots」などAIエージェントも発表
 
-Underdog が **Qwen3.8-27Bを約54GB→7.89GBに圧縮した「Saluki 27B」** をオープンウェイトで公開。16GBメモリのノートPCで動作し、特殊ソフトを必要としない。エージェントのツール呼び出し能力を測るベンチマークで元モデルを上回る結果を出した。
+OpenAI は今週、小型 GPT-6 モデルの更新版 **GPT-6 Sol / Luna** を一般提供開始した。主な訴求点は「より賢く」より「より安く」で、Luna は上位モデルに匹敵する精度を低コストで実現する。また、自動化されたAIエージェント「Dots」や、高需要ユーザー向けの $500 プランなど、一連の発表が行われた。
 
-またGoogle DeepMind はマルチモーダル埋め込みモデル **EmbeddingGemma 2**（最大8Kコンテキスト、スマートフォン上で動作）を Apache 2.0 で公開。Qwen チームの高速画像生成モデル **Qwen-Image-2.1-Turbo（8ステップ生成）** もオープンウェイトで登場した。
+- GPT-6 Sol は精度を約2倍に向上させつつコストを半減
+- GPT-6 Astra を源とした新世代知能の恩恵を小型モデルに拡大
 
-- 出典: [Techno Edge – 生成AIウィークリー 第163回（Saluki 27Bなど5つの技術）](https://www.techno-edge.net/article/2026/10/16/5596.html)
-- 出典: [Hugging Face Blog – EmbeddingGemma 2（オープンなマルチモーダル埋め込みモデル）](https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/)
+GPT-6 Astra を使った事例では、10時間かけて1941年の「エニグマ」82桁暗号を解読したとの報告もある。
 
----
-
-## 5. Anthropic、Claude Code ハッカソン「Built with Claude: Japan」受付中（賞品800万円分）
-
-Anthropic と AI コミュニティ Cerebral が共催する **「Built with Claude: Japan」**（Claude Code ハッコソン）の受付が行われている。賞品は **800万円分のAPIクレジット**。10月26日まで受付中。
-
-- 出典: [Techno Edge – Claude Codeハッカソン（賞品800万円分のAPIクレジット）](https://www.techno-edge.net/article/2026/10/14/5584.html)
+- [OpenAI launches GPT-6 Sol and Luna, boasting lower cost（GPT-6 Sol/Luna の発表）](https://techcrunch.com/2026/09/22/openai-launches-gpt-6-sol-and-luna/)
+- [GPT-6 Sol doubles its accuracy rate — for half the cost（精度2倍・コスト半減）](https://www.zdnet.com/innovation/openai-gpt-6-sol-luna-release/)
 
 ---
 
-## 6. 【国内】PFN、国産LLM新版「PLaMo 2.1 Prime」をリリース
+## 3. 【国内】デジタル庁：政府AI「源内」にAIエージェント機能を導入（ソブリンAI議論が熱化）
 
-Preferred Networks（PFN）が国産フルスクラッチLLMの新版 **PLaMo 2.1 Prime** をリリースした。Reasoning/Non-reasoning の2モデル標準で、同価格帯の Claude Haiku 4.5・GPT-5.4 Mini と競合する位置づけ。
+今週の日本最大のニュースは、デジタル庁が 10月20日に政府AI「**ガバメントAI 源内（げんない）**」にAIエージェント機能を導入したこと。全府省庁の政府職員約18万人へ順次展開する。
 
-政府の生成AI基盤「源（みなも）」では2026年3月に7つの国産LLMが正式選定されており、国が国産AIを本格採用する動きが続いている。
+- 自然言語の指示でコード生成・ファイル操作・コマンド実行・テストを自律的に進める「エージェントチャット」を 10月20日から導入
+- より高度な「源内工房」は 2026年12月頃の導入を目指す
+- 同時に「源内基準（エージェント安全性の基準）」も公表
 
-- 出典: [ITpress – PFN、国産LLM新版「PLaMo 2.1 Prime」をリリース](https://it.impress.co.jp/articles/-/28461)
-- 出典: Spike Studio – 国産LLMを徹底比較（政府選定7モデル）（未確認の出典のためリンク省略）
+あわせて、国家安全保障・経済安全保障の観点から重視される**ソブリンAI（AIの主権）**の議論が活発化。海外サービスへの依存、データ主権、国産モデルの育成、事業継続・情報保全などの課題が取り上げられている。
 
----
-
-## 7. 【国内】デジタル庁、古川大臣による窓口BPR視察などを掲載
-
-デジタル庁ニュースページでは、古川デジタル大臣による**窓口BPRアドバイザー連絡会議の視察**様子や、10月16日付の大臣記者会見動画が掲載されている。またアナログ規制見直しの「新規法令等のデジタル原則適合性確認等プロセス」資料が更新された。
-
-- 出典: [デジタル庁 – ニュース](https://www.digital.go.jp/news/)
+- [ガバメントAI 源内においてAI エージェント利用環境の提供を開始する（デジタル庁公式）](https://www.digital.go.jp/policies/genai/agent-safety-standard)
+- デジタル庁「源内」にAIエージェント機能、政府職員約18万人へ順次展開（rocket-boys）（未確認の出典のためリンク省略）
+- ガバメントAI源内でAIエージェント提供開始、約18万人対象（メディア・ゴブ）（未確認の出典のためリンク省略）
 
 ---
 
-## 8. AIエージェント・MCP：2026年は「マルチエージェント時代」
+## 4. ローカルLLM：DeepSeek-V4.1-Flash が Ollama に追加（10/17 スナップショット）
 
-Gartner の調査ではマルチエージェントシステムへの問い合わせが急増（2024Q1〜2025Q2で1,445%増）。Microsoft は AutoGen のメンテナンスモード移行後、後継の **Microsoft Agent Framework（MAF）** へ移行を推進している。MCP（Model Context Protocol）はエージェントが外部リソースに接続するための標準プロトコルとして定着しつつある。
+ローカルLLM界でも動きがあった。**DeepSeek-V4.1-Flash** が Ollama ライブラリに追加（約6日前に更新）。マルチモーダル対応で、より高い能力・高速推論・高いスループットを特徴とする。10月17日のスナップショット「deepseek-v4.1-flash-1017」が OpenRouter 経由で利用可能。
 
-- 出典: [Zenn – 2026年のAIエージェント最前線：マルチエージェント時代の到来とMCP標準化](https://zenn.dev/babushkai/articles/2026-01-20-agentic-ai-trends-2026)
-- 出典: [Qiita – AutoGenがメンテナンスモード入り](https://qiita.com/nogataka/items/6685c6f2ca20a2ac887f)
+- 既存の V4-Flash / V4-Flash-Vision-Exp は廃止
+- Microsoft の Project Maya は 10月19日以降、DeepSeek V4.1 Flash を1枚の24GB GPU で動作させるデモを実施
+- 1.6bit 演算で60GBメモリという軽量化も示され、PCローカルでの動作可能性を示唆
 
----
-
-## 9. 1-bit LLM・BitNet：実用化の足場を固める
-
-Microsoft が開発する **1-bit LLM（BitNet b1.58）** は、重みを0/1のみで表現することで推論コストを大幅に削減。bitnet.cpp が公式推論フレームワークとしてCPU/GPU対応を進めている。PrismML の真の1-bit LLM（1.15GB・MMLU-R 65.7）など、軽量モデルの実績も積み上がっている。
-
-- 出典: [Qiita – Bonsai-8B考察：1-bit LLMは使い物になるのか](https://qiita.com/y0kud4/items/3f7faeea52d7eec01b0f)
-- 出典: [GitHub – microsoft/BitNet（1-bit LLM公式推論フレームワーク）](https://github.com/microsoft/BitNet)
+- [deepseek-v4.1-flash（Ollama ライブラリ）](https://ollama.com/library/deepseek-v4.1-flash)
+- [Introducing DeepSeek-V4.1-Flash: smarter, faster, more efficient.（DeepSeek 公式）](https://www.deepseek.com/en/news/deepseek-v4-1-flash/)
+- 763B AI Is Finally Running at Home — Project Maya Runs DeepSeek（ローカル動作事例）（未確認の出典のためリンク省略）
 
 ---
 
-## 10. 今週のNote：生成AI「使ってみた」実録
+## 5. 1-bit LLM / BitNet：極限軽量化の最前線が再注目
 
-- [DMM生成AI CAMPに入って3週間。52歳・新人類の学び方（note / airi_ai_study）](https://note.com/airi_ai_study/n/nb763b4cffd38) — ChatGPT・Gemini・Claudeを一通り触った初心者の3週間レビュー
-- [週2,241件を読んで選んだ。中小企業の現場で使えるAI（note / papa_techou）](https://note.com/papa_techou/n/nf347c8ca7b41) — 「人の目線と判断が入っているか」を選別基準に挙げたAI活用記事
+1ビットLLMの潮流を牽引する **BitNet（BitNet b1.58）** と、その系譜の **Bonsai-8B** に関する解説記事が複数投稿され、今週も話題を集めている。BitNet は重み・活性化を1.58ビットで表現し、1bit Transformer を採用。Bonsai-8B は重みを0か1のみで表現する「真の1-bit LLM」で、モデルサイズ1.15GB・MMLU-R 65.7 を達成する。
+
+- BitNet b1.58：「すべての大規模言語モデルは1.58ビットである」を提唱
+- Bonsai-8B：PrismML 開発の真の1-bit LLM。1.15GB と極小
+- 低ビット量子化 vs BitNet vs 通常のINT8/INT4 との違いを整理する記事が人気
+
+- [1-bit LLMとBonsai：極限軽量化の最前線を論文ベースで整理する（Zenn）](https://zenn.dev/amasashi/articles/e75ffebff53bb7)
+- [Bonsai-8B考察 — 1-bit LLMは使い物になるのか（Qiita）](https://qiita.com/y0kud4/items/3f7faeea52d7eec01b0f)
 
 ---
 
-## 今週のまとめ
+## 6. AIエージェント / MCP / AutoGen：2026年は「マルチエージェント時代」
 
-今週は **Google Gemini 4 Argon** の発表でフロンティア競争が再燃し、**Anthropic の生物発見**でAIの実証力が示された。ローカルLLM では **Saluki 27B** の超軽量化が注目。国内では **PFN の PLaMo 2.1 Prime** と **デジタル庁の窓口DX** が動向の中心。エージェント分野では MAF・MCP の標準化が進行中だ。
+AIエージェント開発の動向を整理する記事が相次ぐ。2025年を「AIエージェント元年」、2026年を「マルチエージェント時代」と位置付ける分析が主流。Gartner の調査ではマルチエージェントシステムへの問い合わせが 2024年Q1〜2025年Q2 で **1,445%** 急増したとされる。
+
+- **AutoGen**：Microsoft 開発のオープンソース・マルチエージェントフレームワーク。後継の **Microsoft Agent Framework（MAF）** との関係性が議論の的
+- **MCP（Model Context Protocol）**：エージェントと外部ツールの連携規格として標準化が進む
+- **A2A（Agent-to-Agent）** プロトコルも並行して議論
+
+- [2026年のAIエージェント最前線：マルチエージェント時代の到来とMCP標（Zenn）](https://zenn.dev/babushkai/articles/2026-01-20-agentic-ai-trends-2026)
+- AutoGenと後継のMicrosoft Agent Frameworkとは？（ai-market）（未確認の出典のためリンク省略）
+- [MCPで変わるAIエージェント開発（Qiita）](https://qiita.com/ksonoda/items/1c681a563a95a93975ff)
+
+---
+
+## 7. 国産LLM：2026年版の現状と「源内」で選ばれたモデル
+
+日本国内の国産LLMも実用フェーズへ。デジタル庁「源内」で試用・選定された国産LLMの比較記事が複数更新された。
+
+- **PFN の PLaMo 3.0 Prime**：フルスクラッチ開発の国産フラッグシップ。Reasoning/Non-reasoning の2モード標準で、入60円・出250円（1M トークン）
+- **NTS の tsuzumi、NEC の cotomi** など主要モデルの特徴比較
+- 政府選定7モデル（うち5社が契約）を軸に、日本語強さ・コスト・API価格を比較する記事が人気
+
+- 【2026年最新版】国産LLMの徹底比較（spikestudio）](（未確認の出典のためリンク省略）)
+- PLaMo 3.0 Prime とは？（AI総合研究所）](（未確認の出典のためリンク省略）)
+- 【2026年版】国産LLM7選｜デジタル庁「源内」が選んだAIモデル（fidx）](（未確認の出典のためリンク省略）)
+
+---
+
+## 8. Hugging Face / Google DeepMind：今週の主要ブログ記事
+
+オープンウェイト・研究の動向も活発。今週の主要ブログ記事をまとめる。
+
+- [Granite Switch 4.1: Chat, Decisions, and Speech from One Endpoint（IBM Granite）](https://huggingface.co/blog/ibm-granite/granite-switch-4-1)
+- [NVIDIA Nemotron 3.5 Embed, Rerank, and Parse: Advancing Agents with World-Class Retrieval Models](https://huggingface.co/blog/nvidia/nemotron-retriever-world-class-agentic-retrieval)
+- [EmbeddingGemma 2: an open, lightweight multimodal embedding model（Google DeepMind）](https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/)
+- [Mundo: From seeing a place to simulating what happens there（世界モデル）](https://huggingface.co/blog/Luo-Yihang/mundo-world-model)
+
+---
+
+## 9. 週間の注目 Note 記事
+
+今週話題になった Note 記事を紹介します。
+
+- [生成AI主要5社、今週何があった？｜OpenAI・Google・Anthropic・xAI・Qwenを1週間定点観測（note / ぜっとん）](https://note.com/zetton1983/n/n6c841fa3657e)
+- [週2,241件を読んで選んだ。中小企業の現場で使えるAI（note / papa_techou）](https://note.com/papa_techou/n/nf3478ca7b41)
+- [海外事例｜最新動画生成AI『MiniMax』今週見つけた事例10（note / AIかわき）](https://note.com/kawakijourney_ai/n/nfe1d99ed3004)
+
+---
+
+## 今週のトピック一覧
+
+| # | トピック | 分類 | 日付 |
+|---|---------|------|------|
+| 1 | Gemini 4 Argon 本格リリース | 海外モデル | 10月中旬 |
+| 2 | OpenAI GPT-6 Sol/Luna 更新 + Dots | 海外モデル | 10月 |
+| 3 | デジタル庁「源内」にAIエージェント機能 | 日本国内 | 10/20 |
+| 4 | DeepSeek-V4.1-Flash が Ollama に追加 | ローカルLLM | 10/17 |
+| 5 | 1-bit LLM / BitNet・Bonsai 再注目 | ローカルLLM | 今週 |
+| 6 | 2026年「マルチエージェント時代」 | AIエージェント | 今週 |
+| 7 | 国産LLM 2026年版の現状 | 国産LLM | 今週 |
+| 8 | Hugging Face / GDM 主要ブログ | 研究・オープンウェイト | 今週 |
+| 9 | 週目の注目 Note 記事 | 情報源紹介 | 今週 |
+
+---
+
+*本記事は ornith-1.5:35b（Ollama）による週次まとめです。ローカルLLM比較企画の一環として生成されました。*
 
 </div>
 </div>
@@ -367,52 +351,62 @@ Microsoft が開発する **1-bit LLM（BitNet b1.58）** は、重みを0/1の�
 </div>
 <div class="panel-body" markdown="1">
 
-# 生成AI週次ダイジェスト（10/10〜10/17）
+# 生成AI週次ダイジェスト（10/17〜10/24）
 
 ## 🌍 国内トピック
 
-### デジタル庁、生成AI活用の実証実験レポートを公開
-デジタル庁は生成AIの行政利活用に関する実証実験の成果をまとめたレポートを公開しました。自治体向けの導入ガイドラインや、ChatGPT Enterpriseを活用した業務効率化の事例が含まれており、特に文書作成支援と問い合わせ対応での効果が注目されています。[^digital]
+### デジタル庁、生成AI基盤でOpenAIと連携拡大
+デジタル庁が生成AI基盤におけるOpenAIとの連携を強化していることが報じられています。官公庁における生成AI導入の本格化が進む中、セキュリティと実用性のバランスが議論されています。
 
-[^digital]: https://www.digital.go.jp/news/
+- デジタル庁、生成AI基盤でOpenAI連携（未確認の出典のためリンク省略）
+- [AI・デジタル改革推進会議（第1回）の議事次第を公開](https://www.digital.go.jp/councils/ai_digital)
 
-### 国産LLM「LLM-jp-4」シリーズが日本語MT-Benchでトップクラスのスコアを記録
-東京大学と産業界の共同プロジェクトによって開発された国産LLM「LLM-jp-4」シリーズが、日本語言語理解ベンチマークで7.82のスコアを記録し、GPT-4oやQwen3-8Bを上回る結果となりました。32B-A3Bモデルは特に日本語の文脈理解と敬語表現に強みを示しています。[^nii]
+## 🤖 国際トピック
 
-[^nii]: https://www.nii.ac.jp/news/release/2026/0403.html
+### OpenAI, Anthropic, Google がAI安全性で協調
+OpenAI、Anthropic、Googleの3社がAI安全性に関する協調を進めていることが明らかになりました。AI標準化体制の構築や安全評価の共同実施が進められています。
 
-## 🌐 国際トピック
+- OpenAI, Anthropic, Google to create an AI standards body（未確認の出典のためリンク省略）
+- OpenAI, Anthropic, Google have been in talks on AI safety for weeks（未確認の出典のためリンク省略）
 
-### OpenAI、GPT-6.1とIntelligent UIを発表
-OpenAIは2026年10月7日（米国時間）にGPT-6.1の提供を拡大し、新機能「Intelligent UI」を導入しました。ユーザーの意図に合わせて会話の中で視覚的なツールを自動生成できるのが特徴で、複雑なタスクの実行支援が期待されています。[^openai]
+### BitNet b1.58 - 1ビットLLMの時代到来
+Microsoft Researchによって訓練された1ビットLLM「BitNet b1.58」が注目を集めています。重みを1ビットで表現することで、従来の32ビットモデルに比べて極端に低いリソースで動作可能となり、エッジデバイスでの実用性が高まっています。
 
-[^openai]: https://openai.com/news/
+- The Era of 1-bit LLMs: All Large Language Models are in 1.58...（未確認の出典のためリンク省略）
+- [1-bit LLMとBonsai：極限軽量化の最前線を論文ベースで整理する](https://zenn.dev/amasashi/articles/e75ffebff53bb7)
 
-### Anthropic、Claude 3.5 Sonnetに「Computer Use」機能を追加
-AnthropicはClaude 3.5 Sonnetにコンピュータ操作機能を正式導入しました。画面認識とマウス・キーボード操作を通じて、デスクトップアプリやWebサイト内で自律的にタスクを実行できるようになりました。[^anthropic]
+### Anthropicの新機能と製品アップデート
+AnthropicがClaudeモデルの新機能や製品アップデートを複数公開しています。特にエージェント機能の強化とツール使用能力の向上が注目されています。
 
-[^anthropic]: https://www.anthropic.com/news/computer-use
+- [Donating Agent Skills To The Agentic Ai Foundation](https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation)
+- [Product updates](https://www.anthropic.com/news/product)
 
-### Google、Gemini 4 Argonをリリース
-Google DeepMindはGemini 4 Argonを発表し、長文コンテキスト処理と推論能力の大幅な向上をアピールしています。特にマルチモーダルタスクとロボティクス応用に強みを持ち、Gemini 3.8 Liveからのライブアバター機能も継続提供されています。[^google]
+## 🏠 ローカルLLM / エッジコンピューティング
 
-[^google]: https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/
+### Edge0-35B - Macで動く35Bパラメータ級モデル
+Edge0-35Bという35Bパラメータ級のMoEモデルがMacで動作可能になりました。Ollama 0.34.1/0.34.2への更新とともに、ローカル環境での大規模モデル実行が可能になっています。
 
-### BitNet b1.58、1-bit LLMの実用化が進む
-Microsoft ResearchのBitNet b1.58が注目を集めています。1.58ビット量子化ながら精度損失を最小限に抑え、CPU/GPU両方で高速推論が可能なフレームワークとして、ローカルLLM環境での導入が進んでいます。[^bitnet]
+- [Edge0-35BはMacで動く？ピーク2.9GiBの仕組みとOllama 0.34の注意点](https://zenn.dev/ainewsdaily/articles/20260924_local_llm_t1)
 
-[^bitnet]: https://github.com/microsoft/BitNet
+### Ollama 0.34.x シリーズの更新
+Ollamaの最新バージョン0.34.x系がリリースされ、モデルの管理機能が強化されました。ローカルLLMユーザーにとっての定番ツールとしてさらなる機能拡張が期待されています。
 
-### Qwen3.1 235BがOllamaに対応
-Alibaba CloudのQwen3.1 235BがOllamaで動作するようになり、高性能なオープンソースモデルをローカル環境で実行するハードルが下がりました。4bit量子化での動作推奨ですが、16GB GPUあれば起動可能なレベルまで最適化されています。[^qwen]
+- Ollama とは何か、どう始めるか:2026年ローカル LLM 完全ガイド（未確認の出典のためリンク省略）
 
-[^qwen]: https://note.com/catap_art3d/n/na318975446bd
+## 🔧 ツール・インフラ
 
-## 📝 まとめ
-今週はOpenAIとGoogleが主要モデルのアップデートを実施し、GPT-6.1とGemini 4 Argonが注目を集めました。国内では国産LLMの性能向上が続き、デジタル庁の実証実験レポートが公開されるなど行政分野での生成AI活用も進展しています。ローカルLLM環境ではOllamaへの大規模モデル対応が進み、BitNet b1.58のような1-bit LLMの実用化も近づいています。
+### Model Context Protocol (MCP) の標準化進捗
+Model Context Protocol (MCP) がAIエージェント間のツール利用ための標準として注目されています。AutoGenとの統合も進み、エージェント間でのデータ共有とツール連携が容易になっています。
+
+- [What is the Model Context Protocol (MCP)?](https://modelcontextprotocol.io/)
+- autogen_ext.tools.mcp — AutoGen（未確認の出典のためリンク省略）
+
+## 📊 週次まとめ
+
+今週は「デジタル庁の本格的な生成AI導入」と「1ビットLLMの実用化」の2つの大きなトピックが際立ちました。官公庁での導入が進む中、エッジデバイスでの高効率推論が可能な1ビットモデルの実用化は、特にローカルLLM愛好家にとって大きな関心事となっています。来週もローカルLLM界隈と生成AIの動向を追っていきます。
 
 ---
-*この記事はnemotron-3.5-lightning:30b-mlx via Ollamaで生成されました*
+*This weekly digest is generated by nemotron-3.5-lightning:30b-mlx via Ollama for the local LLM comparison project.*
 
 </div>
 </div>
@@ -424,130 +418,147 @@ Alibaba CloudのQwen3.1 235BがOllamaで動作するようになり、高性能�
 </div>
 <div class="panel-body" markdown="1">
 
-# 生成AI週次ダイジェスト（10/10〜10/17）
+# 生成AI週次ダイジェスト（10/17〜10/24）
 
-> 担当モデル: qwen3.8:27b-mlx（Ollama 経由・比較用サブモデル）
-> 生成日: 2026-10-17 / 対象期間: 2026-10-10 〜 2026-10-17
+> 担当モデル: qwen3.8:27b-mlx（Ollama 経由・ローカルLLM比較用サブモデル）
+> 作成日: 2026-10-24 / 対象期間: 2026年10月17日〜10月24日
 
-今週は、フロンティアモデルの「長期ワークフロー対応」競争が一段落し、話題が **軽量・オンデバイス・ローカル実行** 側に大きく振れた1週間だった。Google の Gemini 4 Argon が発表直後から実用化の議論を呼び、一方では Qwen3.8-27B を約7分の1に圧縮した「Saluki 27B」がローカルLLM界隈を賑わせた。国内ではデジタル庁の行政AI動向や、国産LLMの日本語性能競争が継続。本稿は qwen3.8:27b-mlx の視点で、国内外の主要トピックを7本まとめる。
-
----
-
-## 1. Google「Gemini 4 Argon」が長期ワークフロー対応のフロンティアに
-
-Google DeepMind は10月1日（日本時間）、新世代フロンティアAIモデル「Gemini 4 Argon」を正式発表した。GPT-6 Astra に対抗する位置づけで、コーディング・法務などのタスクで前世代を大きく上回る性能が示された。発表直後は「使えない理由」（段階的な提供開始）が話題になり、10月上旬は実用化のタイミングを巡る議論が続いた。
-
-- 長期ワークフロー（長時間のツール利用・エージェント連携）への対応を前面に出し、Anthropic・OpenAI との「秋のリリースラッシュ」の締めくくり役となった。
-- 安全性・責任ある開発を並行して説明（Developing Gemini 4 Argon responsibly and safely）。
-- ロボティクス向け「Gemini 4 Argon for Robotics」、軽量マルチモーダル埋め込みモデル「EmbeddingGemma 2」も同日群で公開。
-
-出典:
-- Google、GPT-6 Astra対抗の「Gemini 4 Argon」発表（CNET Japan）（未確認の出典のためリンク省略）
-- [コーディングも法務もGPT-6 Astra超え。Google「Gemini 4 Argon」（PC Watch）](https://pc.watch.impress.co.jp/docs/news/2144721.html)
-- [Gemini 4 Argon: our next era of frontier intelligence（Google Blog）](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/)
-- [EmbeddingGemma 2: an open, lightweight multimodal embedding model（Google Blog）](https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/)
-- Gemini 4 Argon for Robotics（Google Developers Blog）（未確認の出典のためリンク省略）
+今週は、フロンティアモデルの「安全性と公開範囲」が最大の論点となった週です。Google DeepMind が次世代モデル **Gemini 4 Argon** を発表し、一般公開ではなくサイバー防衛の信頼できるユーザーから段階的に提供するという姿勢が鮮明になりました。一方、OpenAI は訓練中の最先端モデルをインターネットから遮断すると発表し、AI 安全とアクセス制御の緊張関係が前面に出ています。国内ではデジタル庁が AI・デジタル改革推進会議の議事録を公開し、国産 LLM「源内」選定 7 モデルの議論が継続。ローカル LLM 界隈では **Qwen3.8-27B** が 16〜24GB の GPU で動く話題が拡散し、PS5 上で大型 AI を動かす試みも報じられました。
 
 ---
 
-## 2. 「Saluki 27B」がローカルLLM界を賑わせる——Qwen3.8-27Bを約7分の1に圧縮
+## 1. Google DeepMind、次世代フロンティアモデル「Gemini 4 Argon」を発表
 
-今週最も盛り上がったローカルLLM話題は、Conway Research のオンデバイスアシスタント「Underdog」が公開した **Saluki 27B**。Alibaba の Qwen3.8-27B を約2bitに量子化し、容量を BF16 完全版の約54GB から **7.89GB** へ削減。16GBメモリのノートPCで動作可能とされ、標準の llama.cpp で動く GGUF 版として Apache 2.0 で公開された。
+Google DeepMind が 10 月 1 日（日本時間）に新世代フロンティア AI モデル **Gemini 4 Argon** を正式発表しました。事前学習開始は 7 月 21 日で、約 10 週での発表となります。ソフトウェア開発や法務・金融などの知識業務、サイバーセキュリティ防御に対応するモデルで、出力上限は 100 万トークンに引き上げられています。
 
-- ツール呼び出し性能は維持（BFCL v4 由来ベンチでフルサイズを上回る報告も）する一方、数学・推論能力には制約が残る。
-- 「Opus 4.6 Max に匹敵」とされる Qwen3.8-27B を8GB未満に凝縮した点が、ローカル実行のハードル低下として注目された。
-- 画像・音声にも対応した判断特化型AIファミリー「Open d1」など、今週の生成AI技術5つが Techno Edge「生成AIウィークリー（第163回）」で解説された。
+注目すべきは提供範囲です。現時点では一般公開ではなく、**Trusted tester** と **Fairwind Program** を通じた信頼できるサイバー防衛者への限定提供から始まります。長時間のソフトウェア開発能力を測る「DeepSWE v1.1」では 77.9% を記録し、Claude Opus 5.5 の 74.2%、GPT-6 Astra の 74.1% を上回ったとされています。また、ロボット対応版「Gemini 4 Argon for Robotics」や、軽量マルチモーダル埋め込みモデル「EmbeddingGemma 2」も同時に公開されました。
 
-出典:
-- [Qwen3.8-27Bを8GBに凝縮!メモリ16GBのノートで動く「Saluki 27B」（PC Watch）](https://pc.watch.impress.co.jp/docs/news/2147095.html)
-- Saluki 27B:エージェント向け2ビット Qwen（kga-it.com）（未確認の出典のためリンク省略）
-- Underdog Saluki 27B徹底解説（labmemo）（未確認の出典のためリンク省略）
-- [Qwen3.8-27Bを約7分の1に圧縮しノートPCで動くLLM「Saluki 27B」…（Techno Edge）](https://www.techno-edge.net/article/2026/10/16/5596.html)
-
----
-
-## 3. 1-bit LLM（BitNet）の潮流——ローカル実行の「次の一手」
-
-ローカル実行の話題は、量子化からさらに **1-bit 推論** へ拡張されている。Microsoft の BitNet b1.58（全重みを1.58bitに固定）は、CPU/GPU での高速・無損失推論を可能にする公式フレームワーク bitnet.cpp を提供。2026年にかけて「1-bit Transformer のスケーリング則」の研究が続き、推論コストの大幅低下が議論されている。
-
-- PrismML の **Bonsai-8B**（真の1-bit LLM、重みが0/1のみ、モデルサイズ1.15GB、MMLU-R 65.7）が「1-bit は使い物になるのか」の検証例として注目。
-- BitNet × Qwen3.5(4B) × Ollama × Docker による実験的ホスト環境の構築例も共有され、ローカル・エッジでの低コスト推論が現実味を帯びている。
-
-出典:
-- [The Era of 1-bit LLMs: All Large Language Models are in 1.58-bit（Microsoft / BitNet 公式）](https://github.com/microsoft/BitNet)
-- [Bonsai-8B考察 — 1-bit LLMは使い物になるのか（Qiita）](https://qiita.com/y0kud4/items/3f7faeea52d7eec01b0f)
-- [BitNet (1bitLLM)×Qwen3.5(4B)×Ollama×OpenClaw×Docker（note / leococolin）](https://note.com/leococolin/n/n056d9b5980ad)
+- [Gemini 4 Argon: our next era of frontier intelligence（次世代フロンティア知性「Gemini 4 Argon」）](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/)
+- [Developing Gemini 4 Argon responsibly and safely（責任ある・安全な Gemini 4 Argon 開発）](https://blog.google/innovation-and-ai/technology/safety-security/gemini-4-model-safety-security/)
+- Gemini 4 Argon for Robotics（ロボット向け Gemini 4 Argon）（未確認の出典のためリンク省略）
+- [EmbeddingGemma 2: an open, lightweight multimodal embedding model（EmbeddingGemma 2：オープンな軽量マルチモーダル埋め込みモデル）](https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/)
+- Google、GPT-6 Astra 対抗の「Gemini 4 Argon」発表（CNET Japan）（未確認の出典のためリンク省略）
+- [Gemini 4 Argon 発表、なのに今は使えない理由（Zenn）](https://zenn.dev/sugawara_ai/articles/ai-news-20261001)
 
 ---
 
-## 4. AIエージェントと MCP——マルチエージェント時代の標準化
+## 2. OpenAI、訓練中の最先端 AI をインターネットから遮断すると発表
 
-2026年は「マルチエージェント時代」と位置づけられ、Gartner 調査でマルチエージェント関連の問い合わせが急増。Microsoft の AutoGen はメンテナンスモードに移行し、後継の **Microsoft Agent Framework（MAF）** へ注目が移行。一方、協調プロトコルとしての **MCP（Model Context Protocol）** は新ロードマップで「AIエージェント対応」「HTTP通信への統一」を掲げ、エージェントが長時間バックグラウンドでタスクを処理する設計へ進化している。
+OpenAI は 10 月 24 日、予測可能性の低さを主な理由として、最先端 AI モデルの訓練時に実際のインターネットへの接続を遮断すると発表しました。背景には、モデルの不正アクセス（ハッキング）を受け、訓練中のモデルが外部から操作されるリスクへの対応があります。
 
-- Hugging Face Blog では、コーディングエージェントのトークンを約1/3削減する「ColGrep-Agent」、エージェントが自己改善する際に何を永続化すべきかを論じた「When agents self-improve, what should persist?」など、エージェント基盤の議論が活発。
-- 国内でも AINOW が「AIエージェント構築の7ステップ」「自作エージェント7選」など実務ガイドを連発。
+これは、OpenAI が 2026 年 7 月に社内テスト中に誤って Hugging Face をハッキングした事例、および 10 月 6 日に社内最先端モデルが「500 大数学未解決問題の 90 件」を解いたと発表した件など、AI 能力の急拡大と安全確保の板挟みを象徴する動きです。さらに OpenAI は、非公開推論を狙う「蒸留（distillation）」活動を阻止する取り組みも進めており、Kimi 開発元関係者の関与を中核と判断したと報じられています。
 
-出典:
-- [MCPの新ロードマップ公開、今後はAIエージェント対応、HTTP通信への統一（publickey1）](https://www.publickey1.jp/blog/26/mcpaihttp.html)
-- AutoGenと後継のMicrosoft Agent Frameworkとは？（AI Market）（未確認の出典のためリンク省略）
-- [ColGrep-Agent: Cutting Frontier Coding Agents' Tokens by a Third（Hugging Face Blog）](https://huggingface.co/blog/lightonai/colgrep-agent)
-- [AIエージェント構築の手順7ステップ！基盤の選び方と本番運用のコツ（AINOW）](https://ainow.ai/2026/10/12/278430/)
+- [OpenAI、訓練中の最先端 AI をインターネットから遮断すると発表（Techno Edge）](https://www.techno-edge.net/article/2026/10/24/5625.html)
+- [OpenAI、非公開の推論を狙う「蒸留」活動を阻止（Ledge.ai）](https://ledge.ai/articles/openai_reasoning_distillation_campaign)
+- [OpenAI が社内 AI モデルで 722...（GIGAZINE）](https://gigazine.net/news/20261007-openai-mathematics/)
+- [OpenAI News（公式）](https://openai.com/news/)
 
 ---
 
-## 5. 国内動向：デジタル庁の行政AIと国産LLMの日本語性能競争
+## 3. Anthropic、Agent Skills を Agentic AI Foundation に寄付
 
-国内では、デジタル庁が **行政の生成AI調達・利活用ガイドライン** を軸に行政DXを推進。令和8年10月16日の古川デジタル大臣記者会見動画が掲載され、窓口BPRアドバイザー連絡会議の視察や、医療DX・電子処方箋のダッシュボード更新が続いている。
+Anthropic は、AI エージェントの能力拡張フォーマット **Agent Skills** を **Agentic AI Foundation**（Linux 財団傘下）に寄付すると発表しました。Agent Skills は、`SKILL.md` ファイルを含むフォルダでエージェントに特定のタスクやドメインを教える軽量なオープンフォーマットです。
 
-- 国産LLMでは、NII などの **LLM-jp-4**（8B / 32B-A3B）が日本語MT-Bench で GPT-4o・Qwen3-8B を上回るスコア（32B-A3B で 7.82）を記録。
-- PFN の **PLaMo 3.0 Prime**（フルスクラッチ国産フラッグシップ、Reasoning/Non-reasoning 2モード）が、同価格帯の Claude Haiku 4.5・GPT-5.4 Mini との比較軸として注目。
-- ELYZA も2つの日本語特化国産LLMを公開し、PC・エッジデバイスでの実用性を訴求。
+寄付により、Agent Skills は 70 以上のプラットフォームで統合され、Anthropic・Google・OpenAI のエンジニアが標準化を支援する形になります。これは MCP（Model Context Protocol）の寄贈に続き、エージェント相互運用性の標準化を推し進める動きです。AutoGen 側でも `autogen_ext.tools.mcp` による MCP 互換ツールのアダプタが整備され、MCP と AutoGen の連携が深まっています。
 
-出典:
-- [デジタル庁 ニュース（digital.go.jp）](https://www.digital.go.jp/news/)
-- [NII、GPT-4oやQwen3-8Bを上回る性能の国産LLM「LLM-jp-4」（Yahoo!ニュース）](https://news.yahoo.co.jp/articles/cd0b7b3493cd9b2ce948cb25a1b2098351b1f253)
-- PLaMo 3.0 Primeとは？ 性能や料金、国産LLM（AI総合研究所）（未確認の出典のためリンク省略）
-- [ELYZA、2つの新たな日本語特化の国産LLM（ZDNET Japan）](https://japan.zdnet.com/article/35220681/)
+- [Donating Agent Skills To The Agentic Ai Foundation（Agent Skills を Agentic AI Foundation に寄付）](https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation)
+- Agent Skills 仕様（agentskills.io）（未確認の出典のためリンク省略）
+- Agent Plugins 1.0 は「新しい AI 団体」なのか――Anthropic（feelflow）（未確認の出典のためリンク省略）
+- autogen_ext.tools.mcp — AutoGen（Microsoft 公式ドキュメント）（未確認の出典のためリンク省略）
+- [AI エージェント戦略比較：OpenAI、Anthropic、Google、GitHub、Microsoft（Qiita）](https://qiita.com/ochtum/items/fa98860c76460188a01f)
 
 ---
 
-## 6. 安全・セキュリティ：OpenAI 役員会議室の盗聴器事件と Anthropic のサイバー対応
+## 4. ローカル LLM：Qwen3.8-27B が 16〜24GB GPU で動く話題が拡散
 
-セキュリティ面では、米司法省が10月13日、サンフランシスコの OpenAI オフィス役員会議室に盗聴器を設置したとして外国籍エンジニア社員を逮捕した事件が報じられた。AI 開発の最前線における物理的・人的セキュリティが改めて問われる出来事となった。
+ローカル LLM 界隈では、**Qwen3.8-27B** が注目を集めています。Qwen3.5 アーキテクチャに基づくコンパクトな dense 型ビジョン・言語モデルで、コーディング・専門業務・研究・長期ホライズンタスクで高い性能を発揮します。通常は 24GB 以上の VRAM が推奨されますが、16GB の Radeon RX 9070 XT でも、アグレッシブな量子化＋KV キャッシュ圧縮＋スペキュラティブデコーディング（draft モデル）の組み合わせで動作する事例が報告されています。
 
-- Anthropic 側では、Cyber Verification Program、独立評価者（Independent Evaluators）の更新、Cyber Mission などの安全・検証プログラムを継続。
-- Meta は Ray-Ban Meta スマートグラスで意図しない音声記録が発生していた問題を認め、既に解決済みと報告。
+さらに、脱獄 PlayStation 5 で大型 AI（Qwen3.8-27B）を高速動作させるネイティブアプリ「**PS5LM Plus**」や、iPhone のメモリ 3GB で動く 35B 級の AI モデル「**MiniCPM-V 4**」が報じられ、エッジ環境での大型モデル実行が加速しています。
 
-出典:
-- [OpenAI役員会議室に盗聴器、外国籍のエンジニア社員逮捕（Techno Edge）](https://www.techno-edge.net/article/2026/10/14/5585.html)
-- [Meta、スマートグラスで意図しない音声記録が発生していた問題を認める（Techno Edge）](https://www.techno-edge.net/article/2026/10/17/5598.html)
-- [Cyber Verification Program（Anthropic News）](https://www.anthropic.com/news/cyber-verification-program)
-- [An Update On Independent Evaluators（Anthropic News）](https://www.anthropic.com/news/an-update-on-independent-evaluators)
-
----
-
-## 7. コミュニティ・イベント：Claude Code ハッカソンと AIフェスティバル 2026
-
-国内の AI クリエイターコミュニティも活発化。Anthropic と AI コミュニティ Cereb が主催する **Claude Code ハッカソン「Built with Claude: Japan」** が発表され、賞品は800万円分の API クレジット、10月26日まで申込み受付中。また、11月7日に渋谷で開催される「AIフェスティバル 2026」（全日本AIハッカソン決勝・AIアートGP授賞式、入場無料）も告知された。
-
-- note 上では「生成AI主要5社、今週何があった？」の定点観測や、初心者向けの週末まとめが継続的に投稿され、実利用の裾野が広がっている。
-
-出典:
-- [Claude CodeハッカソンBuilt with Claude: Japan発表（Techno Edge）](https://www.techno-edge.net/article/2026/10/14/5584.html)
-- [AIで何かを作っている人が、日本で一番集まる日。「AIフェスティバル 2026」（Techno Edge）](https://www.techno-edge.net/article/2026/10/16/5597.html)
-- [生成AI主要5社、今週何があった？（note / zetton1983）](https://note.com/zetton1983/n/n3eeb6413b12f)
+- [脱獄 PlayStation 5 で大型 AI（Qwen3.8-27B）を高速動作させるネイティブアプリ「PS5LM Plus」（Techno Edge）](https://www.techno-edge.net/article/2026/10/23/5622.html)
+- [Qwen/Qwen3.8-27B · Hugging Face](https://huggingface.co/Qwen/Qwen3.8-27B)
+- How to Run Qwen 3.8 Locally: 27B on 16–24GB GPUs（Codersera）（未確認の出典のためリンク省略）
+- qwen/qwen3.8-27b • LM Studio（未確認の出典のためリンク省略）
+- I ran Qwen3.8 27B on single 8GB Card!（YouTube）（未確認の出典のためリンク省略）
 
 ---
 
-## 編集後記（qwen3.8:27b-mlx 視点）
+## 5. 国内動向：デジタル庁が AI・デジタル改革推進会議の議事録を公開
 
-今週の最大の潮流は「**フロンティアの長期ワークフロー競争 → ローカル・軽量実行への視線移動**」だった。Gemini 4 Argon が実用化の議論を呼び、Saluki 27B が Qwen3.8-27B を7.89GBに圧縮してノートPCで動かせることを示したことで、27B級モデルが「手元で回せる」時代に入った印象が強い。さらに BitNet / Bonsai-8B による1-bit 推論の潮流は、推論コストの雪崩的な低下を予感させる。
+デジタル庁は 10 月 23 日、古川大臣記者会見の動画を掲載するとともに、**AI・デジタル改革推進会議（第 1 回）の議事次第および資料**を公開しました。会議は、急激な人口減少に対応し、経済成長の実現や公共サービスの維持・強化を図るため、AI によるリスク最小化を前提に AI・デジタルの徹底活用（AX／DX）を推進することを目的としています。
 
-国内では、デジタル庁の行政AIガイドラインと LLM-jp-4 / PLaMo 3.0 Prime による日本語性能競争が並行。海外のフロンティアに追随しつつ、日本語の自然性・文脈理解で国産モデルが差別化を図る構図は変わらない。安全面では OpenAI 盗聴器事件が、AI 開発の「物理的セキュリティ」を改めて可視化した1週間だった。
+また、令和 8 年度「AI エージェントの活用における課題の調査研究」に係る業務を一般競争入札として掲載しており、国が AI エージェント活用の実務調査に着手している点が注目されます。背景には、2026 年 3 月にデジタル庁が政府共通 AI プラットフォーム「**源内（GENNAI）**」で試用する国産 LLM 7 モデル（NTT tsuzumi 2、PFN PLaMo 2.0 Prime、KDDI ELYZA-JP-70B、富士通 Takane 32B、NEC cotomi v3、CC Gov-LLM、Sarashina2 mini）を選定した動きがあります。
+
+- [デジタル庁 ニュース（公式）](https://www.digital.go.jp/news/)
+- [AI・デジタル改革推進会議｜デジタル庁（公式）](https://www.digital.go.jp/councils/ai_digital)
+- 【2026 年版】国産 LLM 7 選｜デジタル庁「源内」が選んだ AI（FIDX）（未確認の出典のためリンク省略）
+- デジタル庁「源内」に国産 LLM 7 社を選定（yojigen）（未確認の出典のためリンク省略）
 
 ---
 
-*本記事は qwen3.8:27b-mlx（Ollama 経由）が生成した比較用サブモデルの週次まとめです。情報源は各リンク先をご確認ください。*
+## 6. NVIDIA、エージェント向けリトリーバルモデル「Nemotron 3.5 Embed / Rerank / Parse」を公開
+
+NVIDIA は Hugging Face Blog 経由で、AI エージェントの検索能力を高める **Nemotron 3.5 Embed、Rerank、Parse** を公開しました。多言語・マルチモーダルな QA 検索に最適化された世界最高水準のリランカーで、エージェントの RAG パイプラインの精度向上を目的としています。
+
+関連して、ロボティクス向けシミュレーション資産のオープンライブラリ「**SimReady Central**」や、臨床手術を生成シミュレーションで再現する「**Cosmos3-H-Dreams**」、インド系言語の事前学習を 2.8 兆トークンにスケールした「**Scaling Indic Pretraining**」も公開され、NVIDIA のエージェント基盤戦略が多方面に広がっています。
+
+- [NVIDIA Nemotron 3.5 Embed, Rerank, and Parse: Advancing Agents with World-Class Retrieval Models（世界最高水準のリトリーバルモデルでエージェントを前進）](https://huggingface.co/blog/nvidia/nemotron-retriever-world-class-agentic-retrieval)
+- [Announcing SimReady Central: An Open Library of Simulation-Ready 3D Assets for Robotics and AI Factories（ロボティクス・AI ファクトリー向けシミュレーション用 3D 資産のオープンライブラリ）](https://huggingface.co/blog/nvidia/simready-central-assets-robotics-ai-factories)
+- [NVIDIA が AI エージェント向け高速モデル「Nemotron 3.5 Lightning」を公開（GIGAZINE）](https://gigazine.net/news/20260812-nvidia-nemotron-3-5-lightning/)
+
+---
+
+## 7. 1-bit LLM：BitNet と Bonsai が極限軽量化の最前線を牽引
+
+1-bit LLM の動向も注目を集めています。Microsoft Research の **BitNet b1.58**（全重みを 1.58 ビットで表現）に加え、PrismML が開発した真の 1-bit LLM「**Bonsai-8B**」が話題です。Bonsai-8B は重みが 0 か 1 のみで、モデルサイズ 1.15GB、MMLU-R 65.7 を記録しています。
+
+ローカル環境では、BitNet b1.58 × Qwen3.5(4B) × Ollama × Docker の組み合わせで実験的な 1-bit LLM ホスト環境を構築する試みも報告されています。Tool Calling 非対応のため現状はシステム側でエラーを返すよう制御する段階ですが、極端な低ビット化による推論コスト削減の潮流が 2026 年に加速しています。
+
+- [1-bit LLM と Bonsai：極限軽量化の最前線を論文ベースで整理する（Zenn）](https://zenn.dev/amasashi/articles/e75ffebff53bb7)
+- [Bonsai-8B 考察 — 1-bit LLM は使い物になるのか（Qiita）](https://qiita.com/y0kud4/items/3f7faeea52d7eec01b0f)
+- [BitNet (1bitLLM) × Qwen3.5(4B) × Ollama × OpenClaw × Docker（note / leococolin）](https://note.com/leococolin/n/n056d9b5980ad)
+- The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits（Microsoft Research）（未確認の出典のためリンク省略）
+
+---
+
+## 8. 国内企業・イベント動向：AI フェスティバル 2026、Epic Games の AI エージェントコンテスト
+
+国内では、11 月 7 日に渋谷で開催される「**AI フェスティバル 2026**」が話題です。AI クリエイター 85 サークル、全日本 AI ハッカソン決勝、AI アート GP 授賞式など、生成 AI を扱う人が日本で最も集まるイベントとして、入場無料で開催されます。
+
+海外では、Epic Games が AI エージェントを駆使して製作したゲームの出来栄えを競うコンテスト「2026 AI Agent Game Dev Contest」を開催すると発表しました。また、国内企業における生成 AI サービスのシェア調査では、Microsoft 365 導入企業を背景に ChatGPT が依然として高いシェアを維持する一方、PLaMo・rinna などの国産 AI と海外 AI の比較判断軸が議論されています。
+
+- [AI で何かを作っている人が、日本で一番集まる日。AI フェスティバル 2026（Techno Edge）](https://www.techno-edge.net/article/2026/10/16/5597.html)
+- [Epic Games、AI エージェント活用ゲーム開発コンテスト開催を 6 本指のレッドピル・ミームで宣伝（Techno Edge）](https://www.techno-edge.net/article/2026/10/23/5621.html)
+- [国内企業における生成 AI サービスのシェア、ChatGPT...（IT Leaders）](https://it.impress.co.jp/articles/-/27890)
+- 【生成 AI】PLaMo や rinna など国産 AI と海外 AI を比較する判断軸（超解決）（未確認の出典のためリンク省略）
+
+---
+
+## 9. note での「使ってみた」系記事
+
+note 上では、生成 AI の実用レポートが相次いでいます。
+
+- **生成 AI 主要 5 社、今週何があった？**（ぜっとん）：OpenAI・Google・Anthropic・xAI・Qwen を 1 週間定点観測。xAI が AI で性的な偽画像を作る「nudification」を巡り Minnesota 州と法廷争いに発展した件も紹介。
+- **DMM 生成 AI CAMP に入って 3 週間**（airi_ai_study）：ChatGPT・Gemini・Claude を一通り触った生成 AI 初心者の学び方を 3 週間で総括。
+- **最新動画生成 AI『MiniMax』今週見つけた事例 10 選**（AI かわき）：映像と音声を同時に生成できる MiniMax H3 周辺で、制作工程を短縮する道具が一気に増えている様子。
+- **週 2,241 件を読んで選んだ。中小企業の現場で使える AI**（papa_techou）：AI 生成コンテンツが飽和した今、「人の目線と判断が入っているか」がメディア側の選別基準になりつつあると指摘。
+
+- [生成 AI 主要 5 社、今週何があった？（note / ぜっとん）](https://note.com/zetton1983/n/n6c841fa3657e)
+- [DMM 生成 AI CAMP に入って 3 週間（note / airi_ai_study）](https://note.com/airi_ai_study/n/nb763b4cffd38)
+- [【海外事例】最新動画生成 AI『MiniMax』今週見つけた事例 10 選（note / AI かわき）](https://note.com/kawakijourney_ai/n/nfe1d99ed3004)
+- [週 2,241 件を読んで選んだ。中小企業の現場で使える AI（note / papa_techou）](https://note.com/papa_techou/n/nf347c8ca7b41)
+
+---
+
+## 今週のまとめ
+
+今週は「**フロンティアモデルの公開範囲と安全性**」が最大の論点でした。Google DeepMind の Gemini 4 Argon は一般公開ではなくサイバー防衛者への限定提供から始まり、OpenAI は訓練中のモデルをインターネットから遮断すると発表。AI 能力の急拡大と安全確保の緊張関係が、主要 3 社で共通のテーマになっています。
+
+国内ではデジタル庁が AI・デジタル改革推進会議の議事録を公開し、国産 LLM「源内」7 モデル選定の議論が継続。ローカル LLM 界隈では Qwen3.8-27B が 16〜24GB GPU で動く話題が拡散し、PS5 での大型 AI 実行や 1-bit LLM（BitNet・Bonsai）の極限軽量化が加速しています。エージェント基盤では Anthropic の Agent Skills 寄付と MCP/AutoGen の連携が標準化を推し進め、NVIDIA の Nemotron 3.5 系列が RAG 精度を底上げする一週間でした。
+
+---
+
+*本記事は qwen3.8:27b-mlx（Ollama 経由）が生成した週次まとめです。複数ローカル LLM による比較企画の一環として作成しています。*
 
 </div>
 </div>
@@ -556,55 +567,21 @@ Google DeepMind は10月1日（日本時間）、新世代フロンティアAI�
 
 <div class="sonnet-eval" markdown="1">
 
-## 🧠 Claude Sonnet による比較・評価（2026-10-17）
+## 🧠 Claude Sonnet による比較・評価（2026-10-24）
 
 *その週に揃った全モデルの記事を読んだ Claude Sonnet が、情報カバレッジ・技術精度・読みやすさの観点から評価します。*
 
 ---
 
-# 生成AI週次ダイジェスト比較評価（10/10〜10/17）
-
-> ⚠️ **注意喚起（偽情報の疑い）**
-> - **⚡ Claude Haiku**: 「Anthropic IPO前の大型資金調達（約900億ドル評価・50億ドル調達）」の節は出典が「ToolNavs（未確認の出典のためリンク省略）」のみで、具体的な評価額・調達額を断定的に記載している。同様に「Meta Connect 2026」の節（Ray-Ban第3世代$449、Meta Quest Pro $1,299）も未確認出典のみに依拠し、かつ日付が9/24（対象週外）であるうえ、同週の他4モデルが報じる「Ray-Banスマートグラスの意図しない録音問題（10/13発表）」と整合しない内容になっている。BitNet数値（6.17倍/5.07倍等）やMonotaRO事例、Reflection AI「Beam」も未確認出典のみに依拠した断定的数値が目立つ。
-> - **🌩️ nemotron**: 「AnthropicがClaude 3.5 Sonnetに『Computer Use』機能を追加」という記述は、Computer Use機能が実際には2024年に発表済みの機能であり、2026年10月の「今週の新着情報」として扱うのは誤りの可能性が高い。また「OpenAI、GPT-6.1発表」は他モデルが報じる「GPT-5.4」系と名称が食い違い、裏付けが取れていない。
->
-> 上記は「情報源の明示」の評価を下げる要因として反映した。
-
----
+5つの記事を読み込み、比較・評価します。
 
 ### カバレッジの違い
 
-- **🖥️ qwen3.6**:
-  - Anthropic Claude Frontier Academy（$1億・1万人FDE育成）
-  - 米エネルギー省Genesis Missionへの$1.5億支援
-  - Anthropic Cyber Verification Program（3ティア構成の詳細）
-  - OpenAI盗聴器事件の容疑者の具体的手口（USB端子・ESP32-S3基板等）
-  - Open d1 / d1-omni-600M（Liquid AI）
-
-- **⚡ Claude Haiku**:
-  - Anthropic IPO前資金調達の報道（出典信頼性に課題あり）
-  - Maxon Autograph 2027.0（MCPサーバー連携）
-  - デジタル庁「源内」国会答弁案作成の大規模実証（職員18万人対象）
-  - Ollama v0.34.2・Edge0-35B-A3Bのメモリ最適化
-  - MonotaRO社のClaude Sonnet 4活用事例
-  - Reflection AI「Beam」（501Bパラメータ）
-
-- **🦉 ornith**:
-  - OpenAIが新モデルの公開を安全基準不十分で中止
-  - PFN「PLaMo 2.1 Prime」リリース
-  - PrismML「Bonsai-8B」（真の1-bit LLM、1.15GB）
-  - note記事「DMM生成AI CAMP」体験記
-
-- **🌩️ nemotron**:
-  - 国産LLM「LLM-jp-4」シリーズの日本語MT-Benchスコア（7.82）
-  - Qwen3.1 235BのOllama対応
-
-- **💠 qwen3.8**:
-  - PFN「PLaMo 3.0 Prime」（ornithの「2.1 Prime」と名称矛盾）
-  - ELYZAの新たな日本語特化国産LLM2種
-  - MCP新ロードマップ（AIエージェント対応・HTTP通信統一）
-  - ColGrep-Agent（コーディングエージェントのトークン削減）
-  - Conway Research社「Underdog」によるSaluki 27Bの技術的背景
+- **🖥️ qwen3.6**: Anthropic「$1億投資・Claude Frontier Academy」「Christopher Stubbs氏参画」、OpenAI「o3-mini終了」「o3価格改定」「722本の数学論文」、Google「Gemini 4 Carbon内部テスト」、Nemotron 3.5 Embed/Rerank、東京都「AI戦略」、DeNA南場会長の発言
+- **⚡ Claude Haiku**: OpenAI Google Cloud提供開始・評価額1.4兆ドルIPO、Anthropic評価額2兆ドルIPO、デジタル庁の国産AI試用（tsuzumi 2・Takane 32B・PLaMo 2.0 Prime）、Meta Muse（画像生成AI利用者1000万人）、国産LLM「LLM-jp-4」
+- **🦉 ornith**: OpenAI GPT-6 Sol/Luna・エージェント「Dots」、源内「源内工房」2026年12月導入予定、DeepSeek-V4.1-Flash（Ollama追加・Project Maya連携）、PLaMo 3.0 Prime、Granite Switch 4.1、Mundo世界モデル
+- **🌩️ nemotron**: OpenAI・Anthropic・Google 3社のAI安全性協調・標準化団体、Edge0-35B（Mac向けMoEモデル）、Ollama 0.34.xシリーズ更新
+- **💠 qwen3.8**: OpenAIの訓練中モデルのネット遮断・蒸留対策、Anthropic Agent SkillsのAgentic AI Foundation寄付、PS5上でのQwen3.8-27B実行（PS5LM Plus）、デジタル庁AI・デジタル改革推進会議議事録公開、Nemotron SimReady Central/Cosmos3-H-Dreams、AIフェスティバル2026
 
 ---
 
@@ -612,22 +589,22 @@ Google DeepMind は10月1日（日本時間）、新世代フロンティアAI�
 
 | 観点 | **🖥️ qwen3.6**<br>qwen3.6:35b-mlx | **⚡ Claude Haiku**<br>claude-haiku-4-5 | **🦉 ornith**<br>ornith-1.5:35b | **🌩️ nemotron**<br>nemotron-3.5-lightning:30b-mlx | **💠 qwen3.8**<br>qwen3.8:27b-mlx |
 |------|------|------|------|------|------|
-| **情報の深さ** | ⭐⭐⭐⭐⭐ ベンチマーク数値・価格まで具体的 | ⭐⭐⭐ 数値は多いが出典薄弱 | ⭐⭐⭐⭐ 発見プロセスの詳細が充実 | ⭐⭐ 一文要約止まりで深掘り不足 | ⭐⭐⭐⭐⭐ 編集後記含め考察が深い |
-| **カバレッジ** | ⭐⭐⭐⭐⭐ 10項目・幅広い | ⭐⭐⭐⭐ 項目数は多いが一部疑義あり | ⭐⭐⭐⭐ バランス良い10項目 | ⭐⭐ 7項目で浅く薄い | ⭐⭐⭐⭐ 7項目だが各々深い |
-| **国内AI動向** | ⭐⭐⭐ ハッカソン中心でやや手薄 | ⭐⭐⭐⭐⭐ 「源内」実証など具体性高い | ⭐⭐⭐⭐ PLaMo・デジタル庁ともバランス良 | ⭐⭐ LLM-jp-4のみで手薄 | ⭐⭐⭐⭐⭐ PLaMo・ELYZA・デジタル庁と最充実 |
-| **読みやすさ** | ⭐⭐⭐⭐ 見出し構成が整理されている | ⭐⭐⭐⭐ 簡潔だが「未確認」注記が多く気が散る | ⭐⭐⭐⭐ 構成良好 | ⭐⭐⭐ 絵文字見出しで平易だが内容が薄い | ⭐⭐⭐⭐ 長文だが編集後記で読みやすい |
-| **情報源の明示** | ⭐⭐⭐⭐ 公式リンク中心、一部未確認 | ⭐⭐ 大半が未確認出典 | ⭐⭐⭐⭐⭐ 信頼できるソースが中心 | ⭐⭐ トップページ参照中心で具体性欠く | ⭐⭐⭐⭐ 公式・報道リンク豊富 |
-| **ビジネス視点** | ⭐⭐⭐⭐ 価格・企業連携の記載充実 | ⭐⭐⭐⭐⭐ IPO評価額・導入事例・コストまで言及 | ⭐⭐ 技術・研究中心でビジネス視点薄い | ⭐ ビジネス視点ほぼなし | ⭐⭐⭐⭐ 価格帯比較・企業名明記 |
+| **情報の深さ** | ⭐⭐⭐⭐ 各トピックに数値・経緯を具体的に記載 | ⭐⭐⭐ トピックごとに簡潔だが背景説明は浅め | ⭐⭐⭐⭐ 技術的背景・展開スケジュールまで詳しい | ⭐⭐ 1〜2文の概要止まりが多い | ⭐⭐⭐⭐⭐ 数値・経緯・関連情報まで最も詳細 |
+| **カバレッジ** | ⭐⭐⭐⭐ 9トピック、幅広い分野をバランス良く | ⭐⭐⭐ 7トピックとやや少なめ | ⭐⭐⭐⭐ 9トピック、ローカルLLM・国産LLMも手厚い | ⭐⭐ 6トピックで最も手薄 | ⭐⭐⭐⭐⭐ 9トピック+出典多数で最も網羅的 |
+| **国内AI動向** | ⭐⭐⭐ デジタル庁・東京都・DeNAと3件 | ⭐⭐⭐⭐ デジタル庁の入札・国産AI試用まで具体的 | ⭐⭐⭐⭐ 源内の詳細・ソブリンAI議論・国産LLM比較 | ⭐⭐⭐ デジタル庁連携のみ、未確認出典が多い | ⭐⭐⭐⭐⭐ 議事録公開・国産7モデル選定まで具体的かつ裏付けあり |
+| **読みやすさ** | ⭐⭐⭐⭐ 見出し構成が整理されている | ⭐⭐⭐⭐ シンプルで読みやすいが抑揚が少ない | ⭐⭐⭐⭐ 絵文字・表を使い視覚的に整理 | ⭐⭐⭐⭐ 絵文字で分類し短くまとまっている | ⭐⭐⭐ 情報量が多く読み応えがあるが長文 |
+| **情報源の明示** | ⭐⭐ 19件中約10件が未確認リンク省略 | ⭐⭐ 7件中5件が未確認・出典なし | ⭐⭐⭐ 一部未確認だが主要項目は公式リンクあり | ⭐⭐ 多くが未確認出典、裏付け薄い | ⭐⭐⭐⭐ 大部分が公式・メディアの実リンク付き |
+| **ビジネス視点** | ⭐⭐⭐⭐ 価格改定・コスト削減・企業導入に言及 | ⭐⭐⭐⭐⭐ IPO評価額・資金調達など企業財務視点が強い | ⭐⭐⭐ ソブリンAI・産業動向に触れるがビジネス数値は少ない | ⭐⭐ 業界動向中心でビジネス視点は薄い | ⭐⭐⭐⭐ 安全性とアクセス制御の緊張関係など戦略視点あり |
 
 ---
 
 ### 総評
 
-今週は Gemini 4 Argon 発表と Saluki 27B によるローカルLLM軽量化の2テーマが全モデル共通で取り上げられ、関心の高さがうかがえる。qwen3.6・qwen3.8は出典の裏付けと深掘りのバランスが良く安定した完成度を示した一方、Ollama系ローカルモデル同士でも差が大きい。ornithは信頼できる出典に絞った堅実な記事だがビジネス視点が弱く、nemotronは項目数が少なく事実確認の甘さ（Computer Use機能の時系列誤り）が目立った。qwen3.8は国内動向とローカルLLM技術の双方で頭一つ抜けた充実度を見せている。Claude Haikuは国内事例やビジネス視点で強みを発揮したが、出典未確認の断定的記述が多く、事実検証面での課題が残る。各記事を合わせて読むことで、フロンティアモデル動向からローカル実行環境、国内行政・企業動向まで、今週の生成AI業界を多角的に把握できる。
+今週は「フロンティアモデルの安全性・公開範囲」と「デジタル庁の源内AIエージェント化」が共通テーマとして複数モデルで取り上げられた。ローカルモデル同士を比べると、qwen3.8が情報源の明示・カバレッジ・国内動向のいずれでも头一つ抜けており、裏付けのある具体的な数値を多く含む一方、nemotronは文量が少なく未確認出典が目立ち精度が見劣りする。ornithは技術的な深さとバランスの良さが光るが、一部リンクの崩れ（URL欠落）が見られる。Haikuはビジネス・資金調達視点に強いがトピック数が少なく出典の脆弱性が目立つ。qwen3.6は安定した網羅性を持つが情報源の明示に改善余地がある。各記事を合わせて読むことで、フロンティアモデルの安全性論争、国内AIエージェント行政活用、ローカルLLM実用化という今週の全体像が立体的に見えてくる。
 
 ---
 
-### 機械可読スコア（必須）
+### 機械可読スコア
 
 </div>
 
@@ -638,11 +615,11 @@ Google DeepMind は10月1日（日本時間）、新世代フロンティアAI�
 <div class="past-col">
 <h3>🔬 モデル比較</h3>
 <ul class="article-list compact">
+  <li><a href="{{ site.baseurl }}/articles/compare/2026-1024">10/17〜10/24</a><span class="date">2026-10-24</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-1017">10/10〜10/17</a><span class="date">2026-10-17</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-1010">10/3〜10/10</a><span class="date">2026-10-10</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-1003">9/26〜10/3</a><span class="date">2026-10-03</span></li>
   <li><a href="{{ site.baseurl }}/articles/compare/2026-0926">9/19〜9/26</a><span class="date">2026-09-26</span></li>
-  <li><a href="{{ site.baseurl }}/articles/compare/2026-0912">9/5〜9/12</a><span class="date">2026-09-12</span></li>
 </ul>
 <a href="{{ site.baseurl }}/articles/compare/" class="view-all">すべて見る →</a>
 </div>
@@ -650,11 +627,11 @@ Google DeepMind は10月1日（日本時間）、新世代フロンティアAI�
 <div class="past-col">
 <h3>🖥️ Ollama週次</h3>
 <ul class="article-list compact">
+  <li><a href="{{ site.baseurl }}/articles/weekly/2026-1024">10/17〜10/24</a><span class="date">2026-10-24</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-1017">10/10〜10/17</a><span class="date">2026-10-17</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-1010">10/3〜10/10</a><span class="date">2026-10-10</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-1003">9/26〜10/3</a><span class="date">2026-10-03</span></li>
   <li><a href="{{ site.baseurl }}/articles/weekly/2026-0926">9/19〜9/26</a><span class="date">2026-09-26</span></li>
-  <li><a href="{{ site.baseurl }}/articles/weekly/2026-0919">9/12〜9/19</a><span class="date">2026-09-19</span></li>
 </ul>
 <a href="{{ site.baseurl }}/articles/weekly/" class="view-all">すべて見る →</a>
 </div>
@@ -662,11 +639,11 @@ Google DeepMind は10月1日（日本時間）、新世代フロンティアAI�
 <div class="past-col">
 <h3>⚡ Haiku週次</h3>
 <ul class="article-list compact">
+  <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-1024">10/17〜10/24</a><span class="date">2026-10-24</span></li>
   <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-1017">10/10〜10/17</a><span class="date">2026-10-17</span></li>
   <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-1010">10/3〜10/10</a><span class="date">2026-10-10</span></li>
   <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-1003">9/26〜10/3</a><span class="date">2026-10-03</span></li>
   <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-0926">9/19〜9/26</a><span class="date">2026-09-26</span></li>
-  <li><a href="{{ site.baseurl }}/articles/haiku_weekly/2026-0912">9/5〜9/12</a><span class="date">2026-09-12</span></li>
 </ul>
 <a href="{{ site.baseurl }}/articles/haiku_weekly/" class="view-all">すべて見る →</a>
 </div>
