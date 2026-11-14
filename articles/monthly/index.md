@@ -8,6 +8,7 @@ title: 月次まとめ一覧
 各月の生成AI動向をまとめた月次ダイジェスト記事の一覧です。毎月第1土曜日に自動更新されます。
 
 <ul class="article-list">
+  <li><a href="{{ site.baseurl }}/articles/monthly/2026-11">2026年11月</a><span class="date">2026-11</span></li>
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-10">2026年10月</a><span class="date">2026-10</span></li>
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-09">2026年9月</a><span class="date">2026-09</span></li>
   <li><a href="{{ site.baseurl }}/articles/monthly/2026-08">2026年8月</a><span class="date">2026-08</span></li>
